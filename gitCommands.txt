@@ -4,4 +4,8 @@ git config list                                                 //to confirm tha
 pwd
 git clone https://github.com/emersongrier/MusicStreamProject.git
 cd MusicStreamProject
-ls
+ls                                                              //create a file and put in new directory
+git add .
+git commit -m "How we got this far"
+git log
+git push
