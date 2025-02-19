@@ -1,0 +1,7 @@
+git config --global user.name "Eli McKercher"
+git config --global user.email "e.mckercher03@gmail.com"
+git config list                                                 //to confirm that the bottom lines are updated
+pwd
+git clone https://github.com/emersongrier/MusicStreamProject.git
+cd MusicStreamProject
+ls
