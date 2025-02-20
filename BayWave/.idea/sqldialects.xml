@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="SqlDialectMappings">
+    <file url="file://$PROJECT_DIR$/src/main/java/com/BayWave/Admin.java" dialect="GenericSQL" />
+    <file url="file://$PROJECT_DIR$/src/main/java/com/BayWave/Options/AlbumOptions.java" dialect="GenericSQL" />
+    <file url="file://$PROJECT_DIR$/src/main/java/com/BayWave/Options/ArtistOptions.java" dialect="GenericSQL" />
+    <file url="file://$PROJECT_DIR$/src/main/java/com/BayWave/Options/FollowArtistOptions.java" dialect="GenericSQL" />
+    <file url="file://$PROJECT_DIR$/src/main/java/com/BayWave/Options/FriendOptions.java" dialect="GenericSQL" />
+    <file url="file://$PROJECT_DIR$/src/main/java/com/BayWave/Options/MemberOptions.java" dialect="GenericSQL" />
+    <file url="file://$PROJECT_DIR$/src/main/java/com/BayWave/Options/PlaylistOptions.java" dialect="GenericSQL" />
+    <file url="file://$PROJECT_DIR$/src/main/java/com/BayWave/Options/PlaylistTrackOptions.java" dialect="GenericSQL" />
+    <file url="file://$PROJECT_DIR$/src/main/java/com/BayWave/Options/TrackOptions.java" dialect="GenericSQL" />
+    <file url="file://$PROJECT_DIR$/src/main/java/com/BayWave/Options/UserOptions.java" dialect="GenericSQL" />
+    <file url="file://$PROJECT_DIR$/src/main/java/com/BayWave/Reset.java" dialect="GenericSQL" />
+    <file url="file://$PROJECT_DIR$/src/main/java/com/BayWave/Tables/Album.java" dialect="GenericSQL" />
+    <file url="file://$PROJECT_DIR$/src/main/java/com/BayWave/Tables/Artist.java" dialect="GenericSQL" />
+    <file url="file://$PROJECT_DIR$/src/main/java/com/BayWave/Tables/FollowArtist.java" dialect="GenericSQL" />
+    <file url="file://$PROJECT_DIR$/src/main/java/com/BayWave/Tables/Friend.java" dialect="GenericSQL" />
+    <file url="file://$PROJECT_DIR$/src/main/java/com/BayWave/Tables/Member.java" dialect="GenericSQL" />
+    <file url="file://$PROJECT_DIR$/src/main/java/com/BayWave/Tables/Track.java" dialect="GenericSQL" />
+    <file url="file://$PROJECT_DIR$/src/main/java/com/BayWave/Triggers/DeleteFriendUpdateUserTrigger.java" dialect="GenericSQL" />
+    <file url="file://$PROJECT_DIR$/src/main/java/com/BayWave/Triggers/InsertFriendUpdateUserTrigger.java" dialect="GenericSQL" />
+    <file url="file://$PROJECT_DIR$/src/main/java/com/BayWave/Triggers/InsertMemberUpdateArtistTrigger.java" dialect="GenericSQL" />
+    <file url="file://$PROJECT_DIR$/src/main/resources/BayWave.sql" dialect="GenericSQL" />
+    <file url="PROJECT" dialect="GenericSQL" />
+  </component>
+  <component name="SqlResolveMappings">
+    <file url="PROJECT" scope="{&quot;node&quot;:{  &quot;@negative&quot;:&quot;1&quot;,  &quot;group&quot;:{   &quot;@kind&quot;:&quot;root&quot;,   &quot;node&quot;:{    &quot;@negative&quot;:&quot;1&quot;   }  } }}" />
+  </component>
+</project>
