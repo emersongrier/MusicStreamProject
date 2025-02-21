@@ -1,7 +1,6 @@
 package com.BayWave.Options;
 
-import com.BayWave.Tables.Album;
-import com.BayWave.Tables.Playlist;
+import com.BayWave.Tables.PlaylistTable;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -36,21 +35,21 @@ public class PlaylistOptions {
             input = scanner.nextLine();
             switch (input) {
                 case "1":
-                    Playlist.print(connection);
+                    PlaylistTable.print(connection);
                     break;
                 case "2":
                     System.out.println("Enter username: ");
                     name = scanner.nextLine();
                     System.out.println("Enter playlist name: ");
                     plyName = scanner.nextLine();
-                    Playlist.register(connection, name, plyName);
+                    PlaylistTable.register(connection, name, plyName);
                     break;
                 case "3":
                     System.out.println("Enter username: ");
                     name = scanner.nextLine();
                     System.out.println("Enter playlist name: ");
                     plyName = scanner.nextLine();
-                    Playlist.delete(connection, name, plyName);
+                    PlaylistTable.delete(connection, name, plyName);
                     break;
                 case "4":
                     System.out.println("Enter username: ");
@@ -59,14 +58,14 @@ public class PlaylistOptions {
                     plyName = scanner.nextLine();
                     System.out.println("Enter playlist description: ");
                     String plyDesc = scanner.nextLine();
-                    Playlist.updateDesc(connection, name, plyName, plyDesc);
+                    PlaylistTable.updateDesc(connection, name, plyName, plyDesc);
                     break;
                 case "5":
                     System.out.println("Enter username: ");
                     name = scanner.nextLine();
                     System.out.println("Enter playlist name: ");
                     plyName = scanner.nextLine();
-                    Playlist.printDesc(connection, name, plyName);
+                    PlaylistTable.printDesc(connection, name, plyName);
                     break;
                 case "6":
                     String newName;
@@ -76,7 +75,7 @@ public class PlaylistOptions {
                     plyName = scanner.nextLine();
                     System.out.println("Enter new playlist name: ");
                     newName = scanner.nextLine();
-                    Playlist.updateName(connection, name, plyName, newName);
+                    PlaylistTable.updateName(connection, name, plyName, newName);
                     break;
                 case "7":
                     System.out.println("Enter username: ");
@@ -85,7 +84,7 @@ public class PlaylistOptions {
                     plyName = scanner.nextLine();
                     System.out.println("Enter new playlist cover link: ");
                     String cover = scanner.nextLine();
-                    Playlist.updateCover(connection, name, plyName, cover);
+                    PlaylistTable.updateCover(connection, name, plyName, cover);
                     break;
                 default:
                     input = "-1";

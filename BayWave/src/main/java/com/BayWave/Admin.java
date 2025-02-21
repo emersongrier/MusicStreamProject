@@ -1,11 +1,9 @@
 package com.BayWave;
 
 import com.BayWave.Options.*;
-import com.BayWave.Tables.Artist;
 import com.BayWave.Util.*;
 
 import java.sql.*;
-import java.util.ArrayList;
 import java.util.Objects;
 import java.util.Scanner;
 

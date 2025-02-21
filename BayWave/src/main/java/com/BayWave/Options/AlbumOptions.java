@@ -1,6 +1,6 @@
 package com.BayWave.Options;
 
-import com.BayWave.Tables.Album;
+import com.BayWave.Tables.AlbumTable;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -37,7 +37,7 @@ public class AlbumOptions {
             input = scanner.nextLine();
             switch (input) {
                 case "1":
-                    Album.print(connection);
+                    AlbumTable.print(connection);
                     break;
                 case "2":
                     System.out.println("Enter artist name: ");
@@ -46,7 +46,7 @@ public class AlbumOptions {
                     album = scanner.nextLine();
                     System.out.println("Enter album type (Single, EP, LP): ");
                     type = scanner.nextLine();
-                    Album.register(connection, artist, album, type);
+                    AlbumTable.register(connection, artist, album, type);
                     break;
                 case "3":
                     System.out.println("Enter artist name: ");
@@ -55,7 +55,7 @@ public class AlbumOptions {
                     album = scanner.nextLine();
                     System.out.println("Enter new album name: ");
                     String newName = scanner.nextLine();
-                    Album.updateName(connection, artist, album, newName);
+                    AlbumTable.updateName(connection, artist, album, newName);
                     break;
                 case "4":
                     System.out.println("Enter artist name: ");
@@ -64,7 +64,7 @@ public class AlbumOptions {
                     album = scanner.nextLine();
                     System.out.println("Enter new album type (Single, EP, LP): ");
                     type = scanner.nextLine();
-                    Album.updateType(connection, artist, album, type);
+                    AlbumTable.updateType(connection, artist, album, type);
                     break;
                 case "5":
                     System.out.println("Enter artist name: ");
@@ -73,21 +73,21 @@ public class AlbumOptions {
                     album = scanner.nextLine();
                     System.out.println("Enter new album cover link: ");
                     String cover = scanner.nextLine();
-                    Album.updateCover(connection, artist, album, cover);
+                    AlbumTable.updateCover(connection, artist, album, cover);
                     break;
                 case "6":
                     System.out.println("Enter artist name: ");
                     artist = scanner.nextLine();
                     System.out.println("Enter album name: ");
                     album = scanner.nextLine();
-                    Album.delete(connection, artist, album);
+                    AlbumTable.delete(connection, artist, album);
                     break;
                 case "10":
                     System.out.println("Enter artist name: ");
                     artist = scanner.nextLine();
                     System.out.println("Enter album name: ");
                     album = scanner.nextLine();
-                    ArrayList<String[]> tracks = Album.getTracks(connection, artist, album);
+                    ArrayList<String[]> tracks = AlbumTable.getTracks(connection, artist, album);
                     if (tracks != null) {
                         for (String[] track : tracks) {
                             for (String string : track) {

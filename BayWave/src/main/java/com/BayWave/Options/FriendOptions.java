@@ -1,6 +1,6 @@
 package com.BayWave.Options;
 
-import com.BayWave.Tables.Friend;
+import com.BayWave.Tables.FriendTable;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -27,21 +27,21 @@ public class FriendOptions {
             input = scanner.nextLine();
             switch (input) {
                 case "1":
-                    Friend.print(connection);
+                    FriendTable.print(connection);
                     break;
                 case "2":
                     System.out.println("Enter friend 1 name: ");
                     friend1 = scanner.nextLine();
                     System.out.println("Enter friend 2 name: ");
                     friend2 = scanner.nextLine();
-                    Friend.register(connection, friend1, friend2);
+                    FriendTable.register(connection, friend1, friend2);
                     break;
                 case "3":
                     System.out.println("Enter friend 1 name: ");
                     friend1 = scanner.nextLine();
                     System.out.println("Enter friend 2 name: ");
                     friend2 = scanner.nextLine();
-                    Friend.delete(connection, friend1, friend2);
+                    FriendTable.delete(connection, friend1, friend2);
                     break;
                 default:
                     input = "-1";

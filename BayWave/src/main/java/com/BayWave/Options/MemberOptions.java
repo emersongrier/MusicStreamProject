@@ -1,6 +1,6 @@
 package com.BayWave.Options;
 
-import com.BayWave.Tables.Member;
+import com.BayWave.Tables.MemberTable;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -27,21 +27,21 @@ public class MemberOptions {
             String artist;
             switch (input) {
                 case "1":
-                    Member.print(connection);
+                    MemberTable.print(connection);
                     break;
                 case "2":
                     System.out.println("Enter username: ");
                     user = scanner.nextLine();
                     System.out.println("Enter artist name: ");
                     artist = scanner.nextLine();
-                    Member.register(connection, user, artist);
+                    MemberTable.register(connection, user, artist);
                     break;
                 case "3":
                     System.out.println("Enter username: ");
                     user = scanner.nextLine();
                     System.out.println("Enter artist name: ");
                     artist = scanner.nextLine();
-                    Member.delete(connection, user, artist);
+                    MemberTable.delete(connection, user, artist);
                     break;
                 default:
                     input = "-1";

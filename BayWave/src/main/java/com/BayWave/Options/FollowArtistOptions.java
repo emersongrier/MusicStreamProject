@@ -1,6 +1,6 @@
 package com.BayWave.Options;
 
-import com.BayWave.Tables.FollowArtist;
+import com.BayWave.Tables.FollowArtistTable;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -27,21 +27,21 @@ public class FollowArtistOptions {
             String artist;
             switch (input) {
                 case "1":
-                    FollowArtist.print(connection);
+                    FollowArtistTable.print(connection);
                     break;
                 case "2":
                     System.out.println("Enter username: ");
                     user = scanner.nextLine();
                     System.out.println("Enter artist name: ");
                     artist = scanner.nextLine();
-                    FollowArtist.register(connection, user, artist);
+                    FollowArtistTable.register(connection, user, artist);
                     break;
                 case "3":
                     System.out.println("Enter username: ");
                     user = scanner.nextLine();
                     System.out.println("Enter artist name: ");
                     artist = scanner.nextLine();
-                    FollowArtist.delete(connection, user, artist);
+                    FollowArtistTable.delete(connection, user, artist);
                     break;
                 default:
                     input = "-1";

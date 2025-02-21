@@ -9,7 +9,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
-public class FollowArtist {
+public class FollowArtistTable {
     public static void print(Connection connection) throws SQLException {
         PreparedStatement ps = connection.prepareStatement("select * from FOLLOW_ARTIST");
         ResultSet rs = ps.executeQuery();

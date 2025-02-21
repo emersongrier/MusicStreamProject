@@ -8,7 +8,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
-public class ChainTrack {
+public class ChainTrackTable {
     public static void print(Connection connection) throws SQLException {
         PreparedStatement ps = connection.prepareStatement("select * from CHAIN_TRACK");
         ResultSet rs = ps.executeQuery();

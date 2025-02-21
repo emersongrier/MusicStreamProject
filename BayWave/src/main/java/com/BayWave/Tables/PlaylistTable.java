@@ -9,7 +9,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
-public class Playlist {
+public class PlaylistTable {
     public static void print(Connection connection) throws SQLException {
         PreparedStatement ps = connection.prepareStatement("select * from PLAYLIST");
         ResultSet rs = ps.executeQuery();

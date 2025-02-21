@@ -1,6 +1,6 @@
 package com.BayWave.Options;
 
-import com.BayWave.Tables.User;
+import com.BayWave.Tables.UserTable;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -37,23 +37,23 @@ public class UserOptions {
             input = scanner.nextLine();
             switch (input) {
                 case "1":
-                    User.print(connection);
+                    UserTable.print(connection);
                     break;
                 case "2":
                     System.out.println("Enter username: ");
                     username = scanner.nextLine();
-                    if (User.usernameExists(connection, username)) {
+                    if (UserTable.usernameExists(connection, username)) {
                         System.out.println("Username already exists");
                         break;
                     }
                     System.out.println("Enter password: ");
                     password = scanner.nextLine();
-                    User.register(connection, username, password);
+                    UserTable.register(connection, username, password);
                     break;
                 case "3":
                     System.out.println("Enter username: ");
                     username = scanner.nextLine();
-                    User.delete(connection, username);
+                    UserTable.delete(connection, username);
                     break;
                 case "4":
                     String email;
@@ -61,7 +61,7 @@ public class UserOptions {
                     username = scanner.nextLine();
                     System.out.println("Enter email: ");
                     email = scanner.nextLine();
-                    User.addEmail(connection, username, email);
+                    UserTable.addEmail(connection, username, email);
                     break;
                 case "5":
                     String phoneNumber;
@@ -69,7 +69,7 @@ public class UserOptions {
                     username = scanner.nextLine();
                     System.out.println("Enter phone number: ");
                     phoneNumber = scanner.nextLine();
-                    User.addPhone(connection, username, phoneNumber);
+                    UserTable.addPhone(connection, username, phoneNumber);
                     break;
                 case "6":
                     String newName;
@@ -77,31 +77,31 @@ public class UserOptions {
                     username = scanner.nextLine();
                     System.out.println("Enter new username: ");
                     newName = scanner.nextLine();
-                    User.updateUsername(connection, username, newName);
+                    UserTable.updateUsername(connection, username, newName);
                     break;
                 case "7":
                     System.out.println("Enter username: ");
                     username = scanner.nextLine();
-                    User.deleteEmail(connection, username);
+                    UserTable.deleteEmail(connection, username);
                     break;
                 case "8":
                     System.out.println("Enter username: ");
                     username = scanner.nextLine();
-                    User.deletePhone(connection, username);
+                    UserTable.deletePhone(connection, username);
                     break;
                 case "9":
                     System.out.println("Enter username: ");
                     username = scanner.nextLine();
                     System.out.println("Enter password");
                     password = scanner.nextLine();
-                    System.out.println("Password validity: " + User.passwordValid(connection, username, password));
+                    System.out.println("Password validity: " + UserTable.passwordValid(connection, username, password));
                     break;
                 case "10":
                     System.out.println("Enter username: ");
                     username = scanner.nextLine();
                     System.out.println("Enter new password: ");
                     password = scanner.nextLine();
-                    User.updatePassword(connection, username, password);
+                    UserTable.updatePassword(connection, username, password);
                     break;
                 case "11":
                     FriendOptions.options(connection);

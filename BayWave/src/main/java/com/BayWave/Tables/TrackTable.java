@@ -12,7 +12,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
-public class Track {
+public class TrackTable {
     public static void print(Connection connection) throws SQLException {
         PreparedStatement ps = connection.prepareStatement("select * from TRACK");
         ResultSet rs = ps.executeQuery();

@@ -1,9 +1,8 @@
 package com.BayWave.Options;
 
-import com.BayWave.Tables.Chain;
-import com.BayWave.Tables.ChainTrack;
-import com.BayWave.Tables.Queue;
-import com.BayWave.Tables.QueueTrack;
+import com.BayWave.Tables.ChainTable;
+import com.BayWave.Tables.ChainTrackTable;
+import com.BayWave.Tables.QueueTrackTable;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -43,7 +42,7 @@ public class ChainOptions {
             input = scanner.nextLine();
             switch (input) {
                 case "1":
-                    Chain.print(connection);
+                    ChainTable.print(connection);
                     break;
                 case "2":
                     String artist1;
@@ -68,7 +67,7 @@ public class ChainOptions {
                     album2 = scanner.nextLine();
                     System.out.println("Enter track 2: ");
                     track2 = scanner.nextLine();
-                    Chain.register(connection, name, playlist, artist1, album1, track1, artist2, album2, track2);
+                    ChainTable.register(connection, name, playlist, artist1, album1, track1, artist2, album2, track2);
                     break;
                 case "3":
                     System.out.println("Enter username: ");
@@ -79,7 +78,7 @@ public class ChainOptions {
                     album = scanner.nextLine();
                     System.out.println("Enter track name: ");
                     track = scanner.nextLine();
-                    QueueTrack.delete(connection, name, artist, album, track);
+                    QueueTrackTable.delete(connection, name, artist, album, track);
                     break;
                 case "4":
                     System.out.println("Enter username: ");
@@ -93,7 +92,7 @@ public class ChainOptions {
                     System.out.println("Enter new position (swap): ");
                     newPos = scanner.nextInt();
                     scanner.nextLine();
-                    QueueTrack.swapPosition(connection, artist, album, track, name, newPos);
+                    QueueTrackTable.swapPosition(connection, artist, album, track, name, newPos);
                     break;
                 case "5":
                     System.out.println("Enter username: ");
@@ -107,15 +106,15 @@ public class ChainOptions {
                     System.out.println("Enter new position (insert): ");
                     newPos = scanner.nextInt();
                     scanner.nextLine();
-                    QueueTrack.insertAtPosition(connection, artist, album, track, name, newPos);
+                    QueueTrackTable.insertAtPosition(connection, artist, album, track, name, newPos);
                     break;
                 case "6":
-                    ChainTrack.print(connection);
+                    ChainTrackTable.print(connection);
                     break;
                 case "7":
                     System.out.println("Enter username: ");
                     name = scanner.nextLine();
-                    ArrayList<String[]> queue = QueueTrack.getTableForUser(connection, name);
+                    ArrayList<String[]> queue = QueueTrackTable.getTableForUser(connection, name);
                     if (queue != null) {
                         for (String[] row : queue) {
                             for (String string : row) {

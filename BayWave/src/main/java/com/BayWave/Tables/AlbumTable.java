@@ -8,9 +8,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Objects;
 
-public class Album {
+public class AlbumTable {
 
     public static void print(Connection connection) throws SQLException {
         PreparedStatement ps = connection.prepareStatement("select * from ALBUM");

@@ -9,7 +9,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
-public class User {
+public class UserTable {
     public static void register(Connection connection, String username, String password) throws SQLException {
         try {
             Reset.lock.lock();

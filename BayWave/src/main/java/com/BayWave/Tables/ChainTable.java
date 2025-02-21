@@ -9,7 +9,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
-public class Chain {
+public class ChainTable {
     public static void print(Connection connection) throws SQLException {
         PreparedStatement ps = connection.prepareStatement("select * from CHAIN_");
         ResultSet rs = ps.executeQuery();
@@ -17,6 +17,11 @@ public class Chain {
         TableUtil.print(rs);
     }
 
+    /**
+     * Registers a chain into a playlist while also associating it with
+     * the required minimum of two tracks via the CHAIN_TRACK entity.
+     * Within the chain, the first track will be ordered before the second by default.
+     */
     public static void register(Connection connection, String user, String playlist, String artist1, String album1, String track1,
                                 String artist2, String album2, String track2) throws SQLException { // at least two songs must be in chain
         try {

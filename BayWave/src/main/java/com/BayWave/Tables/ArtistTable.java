@@ -9,7 +9,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
-public class Artist {
+public class ArtistTable {
     public static void register(Connection connection, String name) throws SQLException {
         try {
             Reset.lock.lock();

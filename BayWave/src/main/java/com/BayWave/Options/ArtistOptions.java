@@ -1,6 +1,6 @@
 package com.BayWave.Options;
 
-import com.BayWave.Tables.Artist;
+import com.BayWave.Tables.ArtistTable;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -31,17 +31,17 @@ public class ArtistOptions {
             input = scanner.nextLine();
             switch (input) {
                 case "1":
-                    Artist.print(connection);
+                    ArtistTable.print(connection);
                     break;
                 case "2":
                     System.out.println("Enter artist name: ");
                     name = scanner.nextLine();
-                    Artist.register(connection, name);
+                    ArtistTable.register(connection, name);
                     break;
                 case "3":
                     System.out.println("Enter artist name: ");
                     name = scanner.nextLine();
-                    Artist.delete(connection, name);
+                    ArtistTable.delete(connection, name);
                     break;
                 case "4":
                     String bio;
@@ -49,12 +49,12 @@ public class ArtistOptions {
                     name = scanner.nextLine();
                     System.out.println("Enter bio: ");
                     bio = scanner.nextLine();
-                    Artist.updateBio(connection, name, bio);
+                    ArtistTable.updateBio(connection, name, bio);
                     break;
                 case "5":
                     System.out.println("Enter artist name: ");
                     name = scanner.nextLine();
-                    Artist.printBio(connection, name);
+                    ArtistTable.printBio(connection, name);
                     break;
                 case "6":
                     String newName;
@@ -62,7 +62,7 @@ public class ArtistOptions {
                     name = scanner.nextLine();
                     System.out.println("Enter new artist name: ");
                     newName = scanner.nextLine();
-                    Artist.updateName(connection, name, newName);
+                    ArtistTable.updateName(connection, name, newName);
                     break;
                 case "7":
                     MemberOptions.options(connection);

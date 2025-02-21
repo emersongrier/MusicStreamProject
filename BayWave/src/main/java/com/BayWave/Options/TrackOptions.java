@@ -1,6 +1,6 @@
 package com.BayWave.Options;
 
-import com.BayWave.Tables.Track;
+import com.BayWave.Tables.TrackTable;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -38,7 +38,7 @@ public class TrackOptions {
             input = scanner.nextLine();
             switch (input) {
                 case "1":
-                    Track.print(connection);
+                    TrackTable.print(connection);
                     break;
                 case "2":
                     System.out.println("Enter artist name: ");
@@ -47,7 +47,7 @@ public class TrackOptions {
                     album = scanner.nextLine();
                     System.out.println("Enter track name: ");
                     name = scanner.nextLine();
-                    Track.register(connection, artist, album, name);
+                    TrackTable.register(connection, artist, album, name);
                     break;
                 case "3":
                     System.out.println("Enter artist name: ");
@@ -56,7 +56,7 @@ public class TrackOptions {
                     album = scanner.nextLine();
                     System.out.println("Enter track name: ");
                     name = scanner.nextLine();
-                    Track.delete(connection, artist, album, name);
+                    TrackTable.delete(connection, artist, album, name);
                     break;
                 case "4":
                     System.out.println("Enter artist name: ");
@@ -67,7 +67,7 @@ public class TrackOptions {
                     name = scanner.nextLine();
                     System.out.println("Enter new track name: ");
                     newName = scanner.nextLine();
-                    Track.updateName(connection, artist, album, name, newName);
+                    TrackTable.updateName(connection, artist, album, name, newName);
                     break;
                 case "5":
                     System.out.println("Enter artist name: ");
@@ -78,7 +78,7 @@ public class TrackOptions {
                     name = scanner.nextLine();
                     System.out.println("Enter track filepath: ");
                     file = scanner.nextLine();
-                    Track.updateFile(connection, artist, album, name, file);
+                    TrackTable.updateFile(connection, artist, album, name, file);
                     break;
                 case "6":
                     System.out.println("Enter artist name: ");
@@ -87,7 +87,7 @@ public class TrackOptions {
                     album = scanner.nextLine();
                     System.out.println("Enter track name: ");
                     name = scanner.nextLine();
-                    Track.printLyrics(connection, artist, album, name);
+                    TrackTable.printLyrics(connection, artist, album, name);
                     break;
                 case "7":
                     System.out.println("Enter artist name: ");
@@ -98,7 +98,7 @@ public class TrackOptions {
                     name = scanner.nextLine();
                     System.out.println("Enter lyrics filepath: ");
                     file = scanner.nextLine();
-                    Track.updateLyrics(connection, artist, album, name, file);
+                    TrackTable.updateLyrics(connection, artist, album, name, file);
                     break;
                 case "8":
                     System.out.println("Enter artist name: ");
@@ -110,7 +110,7 @@ public class TrackOptions {
                     System.out.println("Enter new track position (swap): ");
                     newPos = scanner.nextInt();
                     scanner.nextLine();
-                    Track.swapPosition(connection, artist, album, name, newPos);
+                    TrackTable.swapPosition(connection, artist, album, name, newPos);
                     break;
                 case "9":
                     System.out.println("Enter artist name: ");
@@ -122,7 +122,7 @@ public class TrackOptions {
                     System.out.println("Enter new track position: ");
                     newPos = scanner.nextInt();
                     scanner.nextLine();
-                    Track.insertAtPosition(connection, artist, album, name, newPos);
+                    TrackTable.insertAtPosition(connection, artist, album, name, newPos);
                     break;
                 default:
                     System.out.println("DEFAULTING");

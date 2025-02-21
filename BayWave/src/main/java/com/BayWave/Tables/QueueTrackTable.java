@@ -9,7 +9,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
-public class QueueTrack {
+public class QueueTrackTable {
     public static void register(Connection connection, String user, String artist, String album, String track) throws SQLException {
         try {
             Reset.lock.lock();
