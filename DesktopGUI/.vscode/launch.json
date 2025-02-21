@@ -1,0 +1,30 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "java",
+            "name": "DesktopFrontend",
+            "request": "launch",
+            "mainClass": "DesktopFrontend",
+            "projectName": "DesktopGUI_a7968366",
+            "vmArgs": "--module-path \"C:/Users/emcke/Downloads/openjfx-21.0.6_windows-x64_bin-sdk/javafx-sdk-21.0.6/lib\" --add-modules javafx.controls,javafx.fxml"
+        },
+        {
+            "type": "java",
+            "name": "DesktopFrontend",
+            "request": "launch",
+            "mainClass": "DesktopFrontend",
+            "projectName": "DesktopGUI",
+            "vmArgs": "--module-path \"C:/Users/emcke/Downloads/openjfx-21.0.6_windows-x64_bin-sdk/javafx-sdk-21.0.6/lib\" --add-modules javafx.controls,javafx.fxml"
+        },
+        {
+            "type": "java",
+            "name": "Current File",
+            "request": "launch",
+            "mainClass": "${file}"
+        }
+    ]
+}
