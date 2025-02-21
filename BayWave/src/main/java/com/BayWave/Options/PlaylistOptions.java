@@ -1,5 +1,6 @@
 package com.BayWave.Options;
 
+import com.BayWave.Tables.Album;
 import com.BayWave.Tables.Playlist;
 
 import java.sql.Connection;
@@ -77,10 +78,15 @@ public class PlaylistOptions {
                     newName = scanner.nextLine();
                     Playlist.updateName(connection, name, plyName, newName);
                     break;
-                    /*
                 case "7":
-                    memberOptions(connection);
-                    break;*/
+                    System.out.println("Enter username: ");
+                    name = scanner.nextLine();
+                    System.out.println("Enter playlist name: ");
+                    plyName = scanner.nextLine();
+                    System.out.println("Enter new playlist cover link: ");
+                    String cover = scanner.nextLine();
+                    Playlist.updateCover(connection, name, plyName, cover);
+                    break;
                 default:
                     input = "-1";
             }

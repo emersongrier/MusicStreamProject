@@ -11,8 +11,7 @@ public class AdminUtil {
         System.out.println("5. PLAYLIST");
         System.out.println("6. QUEUE");
         System.out.println("7. CHAIN_");
-        System.out.println("8. MONTHLY_LISTENS");
-        System.out.println("9. Quit");
+        System.out.println("8. Quit");
         System.out.println();
     }
 }

@@ -40,6 +40,9 @@ public class Admin {
                     case "6":
                         QueueOptions.options(connection);
                         break;
+                    case "7":
+                        ChainOptions.options(connection);
+                        break;
                     default:
                         input = "-1";
                         System.out.println("Goodbye!");
