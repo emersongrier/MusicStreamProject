@@ -236,6 +236,16 @@ CREATE TRIGGER DELETE_QUEUE_TRACK_UPDATE_POS
     AFTER DELETE
     ON QUEUE_TRACK
     FOR EACH ROW CALL "com.BayWave.Triggers.DeleteQueueTrackUpdatePosTrigger";
+
+CREATE TRIGGER INSERT_PLAYLIST_TRACK_UPDATE_POS
+    AFTER INSERT
+    ON PLAYLIST_TRACK
+    FOR EACH ROW CALL "com.BayWave.Triggers.InsertPlaylistTrackUpdatePosTrigger";
+CREATE TRIGGER DELETE_PLAYLIST_TRACK_UPDATE_POS
+    AFTER DELETE
+    ON PLAYLIST_TRACK
+    FOR EACH ROW CALL "com.BayWave.Triggers.DeletePlaylistTrackUpdatePosTrigger";
+-- triggers for adding and deleting PLAYLIST_TRACK
 -- add QUEUE_TRACK triggers
 
 COMMIT;

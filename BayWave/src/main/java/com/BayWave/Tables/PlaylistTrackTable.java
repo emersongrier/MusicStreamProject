@@ -9,45 +9,59 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
-public class QueueTrackTable {
-    public static void register(Connection connection, String user, String artist, String album, String track) throws SQLException {
+public class PlaylistTrackTable {
+    public static void print(Connection connection) throws SQLException {
+        PreparedStatement ps = connection.prepareStatement("select * from PLAYLIST_TRACK");
+        ResultSet rs = ps.executeQuery();
+        System.out.println("PLAYLIST_TRACK TABLE:");
+        TableUtil.print(rs);
+    }
+
+    public static void register(Connection connection, String user, String playlist, String artist, String album, String track) throws SQLException {
         try {
             Reset.lock.lock();
-            int trkId = TableUtil.getTrackID(connection, artist, album, track);
-            if (trkId == -1) {
-                System.out.println("Track not found");
-                return;
-            }
             int usrId = TableUtil.getUserID(connection, user);
             if (usrId == -1) {
                 System.out.println("User not found");
                 return;
             }
-            // get queue ID
-            PreparedStatement ps = connection.prepareStatement("SELECT * FROM QUEUE WHERE usr_id=?");
-            ps.setInt(1, usrId);
-            ResultSet rs = ps.executeQuery();
-            if (!rs.isBeforeFirst()) {
-                System.out.println("Queue not found");
+            int trkId = TableUtil.getTrackID(connection, artist, album, track);
+            if (trkId == -1) {
+                System.out.println("Track not found");
+                return;
             }
-            rs.next();
-            int queId = rs.getInt("que_id");
-            ps = connection.prepareStatement("INSERT INTO QUEUE_TRACK (que_id, trk_id) VALUES (?, ?)");
-            ps.setInt(1, queId);
+            int plyId = TableUtil.getPlaylistID(connection, user, playlist);
+            if (plyId == -1) {
+                System.out.println("Playlist not found");
+                return;
+            }
+            // check if song is already in that playlist
+            PreparedStatement ps = connection.prepareStatement("SELECT * FROM PLAYLIST_TRACK WHERE trk_id=? AND ply_id=?");
+            ps.setInt(1, trkId);
+            ps.setInt(2, plyId);
+            ResultSet rs = ps.executeQuery();
+            if (rs.isBeforeFirst()) {
+                System.out.println("Track is already in playlist");
+                return;
+            }
+
+            ps = connection.prepareStatement("INSERT INTO PLAYLIST_TRACK (ply_id, trk_id) VALUES (?, ?)");
+            ps.setInt(1, plyId);
             ps.setInt(2, trkId);
             int result = ps.executeUpdate();
             if (result == 0) {
-                System.out.println("Queue insert failed");
+                System.out.println("PlaylistTrack not registered");
+                return;
             }
             connection.commit();
-            System.out.println("Track added to queue");
+            System.out.println("PlaylistTrack registered"); // TODO: Order track in playlist via trigger
         }
         finally {
             Reset.lock.unlock();
         }
     }
 
-    public static void delete(Connection connection, String user, String artist, String album, String track) throws SQLException {
+    public static void delete(Connection connection, String user, String playlist, String artist, String album, String track) throws SQLException {
         try {
             Reset.lock.lock();
             if (track.isEmpty()) {
@@ -59,16 +73,12 @@ public class QueueTrackTable {
                 System.out.println("User not found");
                 return;
             }
-            // get queue id
-            PreparedStatement ps = connection.prepareStatement("SELECT * FROM QUEUE WHERE usr_id=?");
-            ps.setInt(1, userId);
-            ResultSet rs = ps.executeQuery();
-            if (!rs.isBeforeFirst()) {
-                System.out.println("Queue not found");
+            // get playlist id
+            int plyId = TableUtil.getPlaylistID(connection, user, playlist);
+            if (plyId == -1) {
+                System.out.println("Playlist not found");
                 return;
             }
-            rs.next();
-            int queId = rs.getInt("que_id");
 
             int trkId = TableUtil.getTrackID(connection, artist, album, track);
             if (trkId == -1) {
@@ -76,15 +86,15 @@ public class QueueTrackTable {
                 return;
             }
 
-            ps = connection.prepareStatement("DELETE FROM QUEUE_TRACK WHERE que_id=? AND trk_id=?");
-            ps.setInt(1, queId);
+            PreparedStatement ps = connection.prepareStatement("DELETE FROM PLAYLIST_TRACK WHERE ply_id=? AND trk_id=?");
+            ps.setInt(1, plyId);
             ps.setInt(2, trkId);
             int result = ps.executeUpdate();
             if (result == 0) {
                 System.out.println("Track not deleted");
                 return;
             }
-            System.out.println("Track deleted from queue");
+            System.out.println("Track deleted from playlist");
             connection.commit();
         }
         finally {
@@ -92,7 +102,7 @@ public class QueueTrackTable {
         }
     }
 
-    public static void swapPosition(Connection connection, String artist, String album, String track, String user, int newPos) throws SQLException {
+    public static void swapPosition(Connection connection, String user, String playlist, String artist, String album, String track, int newPos) throws SQLException {
         try {
             Reset.lock.lock();
             int userId = TableUtil.getUserID(connection, user);
@@ -100,16 +110,12 @@ public class QueueTrackTable {
                 System.out.println("User not found");
                 return;
             }
-            // get queue id
-            PreparedStatement ps = connection.prepareStatement("SELECT * FROM QUEUE WHERE usr_id=?");
-            ps.setInt(1, userId);
-            ResultSet rs = ps.executeQuery();
-            if (!rs.isBeforeFirst()) {
-                System.out.println("Queue not found");
+            // get playlist id
+            int plyId = TableUtil.getPlaylistID(connection, user, playlist);
+            if (plyId == -1) {
+                System.out.println("Playlist not found");
                 return;
             }
-            rs.next();
-            int queId = rs.getInt("que_id");
             // get track id
             int trkId = TableUtil.getTrackID(connection, artist, album, track);
             if (trkId == -1) {
@@ -117,21 +123,21 @@ public class QueueTrackTable {
                 return;
             }
             // check that a track exists with the new position
-            ps = connection.prepareStatement(
-                    "SELECT * FROM QUEUE_TRACK WHERE que_id=? and trk_id=?");
-            ps.setInt(1, queId);
+            PreparedStatement ps = connection.prepareStatement(
+                    "SELECT * FROM PLAYLIST_TRACK WHERE ply_id=? and trk_id=?");
+            ps.setInt(1, plyId);
             ps.setInt(2, trkId);
-            rs = ps.executeQuery();
+            ResultSet rs = ps.executeQuery();
             if (!rs.isBeforeFirst()) {
                 System.out.println("Track not found");
                 return;
             }
             rs.next();
-            int trkPos1 = rs.getInt("que_trk_pos");
+            int trkPos1 = rs.getInt("ply_trk_pos");
             int trkId1 = rs.getInt("trk_id");
             ps = connection.prepareStatement(
-                    "SELECT * FROM QUEUE_TRACK WHERE que_id=? AND que_trk_pos=?");
-            ps.setInt(1, queId);
+                    "SELECT * FROM PLAYLIST_TRACK WHERE ply_id=? AND ply_trk_pos=?");
+            ps.setInt(1, plyId);
             ps.setInt(2, newPos);
             rs = ps.executeQuery();
             if (!rs.isBeforeFirst()) {
@@ -139,13 +145,13 @@ public class QueueTrackTable {
                 return;
             }
             rs.next();
-            int trkPos2 = rs.getInt("que_trk_pos");
+            int trkPos2 = rs.getInt("ply_trk_pos");
             int trkId2 = rs.getInt("trk_id");
             if (trkPos1 == trkPos2) {
                 System.out.println("Track already at position specified");
                 return;
             }
-            ps = connection.prepareStatement("UPDATE QUEUE_TRACK SET que_trk_pos=? WHERE trk_id=?");
+            ps = connection.prepareStatement("UPDATE PLAYLIST_TRACK SET ply_trk_pos=? WHERE trk_id=?");
             ps.setInt(1, trkPos2);
             ps.setInt(2, trkId1);
             int updated = ps.executeUpdate();
@@ -153,7 +159,7 @@ public class QueueTrackTable {
                 System.out.println("Track position not updated");
                 return;
             }
-            ps = connection.prepareStatement("UPDATE QUEUE_TRACK SET que_trk_pos=? WHERE trk_id=?");
+            ps = connection.prepareStatement("UPDATE PLAYLIST_TRACK SET ply_trk_pos=? WHERE trk_id=?");
             ps.setInt(1, trkPos1);
             ps.setInt(2, trkId2);
             int updated2 = ps.executeUpdate();
@@ -169,36 +175,32 @@ public class QueueTrackTable {
         }
     }
 
-    public static void insertAtPosition(Connection connection, String artist, String album, String track, String user, int newPos) throws SQLException {
+    public static void insertAtPosition(Connection connection, String user, String playlist, String artist, String album, String track, int newPos) throws SQLException {
         int userId = TableUtil.getUserID(connection, user);
         if (userId == -1) {
             System.out.println("User not found");
             return;
         }
-        // get queue id
-        PreparedStatement ps = connection.prepareStatement("SELECT * FROM QUEUE WHERE usr_id=?");
-        ps.setInt(1, userId);
-        ResultSet rs = ps.executeQuery();
-        if (!rs.isBeforeFirst()) {
-            System.out.println("Queue not found");
+        // get playlist id
+        int plyId = TableUtil.getPlaylistID(connection, user, playlist);
+        if (plyId == -1) {
+            System.out.println("Playlist not found");
             return;
         }
-        rs.next();
-        int queId = rs.getInt("que_id");
         int trkId = TableUtil.getTrackID(connection, artist, album, track);
         if (trkId == -1) {
             System.out.println("Track not found");
             return;
         }
-        ps = connection.prepareStatement("SELECT * FROM QUEUE_TRACK WHERE que_id=? and trk_id=?");
-        ps.setInt(1, queId);
+        PreparedStatement ps = connection.prepareStatement("SELECT * FROM PLAYLIST_TRACK WHERE ply_id=? and trk_id=?");
+        ps.setInt(1, plyId);
         ps.setInt(2, trkId);
-        rs = ps.executeQuery();
+        ResultSet rs = ps.executeQuery();
         if (!rs.isBeforeFirst()) {
             System.out.println("Track position not found");
         }
         rs.next();
-        int currPos = rs.getInt("que_trk_pos");
+        int currPos = rs.getInt("ply_trk_pos");
         if (currPos == newPos) {
             System.out.println("Track already at position specified");
             return;
@@ -211,8 +213,8 @@ public class QueueTrackTable {
             delta = 1;
         }
         // make sure track position exists
-        ps = connection.prepareStatement("SELECT * FROM QUEUE_TRACK WHERE que_id=? AND que_trk_pos=?");
-        ps.setInt(1, queId);
+        ps = connection.prepareStatement("SELECT * FROM PLAYLIST_TRACK WHERE ply_id=? AND ply_trk_pos=?");
+        ps.setInt(1, plyId);
         ps.setInt(2, newPos);
         rs = ps.executeQuery();
         if (!rs.isBeforeFirst()) {
@@ -223,8 +225,8 @@ public class QueueTrackTable {
         // if newPos > currPos, decrement every track position between currPos and newPos (inclusive),
         // except track's trk_pos, which will become newPos
         // if newPos < currPos, increment every track position between currPos and newPos (inclusive)
-        ps = connection.prepareStatement("SELECT * FROM QUEUE_TRACK WHERE que_id=? AND que_trk_pos>=? AND que_trk_pos<=?");
-        ps.setInt(1, queId);
+        ps = connection.prepareStatement("SELECT * FROM PLAYLIST_TRACK WHERE ply_id=? AND ply_trk_pos>=? AND ply_trk_pos<=?");
+        ps.setInt(1, plyId);
         if (delta == -1) {
             System.out.println("DELTA -1");
             ps.setInt(2, currPos);
@@ -242,13 +244,13 @@ public class QueueTrackTable {
         }
         while (rs.next()) {
             int thisId = rs.getInt("trk_id");
-            int thisPos = rs.getInt("que_trk_pos");
+            int thisPos = rs.getInt("ply_trk_pos");
             if (thisId != trkId) {
                 System.out.println("UPDATING TRACK");
-                ps = connection.prepareStatement("UPDATE QUEUE_TRACK SET que_trk_pos=? WHERE que_id=? AND trk_id=?");
+                ps = connection.prepareStatement("UPDATE PLAYLIST_TRACK SET ply_trk_pos=? WHERE ply_id=? AND trk_id=?");
                 int updatedPos = thisPos + delta;
                 ps.setInt(1, updatedPos);
-                ps.setInt(2, queId);
+                ps.setInt(2, plyId);
                 ps.setInt(3, thisId);
                 int result = ps.executeUpdate();
                 if (result == 0) {
@@ -258,9 +260,9 @@ public class QueueTrackTable {
             }
         }
         // set track's trk_pos to newPos
-        ps = connection.prepareStatement("UPDATE QUEUE_TRACK SET que_trk_pos=? WHERE que_id=? AND trk_id=?");
+        ps = connection.prepareStatement("UPDATE PLAYLIST_TRACK SET ply_trk_pos=? WHERE ply_id=? AND trk_id=?");
         ps.setInt(1, newPos);
-        ps.setInt(2, queId);
+        ps.setInt(2, plyId);
         ps.setInt(3, trkId);
         int result = ps.executeUpdate();
         if (result == 0) {
@@ -271,41 +273,9 @@ public class QueueTrackTable {
         connection.commit();
     }
 
-    public static void print(Connection connection) throws SQLException {
-        PreparedStatement ps = connection.prepareStatement("SELECT * FROM QUEUE_TRACK"); // select * from USERS_
-        ResultSet rs = ps.executeQuery();
-        System.out.println("QUEUE_TRACK TABLE:");
-        TableUtil.print(rs);
-    }
-
     public static ArrayList<String[]> getTable(Connection connection) throws SQLException {
-        PreparedStatement ps = connection.prepareStatement("SELECT * FROM QUEUE_TRACK");
+        PreparedStatement ps = connection.prepareStatement("SELECT * FROM PLAYLIST_TRACK");
         ResultSet rs = ps.executeQuery();
-        if (!rs.isBeforeFirst()) {
-            return null;
-        }
-        return TableUtil.getTable(rs);
-    }
-
-    public static ArrayList<String[]> getTableForUser(Connection connection, String user) throws SQLException {
-        int userId = TableUtil.getUserID(connection, user);
-        if (userId == -1) {
-            System.out.println("User not found");
-            return null;
-        }
-        // get queue id
-        PreparedStatement ps = connection.prepareStatement("SELECT * FROM QUEUE WHERE usr_id=?");
-        ps.setInt(1, userId);
-        ResultSet rs = ps.executeQuery();
-        if (!rs.isBeforeFirst()) {
-            System.out.println("Queue not found");
-            return null;
-        }
-        rs.next();
-        int queId = rs.getInt("que_id");
-        ps = connection.prepareStatement("SELECT * FROM QUEUE_TRACK WHERE que_id=?");
-        ps.setInt(1, queId);
-        rs = ps.executeQuery();
         if (!rs.isBeforeFirst()) {
             return null;
         }

@@ -110,6 +110,47 @@ public class TableUtil {
         return rs.getInt(1);
     }
 
+    public static int getPlaylistID(Connection connection, String user, String playlist) throws SQLException {
+        int userID = getUserID(connection, user);
+        PreparedStatement ps = connection.prepareStatement("SELECT * FROM PLAYLIST WHERE usr_id=? AND LOWER(ply_name)=LOWER(?)");
+        ps.setInt(1, userID);
+        ps.setString(2, playlist);
+        ResultSet rs = ps.executeQuery();
+        if (!rs.isBeforeFirst()) {
+            System.out.println("Playlist not found");
+            return -1;
+        }
+        rs.next();
+        int playlistID = rs.getInt(1);
+        if (playlistID == -1) {
+            System.out.println("Playlist ID not found");
+            return -1;
+        }
+        return playlistID;
+    }
+
+    public static int getTrackID(Connection connection, String artist, String album, String track) throws SQLException {
+        int albId = getAlbumID(connection, artist, album);
+        if (albId == -1) {
+            System.out.println("Album not found");
+            return -1;
+        }
+        PreparedStatement ps = connection.prepareStatement("SELECT * FROM TRACK WHERE alb_id=? AND LOWER(trk_name)=LOWER(?)");
+        ps.setInt(1, albId);
+        ps.setString(2, track);
+        ResultSet rs = ps.executeQuery();
+        if (!rs.isBeforeFirst()) {
+            return -1;
+        }
+        rs.next();
+        int trkId = rs.getInt(1);
+        if (trkId == -1) {
+            System.out.println("Track not found");
+            return -1;
+        }
+        return trkId;
+    }
+
     public static boolean isValidType(String type) {
         return Objects.equals(type, "Single") || Objects.equals(type, "EP") || Objects.equals(type, "LP");
     }

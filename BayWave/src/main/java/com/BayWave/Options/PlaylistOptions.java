@@ -86,6 +86,9 @@ public class PlaylistOptions {
                     String cover = scanner.nextLine();
                     PlaylistTable.updateCover(connection, name, plyName, cover);
                     break;
+                case "8":
+                    PlaylistTrackOptions.options(connection);
+                    break;
                 default:
                     input = "-1";
             }

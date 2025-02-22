@@ -299,6 +299,10 @@ public class TrackTable {
         }
         rs.next();
         int trkId = rs.getInt("trk_id");
+        if (trkId == -1) {
+            System.out.println("Track not found");
+            return;
+        }
         int currPos = rs.getInt("trk_pos");
         if (currPos == newPos) {
             System.out.println("Track already at position specified");
