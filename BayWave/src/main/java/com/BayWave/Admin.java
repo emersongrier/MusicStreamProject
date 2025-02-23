@@ -36,7 +36,7 @@ public class Admin {
                         PlaylistOptions.options(connection);
                         break;
                     case "6":
-                        QueueOptions.options(connection);
+                        QueueTrackOptions.options(connection);
                         break;
                     case "7":
                         ChainOptions.options(connection);

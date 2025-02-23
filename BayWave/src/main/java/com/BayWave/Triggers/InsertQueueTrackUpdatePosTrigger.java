@@ -11,9 +11,9 @@ public class InsertQueueTrackUpdatePosTrigger implements Trigger {
     @Override
     public void fire(Connection connection, Object[] oldRow, Object[] newRow) throws SQLException {
         // obtain all tracks in queue
-        Long queId = (Long) newRow[0];
-        PreparedStatement ps = connection.prepareStatement("SELECT que_trk_pos FROM QUEUE_TRACK WHERE que_id=?");
-        ps.setLong(1, queId);
+        Long userId = (Long) newRow[0];
+        PreparedStatement ps = connection.prepareStatement("SELECT que_trk_pos FROM QUEUE_TRACK WHERE usr_id=?");
+        ps.setLong(1, userId);
         ResultSet rs = ps.executeQuery();
         // determine the highest existing track position
         int highest = 0;

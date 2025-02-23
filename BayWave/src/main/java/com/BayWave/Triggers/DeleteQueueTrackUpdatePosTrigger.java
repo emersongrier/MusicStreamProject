@@ -13,19 +13,19 @@ public class DeleteQueueTrackUpdatePosTrigger implements Trigger {
     public void fire(Connection connection, Object[] oldRow, Object[] newRow) throws SQLException {
         long trkPos = Long.parseLong(String.valueOf(oldRow[2]));
         // obtain all tracks in album
-        long queId = Long.parseLong(String.valueOf(oldRow[0]));
+        long userId = Long.parseLong(String.valueOf(oldRow[0]));
 
-        System.out.println("queId is " + queId);
-        PreparedStatement ps = connection.prepareStatement("SELECT * FROM QUEUE_TRACK WHERE que_id=?");
-        ps.setLong(1, queId);
+        System.out.println("usrId is " + userId);
+        PreparedStatement ps = connection.prepareStatement("SELECT * FROM QUEUE_TRACK WHERE usr_id=?");
+        ps.setLong(1, userId);
         ResultSet rs = ps.executeQuery();
         // decrement all track positions greater than trkPos
 
         while (rs.next()) {
             if (rs.getLong("que_trk_pos") > trkPos) {
-                ps = connection.prepareStatement("UPDATE QUEUE_TRACK SET que_trk_pos=? WHERE que_id=?");
+                ps = connection.prepareStatement("UPDATE QUEUE_TRACK SET que_trk_pos=? WHERE usr_id=?");
                 ps.setLong(1, rs.getLong("que_trk_pos") - 1);
-                ps.setLong(2, rs.getLong("que_id"));
+                ps.setLong(2, rs.getLong("usr_id"));
                 ps.executeUpdate();
             }
         }

@@ -1,6 +1,5 @@
 package com.BayWave.Options;
 
-import com.BayWave.Tables.QueueTable;
 import com.BayWave.Tables.QueueTrackTable;
 
 import java.sql.Connection;
@@ -9,16 +8,15 @@ import java.util.ArrayList;
 import java.util.Objects;
 import java.util.Scanner;
 
-public class QueueOptions {
+public class QueueTrackOptions {
     private static void printOptions() {
         System.out.println();
         System.out.println("QUEUE Options:");
-        System.out.println("1. Print QUEUE table");
+        System.out.println("1. Print QUEUE_TRACK table");
         System.out.println("2. Add track to queue (QUEUE_TRACK)");
         System.out.println("3. Remove track from queue (QUEUE_TRACK)");
         System.out.println("4. Update track position (swap) (QUEUE_TRACK)");
         System.out.println("5. Update track position (insert) (QUEUE_TRACK)");
-        System.out.println("6. Print QUEUE_TRACK table");
         System.out.println("7. Print queue for user");
         System.out.println("8. Return");
         System.out.println();
@@ -30,8 +28,6 @@ public class QueueOptions {
         String name;
         String artist;
         String album;
-        String newName;
-        String file;
         String track;
         int newPos;
         do {
@@ -39,7 +35,7 @@ public class QueueOptions {
             input = scanner.nextLine();
             switch (input) {
                 case "1":
-                    QueueTable.print(connection);
+                    QueueTrackTable.print(connection);
                     break;
                 case "2":
                     System.out.println("Enter username: ");
@@ -92,9 +88,6 @@ public class QueueOptions {
                     QueueTrackTable.insertAtPosition(connection, artist, album, track, name, newPos);
                     break;
                 case "6":
-                    QueueTrackTable.print(connection);
-                    break;
-                case "7":
                     System.out.println("Enter username: ");
                     name = scanner.nextLine();
                     ArrayList<String[]> queue = QueueTrackTable.getTableForUser(connection, name);
