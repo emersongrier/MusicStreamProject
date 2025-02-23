@@ -106,7 +106,7 @@ public class ChainTable {
 
             // check if track IDs are already found within chains associated with that playlist
             // first, find all chains associated with that playlist
-            ps = connection.prepareStatement("SELECT * FROM CHAIN WHERE ply_id=?");
+            ps = connection.prepareStatement("SELECT * FROM CHAIN_ WHERE ply_id=?");
             ps.setInt(1, plyId);
             rs = ps.executeQuery();
             // iterate over all chains associated with that playlist,
