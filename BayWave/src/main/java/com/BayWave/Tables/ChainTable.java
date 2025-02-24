@@ -144,21 +144,26 @@ public class ChainTable {
             }
 
             // chain can now be created, with the two songs associated
-            ps = connection.prepareStatement("INSERT INTO CHAIN_ (ply_id) VALUES (?) RETURNING chn_id");
+            ps = connection.prepareStatement("INSERT INTO CHAIN_ (ply_id) VALUES (?)", java.sql.PreparedStatement.RETURN_GENERATED_KEYS);
             ps.setInt(1, plyId);
-            rs = ps.executeQuery(); // executeQuery is used here instead of executeUpdate due to the RETURNING clause
-            if (!rs.isBeforeFirst()) {
+            int result = ps.executeUpdate(); // executeQuery is used here instead of executeUpdate due to the RETURNING clause
+            if (result == 0) {
                 System.out.println("Chain not added");
                 return;
             }
+            // get id of newly inserted chain
+            rs = ps.getGeneratedKeys();
+            if (!rs.isBeforeFirst()) {
+                System.out.println("Could not get chain ID");
+                return;
+            }
             rs.next();
-            int newChainId = rs.getInt("chn_id");
+            int newChainId = rs.getInt(1);
 
-            // TODO: Trigger for ordering chain tracks
             ps = connection.prepareStatement("INSERT INTO CHAIN_TRACK (chn_id, trk_id) VALUES (?, ?)");
             ps.setInt(1, newChainId);
             ps.setInt(2, trackId1);
-            int result = ps.executeUpdate();
+            result = ps.executeUpdate();
             if (result == 0) {
                 System.out.println("Track not added to chain");
                 return;
@@ -178,6 +183,52 @@ public class ChainTable {
         finally {
             Reset.lock.unlock();
         }
+    }
+
+    public static void delete(Connection connection, int chainId) throws SQLException {
+        try {
+            Reset.lock.lock();
+            PreparedStatement ps = connection.prepareStatement("DELETE FROM CHAIN_ WHERE chn_id=?");
+            ps.setInt(1, chainId);
+            int result = ps.executeUpdate();
+            if (result == 0) {
+                System.out.println("Chain not deleted");
+                return;
+            }
+            connection.commit();
+            System.out.println("Chain deleted");
+        }
+        finally {
+            Reset.lock.unlock();
+        }
+    }
+
+    public static int getChainIdWithPlaylistAndTrack(Connection connection, String user, String playlist, String artist, String album, String track) throws SQLException {
+        // get playlist ID
+        int playlistId = TableUtil.getPlaylistID(connection, user, playlist);
+        // get track ID
+        int trackId = TableUtil.getTrackID(connection, artist, album, track);
+        PreparedStatement ps = connection.prepareStatement("SELECT * FROM CHAIN_ WHERE ply_id=?");
+        ps.setInt(1, playlistId);
+        ResultSet rs = ps.executeQuery();
+        if (!rs.isBeforeFirst()) {
+            System.out.println("No chains found");
+            return -1;
+        }
+        // check every chain until trk_id is found
+        while (rs.next()) {
+            int chainId = rs.getInt("chn_id");
+            ps = connection.prepareStatement("SELECT * FROM CHAIN_TRACK WHERE chn_id=? AND trk_id=?");
+            ps.setInt(1, chainId);
+            ps.setInt(2, trackId);
+            rs = ps.executeQuery();
+            if (rs.isBeforeFirst()) {
+                System.out.println("Chain found");
+                return chainId;
+            }
+        }
+        System.out.println("Chain not found");
+        return -1;
     }
 
     public static ArrayList<String[]> getTableForPlaylist(Connection connection, String user, String playlist) throws SQLException {

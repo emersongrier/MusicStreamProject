@@ -151,6 +151,18 @@ public class TableUtil {
         return trkId;
     }
 
+    public static int getPlaylistIdOfChain(Connection connection, int chainId) throws SQLException {
+        PreparedStatement ps = connection.prepareStatement("SELECT ply_id FROM CHAIN_ WHERE chn_id=?");
+        ps.setInt(1, chainId);
+        ResultSet rs = ps.executeQuery();
+        if (!rs.isBeforeFirst()) {
+            System.out.println("Playlist ID not found given chain");
+            return -1;
+        }
+        rs.next();
+        return rs.getInt("ply_id");
+    }
+
     public static boolean isValidType(String type) {
         return Objects.equals(type, "Single") || Objects.equals(type, "EP") || Objects.equals(type, "LP");
     }

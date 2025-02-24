@@ -22,9 +22,10 @@ public class InsertPlaylistTrackUpdatePosTrigger implements Trigger {
                 highest = rs.getInt(1);
             }
         }
-        ps = connection.prepareStatement("UPDATE PLAYLIST_TRACK SET ply_trk_pos=? WHERE trk_id=?");
+        ps = connection.prepareStatement("UPDATE PLAYLIST_TRACK SET ply_trk_pos=? WHERE trk_id=? AND ply_id=?");
         ps.setInt(1, highest + 1);
         ps.setLong(2, (Long) newRow[1]);
+        ps.setLong(3, plyId);
         ps.executeUpdate();
     }
 }

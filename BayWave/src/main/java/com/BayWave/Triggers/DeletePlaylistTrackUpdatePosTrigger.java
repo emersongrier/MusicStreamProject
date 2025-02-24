@@ -23,9 +23,10 @@ public class DeletePlaylistTrackUpdatePosTrigger implements Trigger {
 
         while (rs.next()) {
             if (rs.getLong("ply_trk_pos") > trkPos) {
-                ps = connection.prepareStatement("UPDATE PLAYLIST_TRACK SET ply_trk_pos=? WHERE ply_id=?");
+                ps = connection.prepareStatement("UPDATE PLAYLIST_TRACK SET ply_trk_pos=? WHERE ply_id=? AND trk_id=?");
                 ps.setLong(1, rs.getLong("ply_trk_pos") - 1);
                 ps.setLong(2, rs.getLong("ply_id"));
+                ps.setLong(3, rs.getLong("trk_id"));
                 ps.executeUpdate();
             }
         }
