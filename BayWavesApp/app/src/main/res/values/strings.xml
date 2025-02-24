@@ -1,0 +1,23 @@
+<resources>
+    <string name="app_name">Bay Waves</string>
+    <string name="title_home">Home</string>
+    <string name="title_dashboard">Dashboard</string>
+    <string name="title_notifications">Notifications</string>
+    <string name="song_title">Song Title</string>
+    <string name="artist">Artist Name</string>
+    <string name="album">Album Name</string>
+    <string name="action_settings">Action Settings</string>
+
+    <!-- Button Descriptions -->
+    <string name="play_pause_button">Plays and pauses the song</string>
+    <string name="skip_button">Skips to next song</string>
+    <string name="unskip_button">Goes back to the old song</string>
+
+    <!-- Navigation Icons -->
+    <string name="home_icon">Home</string>
+    <string name="search_icon">Search</string>
+    <string name="playlist_icon">Playlists</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="hello_search_fragment">Hello Search Fragment</string>
+</resources>
