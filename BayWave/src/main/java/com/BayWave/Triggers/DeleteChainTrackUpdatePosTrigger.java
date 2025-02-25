@@ -23,7 +23,7 @@ public class DeleteChainTrackUpdatePosTrigger implements Trigger {
 
         while (rs.next()) {
             if (rs.getLong("chn_trk_pos") > trkPos) {
-                ps = connection.prepareStatement("UPDATE QUEUE_TRACK SET que_trk_pos=? WHERE chn_id=? AND trk_id=?");
+                ps = connection.prepareStatement("UPDATE CHAIN_TRACK SET chn_trk_pos=? WHERE chn_id=? AND trk_id=?");
                 ps.setLong(1, rs.getLong("chn_trk_pos") - 1);
                 ps.setLong(2, rs.getLong("chn_id"));
                 ps.setLong(3, rs.getLong("trk_id"));

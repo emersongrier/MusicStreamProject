@@ -1,9 +1,6 @@
 package com.BayWave.Options;
 
-import com.BayWave.Tables.ChainTable;
 import com.BayWave.Tables.ChainTrackTable;
-import com.BayWave.Tables.QueueTrackTable;
-
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Objects;
@@ -25,12 +22,10 @@ public class ChainTrackOptions {
     public static void options(Connection connection) throws SQLException {
         Scanner scanner = new Scanner(System.in);
         String input;
-        String name;
         String artist;
         String album;
         int chainId;
         String track;
-        String playlist;
         int newPos;
         do {
             printOptions();
@@ -52,34 +47,46 @@ public class ChainTrackOptions {
                     ChainTrackTable.addTrack(connection, chainId, artist, album, track);
                     break;
                 case "3":
-
+                    System.out.println("Enter chain ID: ");
+                    chainId = scanner.nextInt();
+                    scanner.nextLine();
+                    System.out.println("Enter artist name: ");
+                    artist = scanner.nextLine();
+                    System.out.println("Enter album name: ");
+                    album = scanner.nextLine();
+                    System.out.println("Enter track name: ");
+                    track = scanner.nextLine();
+                    ChainTrackTable.removeTrack(connection, chainId, artist, album, track);
                     break;
                 case "4":
-                    System.out.println("Enter username: ");
-                    name = scanner.nextLine();
-                    System.out.println("Enter playlist name: ");
-                    playlist = scanner.nextLine();
+                    System.out.println("Enter chain ID: ");
+                    chainId = scanner.nextInt();
+                    scanner.nextLine();
                     System.out.println("Enter artist name: ");
                     artist = scanner.nextLine();
                     System.out.println("Enter album name: ");
                     album = scanner.nextLine();
                     System.out.println("Enter track name: ");
                     track = scanner.nextLine();
-                    System.out.println("Chain ID: " + ChainTable.getChainIdWithPlaylistAndTrack(connection, name, playlist, artist, album, track));
-                    break;
-                case "5":
-                    System.out.println("Enter username: ");
-                    name = scanner.nextLine();
-                    System.out.println("Enter artist name: ");
-                    artist = scanner.nextLine();
-                    System.out.println("Enter album name: ");
-                    album = scanner.nextLine();
-                    System.out.println("Enter track name: ");
-                    track = scanner.nextLine();
-                    System.out.println("Enter new position (swap): ");
+                    System.out.println("Enter new position (swap) (CHAIN_TRACK): ");
                     newPos = scanner.nextInt();
                     scanner.nextLine();
-                    QueueTrackTable.swapPosition(connection, artist, album, track, name, newPos);
+                    ChainTrackTable.swapPosition(connection, chainId, artist, album, track, newPos);
+                    break;
+                case "5":
+                    System.out.println("Enter chain ID: ");
+                    chainId = scanner.nextInt();
+                    scanner.nextLine();
+                    System.out.println("Enter artist name: ");
+                    artist = scanner.nextLine();
+                    System.out.println("Enter album name: ");
+                    album = scanner.nextLine();
+                    System.out.println("Enter track name: ");
+                    track = scanner.nextLine();
+                    System.out.println("Enter new position (insert) (CHAIN_TRACK): ");
+                    newPos = scanner.nextInt();
+                    scanner.nextLine();
+                    ChainTrackTable.insertAtPosition(connection, chainId, artist, album, track, newPos);
                     break;
                 default:
                     System.out.println("DEFAULTING");
