@@ -1,9 +1,11 @@
 package com.BayWave.Options;
 
 import com.BayWave.Tables.ChainTable;
+import com.BayWave.Util.TableUtil;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Objects;
 import java.util.Scanner;
 
@@ -16,7 +18,7 @@ public class ChainOptions {
         System.out.println("3. Remove chain from playlist");
         System.out.println("4. Get chain ID");
         System.out.println("5. Print chains associated with playlist");
-        System.out.println("6. Print songs associated with chain");
+        System.out.println("6. Print tracks associated with chain");
         System.out.println("7. Manage CHAIN_TRACK");
         System.out.println("8. Return");
         System.out.println();
@@ -30,6 +32,8 @@ public class ChainOptions {
         String album;
         String track;
         String playlist;
+        ArrayList<String[]> chainList;
+        int chainId;
         do {
             printOptions();
             input = scanner.nextLine();
@@ -64,7 +68,7 @@ public class ChainOptions {
                     break;
                 case "3":
                     System.out.println("Enter chain ID: ");
-                    int chainId = scanner.nextInt();
+                    chainId = scanner.nextInt();
                     scanner.nextLine();
                     ChainTable.delete(connection, chainId);
                     break;
@@ -82,16 +86,34 @@ public class ChainOptions {
                     System.out.println("Chain ID: " + ChainTable.getChainIdWithPlaylistAndTrack(connection, name, playlist, artist, album, track));
                     break;
                 case "5":
-
+                    System.out.println("Enter username: ");
+                    name = scanner.nextLine();
+                    System.out.println("Enter playlist name: ");
+                    playlist = scanner.nextLine();
+                    chainList = ChainTable.getTableForPlaylist(connection, name, playlist);
+                    if (chainList == null) {
+                        System.out.println("Chain list is null");
+                    }
+                    else {
+                        TableUtil.printArrayList(chainList);
+                    }
                     break;
                 case "6":
-
+                    System.out.println("Enter chain ID: ");
+                    chainId = scanner.nextInt();
+                    scanner.nextLine();
+                    chainList = ChainTable.getTracksForChain(connection, chainId);
+                    if (chainList == null) {
+                        System.out.println("Chain list is null");
+                    }
+                    else {
+                        TableUtil.printArrayList(chainList);
+                    }
                     break;
                 case "7":
                     ChainTrackOptions.options(connection);
                     break;
                 default:
-                    System.out.println("DEFAULTING");
                     input = "-1";
             }
         } while (!Objects.equals(input, "-1"));

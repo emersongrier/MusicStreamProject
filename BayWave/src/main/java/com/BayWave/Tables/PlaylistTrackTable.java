@@ -102,6 +102,11 @@ public class PlaylistTrackTable {
         }
     }
 
+    /* TODO: Add support for swapping chains, automatically move songs in chains together, etc
+       This should also impact registering a chain. When you swap or insert using a song from a chain, the entire
+       chain is automatically moved as if the chain was one song.
+     */
+
     public static void swapPosition(Connection connection, String user, String playlist, String artist, String album, String track, int newPos) throws SQLException {
         try {
             Reset.lock.lock();

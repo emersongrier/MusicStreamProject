@@ -231,6 +231,9 @@ public class ChainTable {
         return -1;
     }
 
+    /**
+     * Returns an ArrayList of String[] where each string is a row of the ResultSet for each chain associated with the given playlist.
+     */
     public static ArrayList<String[]> getTableForPlaylist(Connection connection, String user, String playlist) throws SQLException {
         int userId = TableUtil.getUserID(connection, user);
         if (userId == -1) {
@@ -252,6 +255,17 @@ public class ChainTable {
         rs = ps.executeQuery();
         if (!rs.isBeforeFirst()) {
             System.out.println("Chain not found");
+            return null;
+        }
+        return TableUtil.getTable(rs);
+    }
+
+    public static ArrayList<String[]> getTracksForChain(Connection connection, int chainId) throws SQLException {
+        PreparedStatement ps = connection.prepareStatement("SELECT * FROM CHAIN_TRACK WHERE chn_id=?");
+        ps.setInt(1, chainId);
+        ResultSet rs = ps.executeQuery();
+        if (!rs.isBeforeFirst()) {
+            System.out.println("Tracks not found");
             return null;
         }
         return TableUtil.getTable(rs);

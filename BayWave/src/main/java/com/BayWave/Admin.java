@@ -41,6 +41,9 @@ public class Admin {
                     case "7":
                         ChainOptions.options(connection);
                         break;
+                    case "8":
+                        GenreOptions.options(connection);
+                        break;
                     default:
                         input = "-1";
                         System.out.println("Goodbye!");

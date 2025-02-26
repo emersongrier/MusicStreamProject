@@ -188,4 +188,51 @@ public class TableUtil {
         }
         return data;
     }
+
+    public static void printArrayList(ArrayList<String[]> list) {
+        for (int i = 0; i < list.size(); i++) {
+            for (int j = 0; j < list.get(i).length; j++) {
+                if (i == 0) {
+                    if (j == 0) {
+                        System.out.format("%-8s", list.get(i)[j]);
+                    } else {
+                        System.out.format("%-20s", list.get(i)[j]);
+                    }
+                }
+                else if (list.get(i)[j] != null) {
+                    if (j == 0) {
+                        System.out.format("%-8s", list.get(i)[j]);
+                    }
+                    else if (list.get(i)[j].length() > 20) {
+                        System.out.format("%-20s", list.get(i)[j].substring(0, 17) + "...");
+                    }
+                    else {
+                        System.out.format("%-20s", list.get(i)[j]);
+                    }
+                }
+                else {
+                    System.out.format("%-20s", "NULL");
+                }
+                if (j != list.get(i).length - 1) {
+                    System.out.print(" | ");
+                }
+            }
+            System.out.println();
+            if (i == 0) {
+                for (int l = 1; l <= list.get(i).length; l++) {
+                    if (l == 1) {
+                        for (int m = 1; m <= 11; m++) {
+                            System.out.print("─");
+                        }
+                    }
+                    else {
+                        for (int m = 1; m <= 23; m++) {
+                            System.out.print("─");
+                        }
+                    }
+                }
+                System.out.println();
+            }
+        }
+    }
 }

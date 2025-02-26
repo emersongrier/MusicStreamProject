@@ -159,6 +159,7 @@ public class QueueTrackTable {
         ResultSet rs = ps.executeQuery();
         if (!rs.isBeforeFirst()) {
             System.out.println("Track position not found");
+            return;
         }
         rs.next();
         int currPos = rs.getInt("que_trk_pos");

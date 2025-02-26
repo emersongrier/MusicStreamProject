@@ -104,7 +104,6 @@ public class QueueTrackOptions {
                     }
                     break;
                 default:
-                    System.out.println("DEFAULTING");
                     input = "-1";
             }
         } while (!Objects.equals(input, "-1"));

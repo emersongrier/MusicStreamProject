@@ -89,7 +89,6 @@ public class ChainTrackOptions {
                     ChainTrackTable.insertAtPosition(connection, chainId, artist, album, track, newPos);
                     break;
                 default:
-                    System.out.println("DEFAULTING");
                     input = "-1";
             }
         } while (!Objects.equals(input, "-1"));

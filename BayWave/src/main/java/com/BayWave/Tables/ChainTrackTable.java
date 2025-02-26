@@ -181,6 +181,7 @@ public class ChainTrackTable {
         ResultSet rs = ps.executeQuery();
         if (!rs.isBeforeFirst()) {
             System.out.println("Track position not found");
+            return;
         }
         rs.next();
         int currPos = rs.getInt("chn_trk_pos");

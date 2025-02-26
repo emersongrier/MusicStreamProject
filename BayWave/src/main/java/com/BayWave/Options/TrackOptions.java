@@ -125,7 +125,6 @@ public class TrackOptions {
                     TrackTable.insertAtPosition(connection, artist, album, name, newPos);
                     break;
                 default:
-                    System.out.println("DEFAULTING");
                     input = "-1";
             }
         } while (!Objects.equals(input, "-1"));
