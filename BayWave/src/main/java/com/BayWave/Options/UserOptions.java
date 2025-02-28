@@ -23,7 +23,8 @@ public class UserOptions {
         System.out.println("10. Update password");
         System.out.println("11. Manage FRIEND (associative entity)");
         System.out.println("12. Manage FOLLOW_ARTIST (associative entity)");
-        System.out.println("13. Return");
+        System.out.println("13. Manage FOLLOW_PLAYLIST (associative entity)");
+        System.out.println("14. Return");
         System.out.println();
     }
 
@@ -109,6 +110,8 @@ public class UserOptions {
                 case "12":
                     FollowArtistOptions.options(connection);
                     break;
+                case "13":
+                    FollowPlaylistOptions.options(connection);
                 default:
                     input = "-1";
             }

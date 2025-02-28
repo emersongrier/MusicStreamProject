@@ -17,8 +17,8 @@ public class QueueTrackOptions {
         System.out.println("3. Remove track from queue (QUEUE_TRACK)");
         System.out.println("4. Update track position (swap) (QUEUE_TRACK)");
         System.out.println("5. Update track position (insert) (QUEUE_TRACK)");
-        System.out.println("7. Print queue for user");
-        System.out.println("8. Return");
+        System.out.println("6. Print queue for user");
+        System.out.println("7. Return");
         System.out.println();
     }
 

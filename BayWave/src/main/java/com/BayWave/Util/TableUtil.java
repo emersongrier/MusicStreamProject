@@ -163,6 +163,18 @@ public class TableUtil {
         return rs.getInt("ply_id");
     }
 
+    public static int getGenreID(Connection connection, String genre) throws SQLException {
+        PreparedStatement ps = connection.prepareStatement("SELECT gen_id FROM GENRE WHERE LOWER(gen_name)=LOWER(?)");
+        ps.setString(1, genre);
+        ResultSet rs = ps.executeQuery();
+        if (!rs.isBeforeFirst()) {
+            System.out.println("Genre not found");
+            return -1;
+        }
+        rs.next();
+        return rs.getInt("gen_id");
+    }
+
     public static boolean isValidType(String type) {
         return Objects.equals(type, "Single") || Objects.equals(type, "EP") || Objects.equals(type, "LP");
     }

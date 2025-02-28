@@ -21,35 +21,23 @@ public class FollowArtistTable {
         try {
             Reset.lock.lock();
             // obtain art_id and usr_id
-            int usrId;
-            int artId;
-            PreparedStatement ps = connection.prepareStatement(
-                    "SELECT usr_id FROM USER_ WHERE LOWER(usr_name)=LOWER(?)");
-            ps.setString(1, user);
-            ResultSet rs = ps.executeQuery();
-            if (rs.next()) {
-                usrId = rs.getInt("usr_id");
-            } else {
-                System.out.println("User not found");
+            int artId = TableUtil.getArtistID(connection, artist);
+            if (artId == -1) {
+                System.out.println("Artist not found");
                 return;
             }
-            ps = connection.prepareStatement(
-                    "SELECT art_id FROM ARTIST WHERE LOWER(art_name)=LOWER(?)");
-            ps.setString(1, artist);
-            rs = ps.executeQuery();
-            if (rs.next()) {
-                artId = rs.getInt("art_id");
-            } else {
-                System.out.println("Artist not found");
+            int usrId = TableUtil.getUserID(connection, user);
+            if (usrId == -1) {
+                System.out.println("User not found");
                 return;
             }
 
             // check if FOLLOW_ARTIST already exist
 
-            ps = connection.prepareStatement("SELECT * FROM FOLLOW_ARTIST WHERE usr_id=? AND art_id=?");
+            PreparedStatement ps = connection.prepareStatement("SELECT * FROM FOLLOW_ARTIST WHERE usr_id=? AND art_id=?");
             ps.setInt(1, usrId);
             ps.setInt(2, artId);
-            rs = ps.executeQuery();
+            ResultSet rs = ps.executeQuery();
             if (rs.isBeforeFirst()) {
                 System.out.println("FOLLOW_ARTIST already exists");
                 return;
@@ -71,30 +59,18 @@ public class FollowArtistTable {
         try {
             Reset.lock.lock();
             // obtain art_id and usr_id
-            int usrId;
-            int artId;
-            PreparedStatement ps = connection.prepareStatement(
-                    "SELECT usr_id FROM USER_ WHERE LOWER(usr_name)=LOWER(?)");
-            ps.setString(1, user);
-            ResultSet rs = ps.executeQuery();
-            if (rs.next()) {
-                usrId = rs.getInt("usr_id");
-            } else {
-                System.out.println("User not found");
-                return;
-            }
-            ps = connection.prepareStatement(
-                    "SELECT art_id FROM ARTIST WHERE LOWER(art_name)=LOWER(?)");
-            ps.setString(1, artist);
-            rs = ps.executeQuery();
-            if (rs.next()) {
-                artId = rs.getInt("art_id");
-            } else {
+            int artId = TableUtil.getArtistID(connection, artist);
+            if (artId == -1) {
                 System.out.println("Artist not found");
                 return;
             }
+            int usrId = TableUtil.getUserID(connection, user);
+            if (usrId == -1) {
+                System.out.println("User not found");
+                return;
+            }
 
-            ps = connection.prepareStatement("DELETE FROM FOLLOW_ARTIST WHERE usr_id=? AND art_id=?");
+            PreparedStatement ps = connection.prepareStatement("DELETE FROM FOLLOW_ARTIST WHERE usr_id=? AND art_id=?");
             ps.setInt(1, usrId);
             ps.setInt(2, artId);
             int count = ps.executeUpdate();

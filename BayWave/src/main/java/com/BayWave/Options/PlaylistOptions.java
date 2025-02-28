@@ -20,8 +20,7 @@ public class PlaylistOptions {
         System.out.println("7. Update playlist cover");
         System.out.println("8. Manage PLAYLIST_TRACK (associative entity)");
         System.out.println("9. Manage COLLABORATE_PLAYLIST (associative entity)");
-        System.out.println("10. Print associated CHAIN_ entities");
-        System.out.println("11. Return");
+        System.out.println("10. Return");
         System.out.println();
     }
 
@@ -88,6 +87,9 @@ public class PlaylistOptions {
                     break;
                 case "8":
                     PlaylistTrackOptions.options(connection);
+                    break;
+                case "9":
+                    CollaboratePlaylistOptions.options(connection);
                     break;
                 default:
                     input = "-1";
