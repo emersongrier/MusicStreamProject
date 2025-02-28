@@ -9,23 +9,23 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
-public class TrackGenreTable {
+public class AlbumGenreTable {
     public static void print(Connection connection) throws SQLException {
-        PreparedStatement ps = connection.prepareStatement("SELECT * from TRACK_GENRE");
+        PreparedStatement ps = connection.prepareStatement("SELECT * from ALBUM_GENRE");
         ResultSet rs = ps.executeQuery();
-        System.out.println("TRACK_GENRE TABLE:");
+        System.out.println("ALBUM_GENRE TABLE:");
         TableUtil.print(rs);
     }
 
     /**
      * Adds genre to track.
      */
-    public static void register(Connection connection, String artist, String album, String track, String genre) throws SQLException {
+    public static void register(Connection connection, String artist, String album, String genre) throws SQLException {
         try {
             Reset.lock.lock();
-            int trackId = TableUtil.getTrackID(connection, artist, album, track);
-            if (trackId == -1) {
-                System.out.println("Track not found");
+            int albumId = TableUtil.getAlbumID(connection, artist, album);
+            if (albumId == -1) {
+                System.out.println("Album not found");
                 return;
             }
             int genreId = TableUtil.getGenreID(connection, genre);
@@ -34,36 +34,36 @@ public class TrackGenreTable {
                 return;
             }
             // make sure row doesn't exist
-            PreparedStatement ps = connection.prepareStatement("SELECT * FROM TRACK_GENRE WHERE trk_id=? and gen_id=?");
-            ps.setInt(1, trackId);
+            PreparedStatement ps = connection.prepareStatement("SELECT * FROM ALBUM_GENRE WHERE alb_id=? and gen_id=?");
+            ps.setInt(1, albumId);
             ps.setInt(2, genreId);
             ResultSet rs = ps.executeQuery();
             if (rs.isBeforeFirst()) {
-                System.out.println("Genre already associated with track");
+                System.out.println("Genre already associated with album");
                 return;
             }
-            ps = connection.prepareStatement("INSERT INTO TRACK_GENRE (trk_id, gen_id) VALUES (?, ?)");
-            ps.setInt(1, trackId);
+            ps = connection.prepareStatement("INSERT INTO ALBUM_GENRE (alb_id, gen_id) VALUES (?, ?)");
+            ps.setInt(1, albumId);
             ps.setInt(2, genreId);
             int result = ps.executeUpdate();
             if (result == 0) {
-                System.out.println("Genre not added to track");
+                System.out.println("Genre not added to album");
                 return;
             }
             connection.commit();
-            System.out.println("Genre added to track");
+            System.out.println("Genre added to album");
         }
         finally {
             Reset.lock.unlock();
         }
     }
 
-    public static void delete(Connection connection, String artist, String album, String track, String genre) throws SQLException {
+    public static void delete(Connection connection, String artist, String album, String genre) throws SQLException {
         try {
             Reset.lock.lock();
-            int trackId = TableUtil.getTrackID(connection, artist, album, track);
-            if (trackId == -1) {
-                System.out.println("Track not found");
+            int albumId = TableUtil.getAlbumID(connection, artist, album);
+            if (albumId == -1) {
+                System.out.println("Album not found");
                 return;
             }
             int genreId = TableUtil.getGenreID(connection, genre);
@@ -71,8 +71,8 @@ public class TrackGenreTable {
                 System.out.println("Genre not found");
                 return;
             }
-            PreparedStatement ps = connection.prepareStatement("DELETE FROM TRACK_GENRE WHERE trk_id=? AND gen_id=?");
-            ps.setInt(1, trackId);
+            PreparedStatement ps = connection.prepareStatement("DELETE FROM ALBUM_GENRE WHERE alb_id=? AND gen_id=?");
+            ps.setInt(1, albumId);
             ps.setInt(2, genreId);
             int result = ps.executeUpdate();
             if (result == 0) {
@@ -87,7 +87,7 @@ public class TrackGenreTable {
     }
 
     public static ArrayList<String[]> getTable(Connection connection) throws SQLException {
-        PreparedStatement ps = connection.prepareStatement("SELECT * FROM TRACK_GENRE");
+        PreparedStatement ps = connection.prepareStatement("SELECT * FROM ALBUM_GENRE");
         ResultSet rs = ps.executeQuery();
         if (!rs.isBeforeFirst()) {
             return null;
