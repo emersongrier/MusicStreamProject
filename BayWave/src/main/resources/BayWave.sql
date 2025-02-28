@@ -120,11 +120,10 @@ CREATE TABLE LIKE_TRACK (
 );
 
 CREATE TABLE TRACK_LISTEN (
+     trk_lst_id IDENTITY PRIMARY KEY, -- added so users can listen multiple times in one day
      usr_id BIGINT REFERENCES USER_(usr_id) ON DELETE CASCADE,
      trk_id BIGINT REFERENCES TRACK(trk_id) ON DELETE CASCADE,
-     trk_lst_date DATE DEFAULT CURRENT_DATE,
-     trk_lst_listens INTEGER DEFAULT 0 NOT NULL,
-     PRIMARY KEY (usr_id, trk_id, trk_lst_date)
+     trk_lst_date DATE DEFAULT CURRENT_DATE
 );
 
 CREATE TABLE LIKE_ALBUM (

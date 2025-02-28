@@ -20,8 +20,9 @@ public class AlbumOptions {
         System.out.println("6. Delete album");
         System.out.println("7. Manage COLLABORATE_ALBUM (associative entity)");
         System.out.println("8. Manage ALBUM_GENRE (associative entity)");
-        System.out.println("9. Get associated tracks");
-        System.out.println("10. Return");
+        System.out.println("9. Manage LIKE_ALBUM (associative entity)");
+        System.out.println("10. Get associated tracks");
+        System.out.println("11. Return");
         System.out.println();
     }
 
@@ -88,6 +89,9 @@ public class AlbumOptions {
                     AlbumGenreOptions.options(connection);
                     break;
                 case "9":
+                    LikeAlbumOptions.options(connection);
+                    break;
+                case "10":
                     System.out.println("Enter artist name: ");
                     artist = scanner.nextLine();
                     System.out.println("Enter album name: ");

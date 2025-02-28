@@ -20,7 +20,9 @@ public class TrackOptions {
         System.out.println("7. Update track lyrics (.txt file)");
         System.out.println("8. Update track position (swap)");
         System.out.println("9. Update track position (insert)");
-        System.out.println("10. Return");
+        System.out.println("10. Manage LIKE_TRACK (associative entity)");
+        System.out.println("11. Manage TRACK_LISTEN (associative entity)");
+        System.out.println("12. Return");
         System.out.println();
     }
 
@@ -123,6 +125,12 @@ public class TrackOptions {
                     newPos = scanner.nextInt();
                     scanner.nextLine();
                     TrackTable.insertAtPosition(connection, artist, album, name, newPos);
+                    break;
+                case "10":
+                    LikeTrackOptions.options(connection);
+                    break;
+                case "11":
+                    TrackListenOptions.options(connection);
                     break;
                 default:
                     input = "-1";
