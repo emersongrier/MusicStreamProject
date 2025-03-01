@@ -163,6 +163,30 @@ public class TableUtil {
         return rs.getInt("ply_id");
     }
 
+    public static String getPlaylistNameFromId(Connection connection, int playlistId) throws SQLException {
+        PreparedStatement ps = connection.prepareStatement("SELECT * FROM PLAYLIST WHERE ply_id=?");
+        ps.setInt(1, playlistId);
+        ResultSet rs = ps.executeQuery();
+        if (!rs.isBeforeFirst()) {
+            System.err.println("Playlist not found");
+            return null;
+        }
+        rs.next();
+        return rs.getString("ply_name");
+    }
+
+    public static String getUsernameFromId(Connection connection, int userId) throws SQLException {
+        PreparedStatement ps = connection.prepareStatement("SELECT * FROM USER_ WHERE usr_id=?");
+        ps.setInt(1, userId);
+        ResultSet rs = ps.executeQuery();
+        if (!rs.isBeforeFirst()) {
+            System.err.println("Playlist not found");
+            return null;
+        }
+        rs.next();
+        return rs.getString("usr_name");
+    }
+
     public static int getGenreID(Connection connection, String genre) throws SQLException {
         PreparedStatement ps = connection.prepareStatement("SELECT gen_id FROM GENRE WHERE LOWER(gen_name)=LOWER(?)");
         ps.setString(1, genre);

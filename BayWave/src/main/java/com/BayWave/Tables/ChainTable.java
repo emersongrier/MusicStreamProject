@@ -20,10 +20,11 @@ public class ChainTable {
     /**
      * Registers a chain into a playlist while also associating it with
      * the required minimum of two tracks via the CHAIN_TRACK entity.
-     * Within the chain, the first track will be ordered before the second by default.
+     * Within the chain, the first track will be ordered before the second by default,
+     * and the same ordering will be enforced within the playlist.
      */
     public static void register(Connection connection, String user, String playlist, String artist1, String album1, String track1,
-                                String artist2, String album2, String track2) throws SQLException { // at least two songs must be in chain
+                                String artist2, String album2, String track2) throws SQLException { // at least two tracks must be in chain
         try {
             Reset.lock.lock();
             int userId = TableUtil.getUserID(connection, user);
@@ -110,7 +111,7 @@ public class ChainTable {
             ps.setInt(1, plyId);
             rs = ps.executeQuery();
             // iterate over all chains associated with that playlist,
-            // checking associated song IDs
+            // checking associated track IDs
             while (rs.next()) {
                 int chainId = rs.getInt("chn_id");
                 ps = connection.prepareStatement("SELECT * FROM CHAIN_TRACK WHERE chn_id=?");
@@ -143,7 +144,7 @@ public class ChainTable {
                 return;
             }
 
-            // chain can now be created, with the two songs associated
+            // chain can now be created, with the two tracks associated
             ps = connection.prepareStatement("INSERT INTO CHAIN_ (ply_id) VALUES (?)", java.sql.PreparedStatement.RETURN_GENERATED_KEYS);
             ps.setInt(1, plyId);
             int result = ps.executeUpdate(); // executeQuery is used here instead of executeUpdate due to the RETURNING clause
@@ -176,9 +177,66 @@ public class ChainTable {
                 System.out.println("Track not added to chain");
                 return;
             }
+            // change playlist positions
+            ps = connection.prepareStatement("SELECT ply_trk_pos FROM PLAYLIST_TRACK WHERE ply_id=? AND trk_id=?");
+            ps.setInt(1, plyId);
+            ps.setInt(2, trackId1);
+            rs = ps.executeQuery();
+            if (!rs.isBeforeFirst()) {
+                System.out.println("Track 1 not found in playlist");
+                return;
+            }
+            rs.next();
+            int plyPos1 = rs.getInt("ply_trk_pos");
+            ps = connection.prepareStatement("SELECT ply_trk_pos FROM PLAYLIST_TRACK WHERE ply_id=? AND trk_id=?");
+            ps.setInt(1, plyId);
+            ps.setInt(2, trackId2);
+            rs = ps.executeQuery();
+            if (!rs.isBeforeFirst()) {
+                System.out.println("Track 2 not found in playlist");
+                return;
+            }
+            rs.next();
+            int plyPos2 = rs.getInt("ply_trk_pos");
+
+            if (plyPos1 < plyPos2) { // insert track 2 at plyPos1 + 1
+                PlaylistTrackTable.insertAtPosition(connection, user, playlist, artist2, album2, track2, plyPos1 + 1);
+            }
+            else { // insert track 2 at plyPos1
+                PlaylistTrackTable.insertAtPosition(connection, user, playlist, artist2, album2, track2, plyPos1);
+            }
+            // this results in back to back commits, which is no issue
 
             connection.commit();
             System.out.println("Chain added, with two associated tracks");
+            /*
+
+            When a chain is added, the positions in the playlist must change such that they
+            are together, and in order, if they are not already.
+            If the first track comes before the second in the playlist, then the second
+            track should be inserted at the position of the first track + 1. This position
+            is guaranteed to exist because the second track comes after the first.
+            However, if the second track comes before the first track,
+            the second track should be inserted at the position of the first track, which
+            will push it up, making the second track come after.
+
+            When a track is added to a chain, it should follow the same rules as the second
+            track when its position was being changed in the playlist. If the track comes
+            after the chain, it should be inserted at the position of the last track
+            in the chain + 1. But if the track comes before the chain, it should be
+            inserted at the position of the last track in the chain.
+
+            If a track is removed from a chain, it should be re-positioned to come after
+            the chain. The current position of the track is guaranteed to come before
+            that position, so the track should be inserted at the position of the last
+            track in the chain. If a chain is deleted, nothing needs to change.
+
+            TODO:
+            When a chain is no longer associated with any CHAIN_TRACKs, the chain itself
+            should be deleted. If the amount of associated CHAIN_TRACKs goes below two,
+            the final CHAIN_TRACK should be deleted, resulting in the CHAIN_TRACK also
+            being deleted.
+            */
         }
         finally {
             Reset.lock.unlock();
@@ -195,6 +253,7 @@ public class ChainTable {
                 System.out.println("Chain not deleted");
                 return;
             }
+            // If a chain is deleted, nothing needs to change regarding playlist position.
             connection.commit();
             System.out.println("Chain deleted");
         }
