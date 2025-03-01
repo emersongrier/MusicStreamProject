@@ -236,6 +236,11 @@ public class ChainTable {
             should be deleted. If the amount of associated CHAIN_TRACKs goes below two,
             the final CHAIN_TRACK should be deleted, resulting in the CHAIN_TRACK also
             being deleted.
+
+            If position within chain is changed, its position within the playlist should also be changed.
+            If position within playlist in changed, and the track is within a chain, it should also
+            change the position within the chain. If the new position is outside the chain, it
+            shouldn't work.
             */
         }
         finally {
