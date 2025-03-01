@@ -25,6 +25,7 @@ public class TrackListenOptions {
         String album;
         String user;
         String track;
+        String date;
         do {
             printOptions();
             input = scanner.nextLine();
@@ -52,7 +53,9 @@ public class TrackListenOptions {
                     album = scanner.nextLine();
                     System.out.println("Enter track name: ");
                     track = scanner.nextLine();
-                    // TrackListenTable.delete(connection, user, artist, album, track);
+                    System.out.println("Enter data (YYYY-MM-DD): ");
+                    date = scanner.nextLine();
+                    TrackListenTable.deleteOne(connection, user, artist, album, track, date);
                     break;
                 default:
                     input = "-1";
