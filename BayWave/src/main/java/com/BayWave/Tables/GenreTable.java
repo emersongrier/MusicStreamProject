@@ -10,6 +10,9 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 
 public class GenreTable {
+    /**
+     * Prints the GENRE table to output.
+     */
     public static void print(Connection connection) throws SQLException {
         PreparedStatement ps = connection.prepareStatement("SELECT * from GENRE");
         ResultSet rs = ps.executeQuery();
@@ -43,6 +46,9 @@ public class GenreTable {
         }
     }
 
+    /**
+     * Deletes a genre from the GENRE table.
+     */
     public static void delete(Connection connection, String genre) throws SQLException {
         try {
             Reset.lock.lock();
@@ -88,6 +94,10 @@ public class GenreTable {
         }
     }
 
+    /**
+     * Returns an ArrayList of String tables. Each string table represents a row in the GENRE table,
+     * except for the first one (at index 0 of the ArrayList), which is a header containing the attribute names.
+     */
     public static ArrayList<String[]> getTable(Connection connection) throws SQLException {
         PreparedStatement ps = connection.prepareStatement("SELECT * FROM GENRE");
         ResultSet rs = ps.executeQuery();

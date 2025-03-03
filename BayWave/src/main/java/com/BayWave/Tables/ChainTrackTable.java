@@ -10,6 +10,9 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 
 public class ChainTrackTable {
+    /**
+     * Prints the CHAIN_TRACK table to output.
+     */
     public static void print(Connection connection) throws SQLException {
         PreparedStatement ps = connection.prepareStatement("SELECT * FROM CHAIN_TRACK");
         ResultSet rs = ps.executeQuery();
@@ -312,22 +315,6 @@ public class ChainTrackTable {
                 System.out.println("Track already at position specified");
                 return;
             }
-            /*
-            int posDifference = trkPos2 - trkPos1;
-
-            // check if track is in chain
-            int chainPos = TableUtil.getChainPos(connection, user, playlist, artist, album, track);
-            if (chainPos != -1) { // if track is in a chain
-                int chainId = TableUtil.getChainID(connection, user, playlist, artist, album, track);
-                if (chainId == -1) {
-                    System.out.println("Chain ID not found");
-                    return;
-                }
-                System.out.println("chainPos: " + chainPos + ", posDifference: " + posDifference);
-                ChainTrackTable.swapPosition(connection, chainId, artist, album, track, chainPos + posDifference);
-                connection.commit();
-                return;
-            }*/
 
             ps = connection.prepareStatement("UPDATE PLAYLIST_TRACK SET ply_trk_pos=? WHERE trk_id=?");
             ps.setInt(1, trkPos2);
@@ -386,22 +373,7 @@ public class ChainTrackTable {
             System.out.println("Track already at position specified");
             return;
         }
-        /*
-        int posDifference = newPos - currPos;
 
-        // check if track is in chain
-        int chainPos = TableUtil.getChainPos(connection, user, playlist, artist, album, track);
-        if (chainPos != -1) { // if track is in a chain
-            int chainId = TableUtil.getChainID(connection, user, playlist, artist, album, track);
-            if (chainId == -1) {
-                System.out.println("Chain ID not found");
-                return;
-            }
-            ChainTrackTable.insertAtPosition(connection, chainId, artist, album, track, chainPos + posDifference);
-            connection.commit();
-            return;
-        }
-        */
         int delta;
         if (newPos > currPos) { // determines whether elements are incremented or decremented
             delta = -1;
@@ -471,7 +443,6 @@ public class ChainTrackTable {
     }
 
     // any of these position changes should be mirrored in the playlist
-    // TODO: I may have to make dedicated versions of the playlist functions for use by these ones
 
     public static void swapPosition(Connection connection, int chainId, String artist, String album, String track, int newPos) throws SQLException {
         try {
@@ -702,6 +673,10 @@ public class ChainTrackTable {
         return TableUtil.getTable(rs);
     }
 
+    /**
+     * Returns an ArrayList of String tables. Each string table represents a row in the CHAIN_TRACK table,
+     * except for the first one (at index 0 of the ArrayList), which is a header containing the attribute names.
+     */
     public static ArrayList<String[]> getTable(Connection connection) throws SQLException {
         PreparedStatement ps = connection.prepareStatement("SELECT * FROM CHAIN_TRACK");
         ResultSet rs = ps.executeQuery();

@@ -13,6 +13,9 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 
 public class TrackTable {
+    /**
+     * Prints the TRACK table to output.
+     */
     public static void print(Connection connection) throws SQLException {
         PreparedStatement ps = connection.prepareStatement("select * from TRACK");
         ResultSet rs = ps.executeQuery();
@@ -60,6 +63,9 @@ public class TrackTable {
         }
     }
 
+    /**
+     * Deletes a track, removing it from its album.
+     */
     public static void delete(Connection connection, String artist, String album, String track) throws SQLException {
         try {
             Reset.lock.lock();
@@ -389,6 +395,10 @@ public class TrackTable {
         return TableUtil.getFirstStringTable(rs);
     }
 
+    /**
+     * Returns an ArrayList of String tables. Each string table represents a row in the TRACK table,
+     * except for the first one (at index 0 of the ArrayList), which is a header containing the attribute names.
+     */
     public static ArrayList<String[]> getTable(Connection connection) throws SQLException {
         PreparedStatement ps = connection.prepareStatement("SELECT * FROM TRACK");
         ResultSet rs = ps.executeQuery();

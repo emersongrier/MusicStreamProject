@@ -10,6 +10,9 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 
 public class FriendTable {
+    /**
+     * Prints the FRIEND table to output.
+     */
     public static void print(Connection connection) throws SQLException {
         PreparedStatement ps = connection.prepareStatement("select * from FRIEND");
         ResultSet rs = ps.executeQuery();
@@ -84,6 +87,9 @@ public class FriendTable {
         }
     }
 
+    /**
+     * Deletes the friendship between the two specified users.
+     */
     public static void delete(Connection connection, String friend1, String friend2) throws SQLException {
         try {
             Reset.lock.lock();
@@ -153,6 +159,10 @@ public class FriendTable {
         }
     }
 
+    /**
+     * Returns an ArrayList of String tables. Each string table represents a row in the FRIEND table,
+     * except for the first one (at index 0 of the ArrayList), which is a header containing the attribute names.
+     */
     public static ArrayList<String[]> getTable(Connection connection) throws SQLException {
         PreparedStatement ps = connection.prepareStatement("SELECT * FROM FRIEND");
         ResultSet rs = ps.executeQuery();

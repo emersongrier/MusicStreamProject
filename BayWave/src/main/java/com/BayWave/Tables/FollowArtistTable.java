@@ -10,6 +10,9 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 
 public class FollowArtistTable {
+    /**
+     * Prints the FOLLOW_ARTIST table to output.
+     */
     public static void print(Connection connection) throws SQLException {
         PreparedStatement ps = connection.prepareStatement("select * from FOLLOW_ARTIST");
         ResultSet rs = ps.executeQuery();
@@ -55,6 +58,9 @@ public class FollowArtistTable {
         }
     }
 
+    /**
+     * Removes user as a follower of the specified artist.
+     */
     public static void delete(Connection connection, String user, String artist) throws SQLException {
         try {
             Reset.lock.lock();
@@ -85,6 +91,10 @@ public class FollowArtistTable {
         }
     }
 
+    /**
+     * Returns an ArrayList of String tables. Each string table represents a row in the FOLLOW_ARTIST table,
+     * except for the first one (at index 0 of the ArrayList), which is a header containing the attribute names.
+     */
     public static ArrayList<String[]> getTable(Connection connection) throws SQLException {
         PreparedStatement ps = connection.prepareStatement("SELECT * FROM FOLLOW_ARTIST");
         ResultSet rs = ps.executeQuery();

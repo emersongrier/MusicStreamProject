@@ -10,6 +10,9 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 
 public class PlaylistTrackTable {
+    /**
+     * Prints the PLAYLIST_TRACK table to output.
+     */
     public static void print(Connection connection) throws SQLException {
         PreparedStatement ps = connection.prepareStatement("select * from PLAYLIST_TRACK");
         ResultSet rs = ps.executeQuery();
@@ -61,6 +64,9 @@ public class PlaylistTrackTable {
         }
     }
 
+    /**
+     * Removes a track from a playlist.
+     */
     public static void delete(Connection connection, String user, String playlist, String artist, String album, String track) throws SQLException {
         try {
             Reset.lock.lock();
@@ -312,6 +318,10 @@ public class PlaylistTrackTable {
         connection.commit();
     }
 
+    /**
+     * Returns an ArrayList of String tables. Each string table represents a row in the PLAYLIST_TRACK table,
+     * except for the first one (at index 0 of the ArrayList), which is a header containing the attribute names.
+     */
     public static ArrayList<String[]> getTable(Connection connection) throws SQLException {
         PreparedStatement ps = connection.prepareStatement("SELECT * FROM PLAYLIST_TRACK");
         ResultSet rs = ps.executeQuery();

@@ -10,6 +10,9 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 
 public class TrackGenreTable {
+    /**
+     * Prints the TRACK_GENRE table to output.
+     */
     public static void print(Connection connection) throws SQLException {
         PreparedStatement ps = connection.prepareStatement("SELECT * from TRACK_GENRE");
         ResultSet rs = ps.executeQuery();
@@ -58,6 +61,9 @@ public class TrackGenreTable {
         }
     }
 
+    /**
+     * Removes a genre from a given track.
+     */
     public static void delete(Connection connection, String artist, String album, String track, String genre) throws SQLException {
         try {
             Reset.lock.lock();
@@ -86,6 +92,10 @@ public class TrackGenreTable {
         }
     }
 
+    /**
+     * Returns an ArrayList of String tables. Each string table represents a row in the TRACK_GENRE table,
+     * except for the first one (at index 0 of the ArrayList), which is a header containing the attribute names.
+     */
     public static ArrayList<String[]> getTable(Connection connection) throws SQLException {
         PreparedStatement ps = connection.prepareStatement("SELECT * FROM TRACK_GENRE");
         ResultSet rs = ps.executeQuery();

@@ -41,6 +41,9 @@ public class ArtistTable {
         }
     }
 
+    /**
+     * Deletes an artist, along with any associated albums, and any tracks associated with those albums.
+     */
     public static void delete(Connection connection, String name) throws SQLException {
         try {
             Reset.lock.lock();
@@ -109,6 +112,9 @@ public class ArtistTable {
         }
     }
 
+    /**
+     * Prints the ARTIST table to output.
+     */
     public static void print(Connection connection) throws SQLException {
         PreparedStatement ps = connection.prepareStatement("select * from ARTIST");
         ResultSet rs = ps.executeQuery();
@@ -141,6 +147,10 @@ public class ArtistTable {
         return TableUtil.getFirstStringTable(rs);
     }
 
+    /**
+     * Returns an ArrayList of String tables. Each string table represents a row in the ARTIST table,
+     * except for the first one (at index 0 of the ArrayList), which is a header containing the attribute names.
+     */
     public static ArrayList<String[]> getTable(Connection connection) throws SQLException {
         PreparedStatement ps = connection.prepareStatement("SELECT * FROM ARTIST");
         ResultSet rs = ps.executeQuery();

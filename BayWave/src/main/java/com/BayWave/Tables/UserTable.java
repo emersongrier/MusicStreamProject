@@ -88,6 +88,9 @@ public class UserTable {
         }
     }
 
+    /**
+     * Deletes a user, along with all of their associative entities.
+     */
     public static void delete(Connection connection, String username) throws SQLException {
         try {
             Reset.lock.lock();
@@ -261,6 +264,9 @@ public class UserTable {
         }
     }
 
+    /**
+     * Prints the USER table to output.
+     */
     public static void print(Connection connection) throws SQLException {
         PreparedStatement ps = connection.prepareStatement("select * from USER_"); // select * from USERS_
         ResultSet rs = ps.executeQuery();
@@ -268,6 +274,10 @@ public class UserTable {
         TableUtil.print(rs);
     }
 
+    /**
+     * Returns an ArrayList of String tables. Each string table represents a row in the USER table,
+     * except for the first one (at index 0 of the ArrayList), which is a header containing the attribute names.
+     */
     public static ArrayList<String[]> getTable(Connection connection) throws SQLException {
         PreparedStatement ps = connection.prepareStatement("SELECT * FROM USER_");
         ResultSet rs = ps.executeQuery();

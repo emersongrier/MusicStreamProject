@@ -10,6 +10,9 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 
 public class LikeAlbumTable {
+    /**
+     * Prints the LIKE_ALBUM table to output.
+     */
     public static void print(Connection connection) throws SQLException {
         PreparedStatement ps = connection.prepareStatement("SELECT * from LIKE_ALBUM");
         ResultSet rs = ps.executeQuery();
@@ -56,6 +59,9 @@ public class LikeAlbumTable {
         }
     }
 
+    /**
+     * Removes an album from a user's likes.
+     */
     public static void delete(Connection connection, String user, String artist, String album) throws SQLException {
         try {
             Reset.lock.lock();
@@ -85,6 +91,10 @@ public class LikeAlbumTable {
         }
     }
 
+    /**
+     * Returns an ArrayList of String tables. Each string table represents a row in the LIKE_ALBUM table,
+     * except for the first one (at index 0 of the ArrayList), which is a header containing the attribute names.
+     */
     public static ArrayList<String[]> getTable(Connection connection) throws SQLException {
         PreparedStatement ps = connection.prepareStatement("SELECT * FROM LIKE_ALBUM");
         ResultSet rs = ps.executeQuery();

@@ -39,6 +39,9 @@ public class QueueTrackTable {
         }
     }
 
+    /**
+     * Removes a track from a given user's queue.
+     */
     public static void delete(Connection connection, String user, String artist, String album, String track) throws SQLException {
         try {
             Reset.lock.lock();
@@ -237,6 +240,9 @@ public class QueueTrackTable {
         connection.commit();
     }
 
+    /**
+     * Prints the QUEUE_TRACK table to output.
+     */
     public static void print(Connection connection) throws SQLException {
         PreparedStatement ps = connection.prepareStatement("SELECT * FROM QUEUE_TRACK"); // select * from USERS_
         ResultSet rs = ps.executeQuery();
@@ -244,6 +250,10 @@ public class QueueTrackTable {
         TableUtil.print(rs);
     }
 
+    /**
+     * Returns an ArrayList of String tables. Each string table represents a row in the QUEUE_TRACK table,
+     * except for the first one (at index 0 of the ArrayList), which is a header containing the attribute names.
+     */
     public static ArrayList<String[]> getTable(Connection connection) throws SQLException {
         PreparedStatement ps = connection.prepareStatement("SELECT * FROM QUEUE_TRACK");
         ResultSet rs = ps.executeQuery();

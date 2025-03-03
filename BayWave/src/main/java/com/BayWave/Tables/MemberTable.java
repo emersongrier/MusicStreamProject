@@ -10,6 +10,9 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 
 public class MemberTable {
+    /**
+     * Prints the MEMBER table to output.
+     */
     public static void print(Connection connection) throws SQLException {
         PreparedStatement ps = connection.prepareStatement("select * from MEMBER");
         ResultSet rs = ps.executeQuery();
@@ -17,6 +20,9 @@ public class MemberTable {
         TableUtil.print(rs);
     }
 
+    /**
+     * Adds a member to the MEMBER table.
+     */
     public static void register(Connection connection, String user, String artist) throws SQLException {
         try {
             Reset.lock.lock();
@@ -82,6 +88,11 @@ public class MemberTable {
         }
     }
 
+    /**
+     * Removes a member from the MEMBER table. If that user is the primary member, another member of that
+     * artist will be designated as primary member, should they exist. This member will be the first one
+     * that appears in the ResultSet.
+     */
     public static void delete(Connection connection, String user, String artist) throws SQLException {
         try {
             Reset.lock.lock();
@@ -145,6 +156,10 @@ public class MemberTable {
         }
     }
 
+    /**
+     * Sets a user as the primary member of an artist. If another user is
+     * already primary member, that user's primary member status is revoked.
+     */
     public static void setAsPrimary(Connection connection, String user, String artist) throws SQLException {
         try {
             Reset.lock.lock();
@@ -196,6 +211,10 @@ public class MemberTable {
         }
     }
 
+    /**
+     * Returns an ArrayList of String tables. Each string table represents a row in the MEMBER table,
+     * except for the first one (at index 0 of the ArrayList), which is a header containing the attribute names.
+     */
     public static ArrayList<String[]> getTable(Connection connection) throws SQLException {
         PreparedStatement ps = connection.prepareStatement("SELECT * FROM MEMBER");
         ResultSet rs = ps.executeQuery();

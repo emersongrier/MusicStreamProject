@@ -10,6 +10,9 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 
 public class CollaborateAlbumTable {
+    /**
+     * Prints the COLLABORATE_ALBUM table to output.
+     */
     public static void print(Connection connection) throws SQLException {
         PreparedStatement ps = connection.prepareStatement("select * from COLLABORATE_ALBUM");
         ResultSet rs = ps.executeQuery();
@@ -63,6 +66,9 @@ public class CollaborateAlbumTable {
         }
     }
 
+    /**
+     * Removes a collaborator from an album.
+     */
     public static void delete(Connection connection, String collab, String primary, String album) throws SQLException {
         try {
             Reset.lock.lock();
@@ -97,6 +103,10 @@ public class CollaborateAlbumTable {
         }
     }
 
+    /**
+     * Returns an ArrayList of String tables. Each string table represents a row in the COLLABORATE_ALBUM table,
+     * except for the first one (at index 0 of the ArrayList), which is a header containing the attribute names.
+     */
     public static ArrayList<String[]> getTable(Connection connection) throws SQLException {
         PreparedStatement ps = connection.prepareStatement("SELECT * FROM COLLABORATE_ALBUM");
         ResultSet rs = ps.executeQuery();

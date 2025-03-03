@@ -10,6 +10,9 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 
 public class ChainTable {
+    /**
+     * Prints the CHAIN table to output.
+     */
     public static void print(Connection connection) throws SQLException {
         PreparedStatement ps = connection.prepareStatement("select * from CHAIN_");
         ResultSet rs = ps.executeQuery();
@@ -248,6 +251,9 @@ public class ChainTable {
         }
     }
 
+    /**
+     * Deletes a chain, along with any associated CHAIN_TRACK entities.
+     */
     public static void delete(Connection connection, int chainId) throws SQLException {
         try {
             Reset.lock.lock();
@@ -335,6 +341,10 @@ public class ChainTable {
         return TableUtil.getTable(rs);
     }
 
+    /**
+     * Returns an ArrayList of String tables. Each string table represents a row in the CHAIN table,
+     * except for the first one (at index 0 of the ArrayList), which is a header containing the attribute names.
+     */
     public static ArrayList<String[]> getTable(Connection connection) throws SQLException {
         PreparedStatement ps = connection.prepareStatement("SELECT * FROM CHAIN_");
         ResultSet rs = ps.executeQuery();
