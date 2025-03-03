@@ -14,7 +14,8 @@ public class MemberOptions {
         System.out.println("1. Print MEMBER table");
         System.out.println("2. Register USER_ as MEMBER of ARTIST");
         System.out.println("3. Remove USER_ as MEMBER of ARTIST");
-        System.out.println("4. Return");
+        System.out.println("4. Set USER_ as primary MEMBER of ARTIST");
+        System.out.println("5. Return");
     }
 
     public static void options(Connection connection) throws SQLException {
@@ -42,6 +43,13 @@ public class MemberOptions {
                     System.out.println("Enter artist name: ");
                     artist = scanner.nextLine();
                     MemberTable.delete(connection, user, artist);
+                    break;
+                case "4":
+                    System.out.println("Enter username: ");
+                    user = scanner.nextLine();
+                    System.out.println("Enter artist name: ");
+                    artist = scanner.nextLine();
+                    MemberTable.setAsPrimary(connection, user, artist);
                     break;
                 default:
                     input = "-1";

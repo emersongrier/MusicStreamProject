@@ -188,30 +188,36 @@ public class AlbumTable {
     }
 
     public static void togglePrivate(Connection connection, String artist, String album) throws SQLException {
-        int albumId = TableUtil.getAlbumID(connection, artist, album);
-        if (albumId == -1) {
-            System.out.println("Album not found");
-            return;
+        try {
+            Reset.lock.lock();
+            int albumId = TableUtil.getAlbumID(connection, artist, album);
+            if (albumId == -1) {
+                System.out.println("Album not found");
+                return;
+            }
+            boolean isPrivate;
+            PreparedStatement ps = connection.prepareStatement("SELECT alb_priv FROM ALBUM WHERE alb_id=?");
+            ps.setInt(1, albumId);
+            ResultSet rs = ps.executeQuery();
+            if (!rs.isBeforeFirst()) {
+                System.err.println("Album privacy not found");
+            }
+            rs.next();
+            isPrivate = rs.getBoolean("alb_priv");
+            ps = connection.prepareStatement("UPDATE ALBUM SET alb_priv=? WHERE alb_id=?");
+            ps.setBoolean(1, !isPrivate);
+            ps.setInt(2, albumId);
+            int result = ps.executeUpdate();
+            if (result == 0) {
+                System.err.println("Album privacy toggle failed");
+                return;
+            }
+            connection.commit();
+            System.out.println("Album privacy toggled");
         }
-        boolean isPrivate;
-        PreparedStatement ps = connection.prepareStatement("SELECT alb_priv FROM ALBUM WHERE alb_id=?");
-        ps.setInt(1, albumId);
-        ResultSet rs = ps.executeQuery();
-        if (!rs.isBeforeFirst()) {
-            System.err.println("Album privacy not found");
+        finally {
+            Reset.lock.unlock();
         }
-        rs.next();
-        isPrivate = rs.getBoolean("alb_priv");
-        ps = connection.prepareStatement("UPDATE ALBUM SET alb_priv=? WHERE alb_id=?");
-        ps.setBoolean(1, !isPrivate);
-        ps.setInt(2, albumId);
-        int result = ps.executeUpdate();
-        if (result == 0) {
-            System.err.println("Album privacy toggle failed");
-            return;
-        }
-        connection.commit();
-        System.out.println("Album privacy toggled");
     }
 
     public static ArrayList<String[]> getTable(Connection connection) throws SQLException {

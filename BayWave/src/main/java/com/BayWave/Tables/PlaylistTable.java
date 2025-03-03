@@ -196,30 +196,36 @@ public class PlaylistTable {
     }
 
     public static void togglePrivate(Connection connection, String user, String playlist) throws SQLException {
-        int playlistId = TableUtil.getPlaylistID(connection, user, playlist);
-        if (playlistId == -1) {
-            System.out.println("Playlist not found");
-            return;
+        try {
+            Reset.lock.lock();
+            int playlistId = TableUtil.getPlaylistID(connection, user, playlist);
+            if (playlistId == -1) {
+                System.out.println("Playlist not found");
+                return;
+            }
+            boolean isPrivate;
+            PreparedStatement ps = connection.prepareStatement("SELECT ply_priv FROM PLAYLIST WHERE ply_id=?");
+            ps.setInt(1, playlistId);
+            ResultSet rs = ps.executeQuery();
+            if (!rs.isBeforeFirst()) {
+                System.err.println("Playlist privacy not found");
+            }
+            rs.next();
+            isPrivate = rs.getBoolean("ply_priv");
+            ps = connection.prepareStatement("UPDATE PLAYLIST SET ply_priv=? WHERE ply_id=?");
+            ps.setBoolean(1, !isPrivate);
+            ps.setInt(2, playlistId);
+            int result = ps.executeUpdate();
+            if (result == 0) {
+                System.err.println("Playlist privacy toggle failed");
+                return;
+            }
+            connection.commit();
+            System.out.println("Playlist privacy toggled");
         }
-        boolean isPrivate;
-        PreparedStatement ps = connection.prepareStatement("SELECT ply_priv FROM PLAYLIST WHERE ply_id=?");
-        ps.setInt(1, playlistId);
-        ResultSet rs = ps.executeQuery();
-        if (!rs.isBeforeFirst()) {
-            System.err.println("Playlist privacy not found");
+        finally {
+            Reset.lock.unlock();
         }
-        rs.next();
-        isPrivate = rs.getBoolean("ply_priv");
-        ps = connection.prepareStatement("UPDATE PLAYLIST SET ply_priv=? WHERE ply_id=?");
-        ps.setBoolean(1, !isPrivate);
-        ps.setInt(2, playlistId);
-        int result = ps.executeUpdate();
-        if (result == 0) {
-            System.err.println("Playlist privacy toggle failed");
-            return;
-        }
-        connection.commit();
-        System.out.println("Playlist privacy toggled");
     }
 
     public static ArrayList<String[]> getTable(Connection connection) throws SQLException {
