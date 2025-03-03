@@ -374,6 +374,21 @@ public class TrackTable {
         connection.commit();
     }
 
+    public static String[] getTrack(Connection connection, String artist, String album, String track) throws SQLException {
+        int trackId = TableUtil.getTrackID(connection, artist, album, track);
+        if (trackId == -1) {
+            return null;
+        }
+        PreparedStatement ps = connection.prepareStatement("SELECT * FROM TRACK WHERE trk_id=?");
+        ps.setInt(1, trackId);
+        ResultSet rs = ps.executeQuery();
+        if (!rs.isBeforeFirst()) {
+            System.err.println("Track not found");
+            return null;
+        }
+        return TableUtil.getFirstStringTable(rs);
+    }
+
     public static ArrayList<String[]> getTable(Connection connection) throws SQLException {
         PreparedStatement ps = connection.prepareStatement("SELECT * FROM TRACK");
         ResultSet rs = ps.executeQuery();

@@ -301,6 +301,23 @@ public class TableUtil {
         return data;
     }
 
+    /**
+     * Returns the first line of a ResultSet as a String table.
+     */
+    public static String[] getFirstStringTable(ResultSet rs) throws SQLException {
+        if (!rs.isBeforeFirst()) {
+            return null;
+        }
+        rs.next();
+        ResultSetMetaData rsmd = rs.getMetaData();
+        int cols = rsmd.getColumnCount();
+        String[] data = new String[cols];
+        for (int i = 0; i < cols; i++) {
+            data[i] = rs.getString(i + 1);
+        }
+        return data;
+    }
+
     public static void printArrayList(ArrayList<String[]> list) {
         for (int i = 0; i < list.size(); i++) {
             for (int j = 0; j < list.get(i).length; j++) {
@@ -344,6 +361,15 @@ public class TableUtil {
                     }
                 }
                 System.out.println();
+            }
+        }
+    }
+
+    public static void printStringTable(String[] table) {
+        for (int i = 0; i < table.length; i++) {
+            System.out.print(table[i]);
+            if (i != table.length - 1) {
+                System.out.print(", ");
             }
         }
     }

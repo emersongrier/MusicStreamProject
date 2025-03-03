@@ -196,6 +196,21 @@ public class AlbumTable {
         return TableUtil.getTable(rs);
     }
 
+    public static String[] getAlbum(Connection connection, String artist, String album) throws SQLException {
+        int albumId = TableUtil.getAlbumID(connection, artist, album);
+        if (albumId == -1) {
+            return null;
+        }
+        PreparedStatement ps = connection.prepareStatement("SELECT * FROM ALBUM WHERE alb_id=?");
+        ps.setInt(1, albumId);
+        ResultSet rs = ps.executeQuery();
+        if (!rs.isBeforeFirst()) {
+            System.err.println("Album not found");
+            return null;
+        }
+        return TableUtil.getFirstStringTable(rs);
+    }
+
     public static ArrayList<String[]> getTracks(Connection connection, String artist, String album) throws SQLException {
         int albId = TableUtil.getAlbumID(connection, artist, album);
         if (albId == -1) {

@@ -126,6 +126,21 @@ public class ArtistTable {
         System.out.println(rs.getString("art_bio"));
     }
 
+    public static String[] getArtist(Connection connection, String artist) throws SQLException {
+        int artistId = TableUtil.getArtistID(connection, artist);
+        if (artistId == -1) {
+            return null;
+        }
+        PreparedStatement ps = connection.prepareStatement("SELECT * FROM ARTIST WHERE art_id=?");
+        ps.setInt(1, artistId);
+        ResultSet rs = ps.executeQuery();
+        if (!rs.isBeforeFirst()) {
+            System.err.println("Album not found");
+            return null;
+        }
+        return TableUtil.getFirstStringTable(rs);
+    }
+
     public static ArrayList<String[]> getTable(Connection connection) throws SQLException {
         PreparedStatement ps = connection.prepareStatement("SELECT * FROM ARTIST");
         ResultSet rs = ps.executeQuery();
