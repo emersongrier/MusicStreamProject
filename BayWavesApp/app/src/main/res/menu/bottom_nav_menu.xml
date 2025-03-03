@@ -2,16 +2,16 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
-        android:title="@string/home_icon"
+        android:title="@string/play_icon"
         android:id="@+id/home"
-        android:icon="@drawable/ic_home_black_24dp"/>
+        android:icon="@drawable/better_music"/>
     <item
         android:title="@string/search_icon"
         android:id="@+id/search"
-        android:icon="@drawable/ic_dashboard_black_24dp"/>
+        android:icon="@drawable/better_search"/>
     <item
         android:title="@string/playlist_icon"
         android:id="@+id/playlists"
-        android:icon="@drawable/ic_notifications_black_24dp"/>
+        android:icon="@drawable/better_library"/>
 
 </menu>

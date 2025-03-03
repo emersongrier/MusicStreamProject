@@ -12,4 +12,6 @@
         android:text="@string/hello_search_fragment"
         android:layout_gravity="center"/>
 
+    <include layout="@layout/search_screen" />
+
 </FrameLayout>
