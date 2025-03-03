@@ -11,7 +11,7 @@ import java.util.ArrayList;
 
 public class ChainTrackTable {
     public static void print(Connection connection) throws SQLException {
-        PreparedStatement ps = connection.prepareStatement("select * from CHAIN_TRACK");
+        PreparedStatement ps = connection.prepareStatement("SELECT * FROM CHAIN_TRACK");
         ResultSet rs = ps.executeQuery();
         System.out.println("CHAIN_TRACK TABLE:");
         TableUtil.print(rs);
@@ -259,6 +259,217 @@ public class ChainTrackTable {
         }
     }
 
+    /**
+     * Dedicated version of PlaylistTrackTable's swap method such that it doesn't call chain's version.
+     */
+    private static void playlistSwapPosition(Connection connection, String user, String playlist, String artist, String album, String track, int newPos) throws SQLException {
+        try {
+            Reset.lock.lock();
+
+            int userId = TableUtil.getUserID(connection, user);
+            if (userId == -1) {
+                System.out.println("User not found");
+                return;
+            }
+            // get playlist id
+            int plyId = TableUtil.getPlaylistID(connection, user, playlist);
+            if (plyId == -1) {
+                System.out.println("Playlist not found");
+                return;
+            }
+            // get track id
+            int trkId = TableUtil.getTrackID(connection, artist, album, track);
+            if (trkId == -1) {
+                System.out.println("Track not found");
+                return;
+            }
+            // check that a track exists with the new position
+            PreparedStatement ps = connection.prepareStatement(
+                    "SELECT * FROM PLAYLIST_TRACK WHERE ply_id=? and trk_id=?");
+            ps.setInt(1, plyId);
+            ps.setInt(2, trkId);
+            ResultSet rs = ps.executeQuery();
+            if (!rs.isBeforeFirst()) {
+                System.out.println("Track not found");
+                return;
+            }
+            rs.next();
+            int trkPos1 = rs.getInt("ply_trk_pos");
+            int trkId1 = rs.getInt("trk_id");
+            ps = connection.prepareStatement(
+                    "SELECT * FROM PLAYLIST_TRACK WHERE ply_id=? AND ply_trk_pos=?");
+            ps.setInt(1, plyId);
+            ps.setInt(2, newPos);
+            rs = ps.executeQuery();
+            if (!rs.isBeforeFirst()) {
+                System.out.println("Track position not found");
+                return;
+            }
+            rs.next();
+            int trkPos2 = rs.getInt("ply_trk_pos");
+            int trkId2 = rs.getInt("trk_id");
+            if (trkPos1 == trkPos2) {
+                System.out.println("Track already at position specified");
+                return;
+            }
+            /*
+            int posDifference = trkPos2 - trkPos1;
+
+            // check if track is in chain
+            int chainPos = TableUtil.getChainPos(connection, user, playlist, artist, album, track);
+            if (chainPos != -1) { // if track is in a chain
+                int chainId = TableUtil.getChainID(connection, user, playlist, artist, album, track);
+                if (chainId == -1) {
+                    System.out.println("Chain ID not found");
+                    return;
+                }
+                System.out.println("chainPos: " + chainPos + ", posDifference: " + posDifference);
+                ChainTrackTable.swapPosition(connection, chainId, artist, album, track, chainPos + posDifference);
+                connection.commit();
+                return;
+            }*/
+
+            ps = connection.prepareStatement("UPDATE PLAYLIST_TRACK SET ply_trk_pos=? WHERE trk_id=?");
+            ps.setInt(1, trkPos2);
+            ps.setInt(2, trkId1);
+            int updated = ps.executeUpdate();
+            if (updated == 0) {
+                System.out.println("Track position not updated");
+                return;
+            }
+            ps = connection.prepareStatement("UPDATE PLAYLIST_TRACK SET ply_trk_pos=? WHERE trk_id=?");
+            ps.setInt(1, trkPos1);
+            ps.setInt(2, trkId2);
+            int updated2 = ps.executeUpdate();
+            if (updated2 == 0) {
+                System.out.println("Track position not updated");
+                return;
+            }
+            connection.commit();
+            System.out.println("Track position updated");
+        }
+        finally {
+            Reset.lock.unlock();
+        }
+    }
+
+    /**
+     * Dedicated version of PlaylistTrackTable's insert method such that it doesn't call chain's version.
+     */
+    private static void playlistInsertAtPosition(Connection connection, String user, String playlist, String artist, String album, String track, int newPos) throws SQLException {
+        int userId = TableUtil.getUserID(connection, user);
+        if (userId == -1) {
+            System.out.println("User not found");
+            return;
+        }
+        // get playlist id
+        int plyId = TableUtil.getPlaylistID(connection, user, playlist);
+        if (plyId == -1) {
+            System.out.println("Playlist not found");
+            return;
+        }
+        int trkId = TableUtil.getTrackID(connection, artist, album, track);
+        if (trkId == -1) {
+            System.out.println("Track not found");
+            return;
+        }
+        PreparedStatement ps = connection.prepareStatement("SELECT * FROM PLAYLIST_TRACK WHERE ply_id=? and trk_id=?");
+        ps.setInt(1, plyId);
+        ps.setInt(2, trkId);
+        ResultSet rs = ps.executeQuery();
+        if (!rs.isBeforeFirst()) {
+            System.out.println("Track position not found");
+        }
+        rs.next();
+        int currPos = rs.getInt("ply_trk_pos");
+        if (currPos == newPos) {
+            System.out.println("Track already at position specified");
+            return;
+        }
+        /*
+        int posDifference = newPos - currPos;
+
+        // check if track is in chain
+        int chainPos = TableUtil.getChainPos(connection, user, playlist, artist, album, track);
+        if (chainPos != -1) { // if track is in a chain
+            int chainId = TableUtil.getChainID(connection, user, playlist, artist, album, track);
+            if (chainId == -1) {
+                System.out.println("Chain ID not found");
+                return;
+            }
+            ChainTrackTable.insertAtPosition(connection, chainId, artist, album, track, chainPos + posDifference);
+            connection.commit();
+            return;
+        }
+        */
+        int delta;
+        if (newPos > currPos) { // determines whether elements are incremented or decremented
+            delta = -1;
+        }
+        else {
+            delta = 1;
+        }
+        // make sure track position exists
+        ps = connection.prepareStatement("SELECT * FROM PLAYLIST_TRACK WHERE ply_id=? AND ply_trk_pos=?");
+        ps.setInt(1, plyId);
+        ps.setInt(2, newPos);
+        rs = ps.executeQuery();
+        if (!rs.isBeforeFirst()) {
+            System.out.println("Track position not found");
+            return;
+        }
+        rs.next();
+        // if newPos > currPos, decrement every track position between currPos and newPos (inclusive),
+        // except track's trk_pos, which will become newPos
+        // if newPos < currPos, increment every track position between currPos and newPos (inclusive)
+        ps = connection.prepareStatement("SELECT * FROM PLAYLIST_TRACK WHERE ply_id=? AND ply_trk_pos>=? AND ply_trk_pos<=?");
+        ps.setInt(1, plyId);
+        if (delta == -1) {
+            System.out.println("DELTA -1");
+            ps.setInt(2, currPos);
+            ps.setInt(3, newPos);
+        }
+        else {
+            System.out.println("DELTA 1");
+            ps.setInt(2, newPos);
+            ps.setInt(3, currPos);
+        }
+        rs = ps.executeQuery();
+        if (!rs.isBeforeFirst()) {
+            System.out.println("Error obtaining track positions");
+            return;
+        }
+        while (rs.next()) {
+            int thisId = rs.getInt("trk_id");
+            int thisPos = rs.getInt("ply_trk_pos");
+            if (thisId != trkId) {
+                System.out.println("UPDATING TRACK");
+                ps = connection.prepareStatement("UPDATE PLAYLIST_TRACK SET ply_trk_pos=? WHERE ply_id=? AND trk_id=?");
+                int updatedPos = thisPos + delta;
+                ps.setInt(1, updatedPos);
+                ps.setInt(2, plyId);
+                ps.setInt(3, thisId);
+                int result = ps.executeUpdate();
+                if (result == 0) {
+                    System.out.println("Track position update failed");
+                    return;
+                }
+            }
+        }
+        // set track's trk_pos to newPos
+        ps = connection.prepareStatement("UPDATE PLAYLIST_TRACK SET ply_trk_pos=? WHERE ply_id=? AND trk_id=?");
+        ps.setInt(1, newPos);
+        ps.setInt(2, plyId);
+        ps.setInt(3, trkId);
+        int result = ps.executeUpdate();
+        if (result == 0) {
+            System.out.println("Track position not updated");
+            return;
+        }
+        System.out.println("Track positions updated");
+        connection.commit();
+    }
+
     // any of these position changes should be mirrored in the playlist
     // TODO: I may have to make dedicated versions of the playlist functions for use by these ones
 
@@ -349,7 +560,7 @@ public class ChainTrackTable {
             }
             rs.next();
             int playlistPos = rs.getInt("ply_trk_pos");
-            PlaylistTrackTable.swapPosition(connection, user, playlist, artist, album, track, playlistPos + posDifference);
+            playlistSwapPosition(connection, user, playlist, artist, album, track, playlistPos + posDifference);
 
             connection.commit();
             System.out.println("Track position updated");
@@ -473,7 +684,7 @@ public class ChainTrackTable {
         }
         rs.next();
         int playlistPos = rs.getInt("ply_trk_pos");
-        PlaylistTrackTable.insertAtPosition(connection, user, playlist, artist, album, track, playlistPos + posDifference);
+        playlistInsertAtPosition(connection, user, playlist, artist, album, track, playlistPos + posDifference);
 
         System.out.println("Track positions updated");
         connection.commit();

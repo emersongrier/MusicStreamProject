@@ -157,7 +157,7 @@ public class PlaylistTrackTable {
                 System.out.println("Track already at position specified");
                 return;
             }
-            /*
+
             int posDifference = trkPos2 - trkPos1;
 
             // check if track is in chain
@@ -172,7 +172,7 @@ public class PlaylistTrackTable {
                 ChainTrackTable.swapPosition(connection, chainId, artist, album, track, chainPos + posDifference);
                 connection.commit();
                 return;
-            }*/
+            }
 
             ps = connection.prepareStatement("UPDATE PLAYLIST_TRACK SET ply_trk_pos=? WHERE trk_id=?");
             ps.setInt(1, trkPos2);
@@ -228,7 +228,7 @@ public class PlaylistTrackTable {
             System.out.println("Track already at position specified");
             return;
         }
-        /*
+
         int posDifference = newPos - currPos;
 
         // check if track is in chain
@@ -243,7 +243,7 @@ public class PlaylistTrackTable {
             connection.commit();
             return;
         }
-        */
+
         int delta;
         if (newPos > currPos) { // determines whether elements are incremented or decremented
             delta = -1;

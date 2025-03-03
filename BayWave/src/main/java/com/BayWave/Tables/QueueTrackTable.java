@@ -74,6 +74,8 @@ public class QueueTrackTable {
         }
     }
 
+
+
     public static void swapPosition(Connection connection, String artist, String album, String track, String user, int newPos) throws SQLException {
         try {
             Reset.lock.lock();
