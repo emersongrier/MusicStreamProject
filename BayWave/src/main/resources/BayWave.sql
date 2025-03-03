@@ -53,6 +53,7 @@ CREATE TABLE ALBUM (
     alb_cvr VARCHAR(255), -- file path to image file
     alb_trks INTEGER DEFAULT 0 NOT NULL,
     alb_likes INTEGER DEFAULT 0 NOT NULL,
+    alb_priv BOOLEAN DEFAULT FALSE NOT NULL,
     art_id BIGINT REFERENCES ARTIST(art_id) ON DELETE CASCADE NOT NULL
 );
 
@@ -74,6 +75,7 @@ CREATE TABLE PLAYLIST (
     ply_desc CHARACTER VARYING(1000),
     ply_cvr VARCHAR(255), -- file path to image file
     ply_flwrs INTEGER DEFAULT 0 NOT NULL,
+    ply_priv BOOLEAN DEFAULT FALSE NOT NULL,
     usr_id BIGINT REFERENCES USER_(usr_id) ON DELETE CASCADE NOT NULL
 );
 

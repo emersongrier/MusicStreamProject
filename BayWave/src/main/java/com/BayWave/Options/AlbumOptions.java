@@ -18,11 +18,12 @@ public class AlbumOptions {
         System.out.println("4. Change album type");
         System.out.println("5. Change album cover");
         System.out.println("6. Delete album");
-        System.out.println("7. Manage COLLABORATE_ALBUM (associative entity)");
-        System.out.println("8. Manage ALBUM_GENRE (associative entity)");
-        System.out.println("9. Manage LIKE_ALBUM (associative entity)");
-        System.out.println("10. Get associated tracks");
-        System.out.println("11. Return");
+        System.out.println("7. Toggle album privacy");
+        System.out.println("8. Manage COLLABORATE_ALBUM (associative entity)");
+        System.out.println("9. Manage ALBUM_GENRE (associative entity)");
+        System.out.println("10. Manage LIKE_ALBUM (associative entity)");
+        System.out.println("11. Get associated tracks");
+        System.out.println("12. Return");
         System.out.println();
     }
 
@@ -83,15 +84,22 @@ public class AlbumOptions {
                     AlbumTable.delete(connection, artist, album);
                     break;
                 case "7":
-                    CollaborateAlbumOptions.options(connection);
+                    System.out.println("Enter artist name: ");
+                    artist = scanner.nextLine();
+                    System.out.println("Enter album name: ");
+                    album = scanner.nextLine();
+                    AlbumTable.togglePrivate(connection, artist, album);
                     break;
                 case "8":
-                    AlbumGenreOptions.options(connection);
+                    CollaborateAlbumOptions.options(connection);
                     break;
                 case "9":
-                    LikeAlbumOptions.options(connection);
+                    AlbumGenreOptions.options(connection);
                     break;
                 case "10":
+                    LikeAlbumOptions.options(connection);
+                    break;
+                case "11":
                     System.out.println("Enter artist name: ");
                     artist = scanner.nextLine();
                     System.out.println("Enter album name: ");

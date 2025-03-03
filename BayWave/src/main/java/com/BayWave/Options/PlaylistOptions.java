@@ -18,9 +18,10 @@ public class PlaylistOptions {
         System.out.println("5. Print playlist description");
         System.out.println("6. Update playlist name");
         System.out.println("7. Update playlist cover");
-        System.out.println("8. Manage PLAYLIST_TRACK (associative entity)");
-        System.out.println("9. Manage COLLABORATE_PLAYLIST (associative entity)");
-        System.out.println("10. Return");
+        System.out.println("8. Toggle playlist privacy");
+        System.out.println("9. Manage PLAYLIST_TRACK (associative entity)");
+        System.out.println("10. Manage COLLABORATE_PLAYLIST (associative entity)");
+        System.out.println("11. Return");
         System.out.println();
     }
 
@@ -86,9 +87,16 @@ public class PlaylistOptions {
                     PlaylistTable.updateCover(connection, name, plyName, cover);
                     break;
                 case "8":
-                    PlaylistTrackOptions.options(connection);
+                    System.out.println("Enter username: ");
+                    name = scanner.nextLine();
+                    System.out.println("Enter playlist name: ");
+                    plyName = scanner.nextLine();
+                    PlaylistTable.togglePrivate(connection, name, plyName);
                     break;
                 case "9":
+                    PlaylistTrackOptions.options(connection);
+                    break;
+                case "10":
                     CollaboratePlaylistOptions.options(connection);
                     break;
                 default:
