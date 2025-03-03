@@ -8,6 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.SeekBar;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -18,19 +19,28 @@ public class HomeFragment extends Fragment {
     private MediaPlayer mediaPlayer;
     private ImageButton playPauseButton;
     private SeekBar seekBar;
-    private Handler handler = new Handler();
+    final private Handler handler = new Handler();
     private boolean isPlaying = false;
     private int lastPlaybackPosition = 0; // Save playback position
+    private TextView startTime;
+    private TextView endTime;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_home, container, false);
 
+        startTime = view.findViewById(R.id.start_time);
+        endTime = view.findViewById(R.id.end_time);
+
         // Initialize MediaPlayer
         if (mediaPlayer == null) {
             mediaPlayer = MediaPlayer.create(getContext(), R.raw.aves_rollin);
         }
+
+        startTime.setText("0:00");
+        endTime.setText(formatTime(mediaPlayer.getDuration()));
+
 
         // Restore playback position if available
         if (savedInstanceState != null) {
@@ -73,6 +83,7 @@ public class HomeFragment extends Fragment {
         return view;
     }
 
+
     private void playAndPause() {
         if (isPlaying) {
             mediaPlayer.pause();
@@ -89,12 +100,33 @@ public class HomeFragment extends Fragment {
             @Override
             public void run() {
                 if (mediaPlayer != null && mediaPlayer.isPlaying()) {
+                    int currentPosition = mediaPlayer.getCurrentPosition();
+                    int duration = mediaPlayer.getDuration();
+
                     int progress = (int) (((float) mediaPlayer.getCurrentPosition() / mediaPlayer.getDuration()) * 100);
                     seekBar.setProgress(progress);
+
+                    startTime.setText(formatTime(currentPosition));
+
+                    // Update end time (remaining time)
+                    int remainingTime = duration - currentPosition;
+                    endTime.setText(formatTime(remainingTime));
                 }
                 handler.postDelayed(this, 1000);
             }
         }, 1000);
+    }
+
+    // Helper method to format time in mm:ss
+    private String formatTime(int timeInMillis) {
+        int minutes = (timeInMillis / 1000) / 60;
+        int seconds = (timeInMillis / 1000) % 60;
+        if(mediaPlayer.getDuration() >= 600000) {
+            return String.format("%02d:%02d", minutes, seconds);
+        }
+        else {
+            return String.format("%01d:%02d", minutes, seconds);
+        }
     }
 
     @Override
@@ -105,6 +137,7 @@ public class HomeFragment extends Fragment {
             outState.putBoolean("isPlaying", isPlaying);
         }
     }
+
 
     @Override
     public void onDestroyView() {
