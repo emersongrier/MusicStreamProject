@@ -245,4 +245,5 @@ CREATE TRIGGER DELETE_CHAIN_TRACK_UPDATE_POS
     ON CHAIN_TRACK
     FOR EACH ROW CALL "com.BayWave.Triggers.DeleteChainTrackUpdatePosTrigger";
 
+
 COMMIT;

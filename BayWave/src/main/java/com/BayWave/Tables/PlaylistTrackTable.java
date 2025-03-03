@@ -110,6 +110,7 @@ public class PlaylistTrackTable {
     public static void swapPosition(Connection connection, String user, String playlist, String artist, String album, String track, int newPos) throws SQLException {
         try {
             Reset.lock.lock();
+
             int userId = TableUtil.getUserID(connection, user);
             if (userId == -1) {
                 System.out.println("User not found");
@@ -156,6 +157,23 @@ public class PlaylistTrackTable {
                 System.out.println("Track already at position specified");
                 return;
             }
+            /*
+            int posDifference = trkPos2 - trkPos1;
+
+            // check if track is in chain
+            int chainPos = TableUtil.getChainPos(connection, user, playlist, artist, album, track);
+            if (chainPos != -1) { // if track is in a chain
+                int chainId = TableUtil.getChainID(connection, user, playlist, artist, album, track);
+                if (chainId == -1) {
+                    System.out.println("Chain ID not found");
+                    return;
+                }
+                System.out.println("chainPos: " + chainPos + ", posDifference: " + posDifference);
+                ChainTrackTable.swapPosition(connection, chainId, artist, album, track, chainPos + posDifference);
+                connection.commit();
+                return;
+            }*/
+
             ps = connection.prepareStatement("UPDATE PLAYLIST_TRACK SET ply_trk_pos=? WHERE trk_id=?");
             ps.setInt(1, trkPos2);
             ps.setInt(2, trkId1);
@@ -210,6 +228,22 @@ public class PlaylistTrackTable {
             System.out.println("Track already at position specified");
             return;
         }
+        /*
+        int posDifference = newPos - currPos;
+
+        // check if track is in chain
+        int chainPos = TableUtil.getChainPos(connection, user, playlist, artist, album, track);
+        if (chainPos != -1) { // if track is in a chain
+            int chainId = TableUtil.getChainID(connection, user, playlist, artist, album, track);
+            if (chainId == -1) {
+                System.out.println("Chain ID not found");
+                return;
+            }
+            ChainTrackTable.insertAtPosition(connection, chainId, artist, album, track, chainPos + posDifference);
+            connection.commit();
+            return;
+        }
+        */
         int delta;
         if (newPos > currPos) { // determines whether elements are incremented or decremented
             delta = -1;

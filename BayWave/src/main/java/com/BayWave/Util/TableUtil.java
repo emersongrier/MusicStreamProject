@@ -187,6 +187,82 @@ public class TableUtil {
         return rs.getString("usr_name");
     }
 
+    public static int getUserIdFromPlaylistId(Connection connection, int playlistId) throws SQLException {
+        PreparedStatement ps = connection.prepareStatement("SELECT usr_id FROM PLAYLIST WHERE ply_id=?");
+        ps.setInt(1, playlistId);
+        ResultSet rs = ps.executeQuery();
+        if (!rs.isBeforeFirst()) {
+            System.err.println("User ID not found given playlist");
+            return -1;
+        }
+        rs.next();
+        return rs.getInt("usr_id");
+    }
+
+    public static int getChainPos(Connection connection, String user, String playlist, String artist, String album, String track) throws SQLException {
+        int playlistId = getPlaylistID(connection, user, playlist);
+        if (playlistId == -1) {
+            System.err.println("Playlist not found");
+            return -1;
+        }
+
+        int trackId = getTrackID(connection, artist, album, track);
+        if (trackId == -1) {
+            System.err.println("Track not found");
+            return -1;
+        }
+        PreparedStatement ps = connection.prepareStatement("SELECT * FROM CHAIN_ WHERE ply_id=?");
+        ps.setInt(1, playlistId);
+        ResultSet rs = ps.executeQuery();
+        if (!rs.isBeforeFirst()) {
+            System.err.println("Chain not found");
+            return -1;
+        }
+        while (rs.next()) {
+            ps = connection.prepareStatement("SELECT * FROM CHAIN_TRACK WHERE chn_id=?");
+            ps.setInt(1, rs.getInt("chn_id"));
+            ResultSet rs2 = ps.executeQuery();
+            while (rs2.next()) {
+                if (rs2.getInt("trk_id") == trackId) {
+                    return rs2.getInt("chn_trk_pos");
+                }
+            }
+        }
+        return -1;
+    }
+
+    public static int getChainID(Connection connection, String user, String playlist, String artist, String album, String track) throws SQLException {
+        int playlistId = getPlaylistID(connection, user, playlist);
+        if (playlistId == -1) {
+            System.err.println("Playlist not found");
+            return -1;
+        }
+
+        int trackId = getTrackID(connection, artist, album, track);
+        if (trackId == -1) {
+            System.err.println("Track not found");
+            return -1;
+        }
+        PreparedStatement ps = connection.prepareStatement("SELECT * FROM CHAIN_ WHERE ply_id=?");
+        ps.setInt(1, playlistId);
+        ResultSet rs = ps.executeQuery();
+        if (!rs.isBeforeFirst()) {
+            System.err.println("Chain not found");
+            return -1;
+        }
+        while (rs.next()) {
+            ps = connection.prepareStatement("SELECT * FROM CHAIN_TRACK WHERE chn_id=?");
+            ps.setInt(1, rs.getInt("chn_id"));
+            ResultSet rs2 = ps.executeQuery();
+            while (rs2.next()) {
+                if (rs2.getInt("trk_id") == trackId) {
+                    return rs2.getInt("chn_id");
+                }
+            }
+        }
+        return -1;
+    }
+
     public static int getGenreID(Connection connection, String genre) throws SQLException {
         PreparedStatement ps = connection.prepareStatement("SELECT gen_id FROM GENRE WHERE LOWER(gen_name)=LOWER(?)");
         ps.setString(1, genre);

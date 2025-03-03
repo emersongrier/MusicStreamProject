@@ -21,6 +21,11 @@ public class DeleteChainTrackUpdatePosTrigger implements Trigger {
         ResultSet rs = ps.executeQuery();
         // decrement all track positions greater than trkPos
 
+        // in addition to updating position, we should check the chain to make sure there are at least two
+        // left. otherwise, we should delete the chain. This will only happen in the event that artists,
+        // albums, or songs are deleted directly
+        int numTracks = 0;
+
         while (rs.next()) {
             if (rs.getLong("chn_trk_pos") > trkPos) {
                 ps = connection.prepareStatement("UPDATE CHAIN_TRACK SET chn_trk_pos=? WHERE chn_id=? AND trk_id=?");
@@ -29,6 +34,20 @@ public class DeleteChainTrackUpdatePosTrigger implements Trigger {
                 ps.setLong(3, rs.getLong("trk_id"));
                 ps.executeUpdate();
             }
+            numTracks++;
+        }
+
+
+        if (numTracks < 2) {
+            // delete the chain
+            ps = connection.prepareStatement("DELETE FROM CHAIN_ WHERE chn_id=?");
+            ps.setLong(1, chainId);
+            ps.executeUpdate();
+            /*
+            if (result == 0) {
+                System.err.println("Chain track not deleted");
+            }
+            */
         }
     }
 }
