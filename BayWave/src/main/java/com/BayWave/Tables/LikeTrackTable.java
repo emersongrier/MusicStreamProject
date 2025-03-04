@@ -20,6 +20,9 @@ public class LikeTrackTable {
         TableUtil.print(rs);
     }
 
+    /**
+     * Adds track to user's likes.
+     */
     public static void register(Connection connection, String user, String artist, String album, String track) throws SQLException {
         try {
             Reset.lock.lock();

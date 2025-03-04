@@ -20,6 +20,9 @@ public class FollowArtistTable {
         TableUtil.print(rs);
     }
 
+    /**
+     * Adds user to artist's followers.
+     */
     public static void register(Connection connection, String user, String artist) throws SQLException {
         try {
             Reset.lock.lock();

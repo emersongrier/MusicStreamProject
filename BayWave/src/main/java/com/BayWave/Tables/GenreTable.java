@@ -20,6 +20,9 @@ public class GenreTable {
         TableUtil.print(rs);
     }
 
+    /**
+     * Adds a genre to the GENRE table.
+     */
     public static void register(Connection connection, String genre) throws SQLException {
         try {
             Reset.lock.lock();
@@ -67,6 +70,9 @@ public class GenreTable {
         }
     }
 
+    /**
+     * Changes the name of a genre.
+     */
     public static void updateName(Connection connection, String currGenre, String newGenre) throws SQLException {
         try {
             Reset.lock.lock();

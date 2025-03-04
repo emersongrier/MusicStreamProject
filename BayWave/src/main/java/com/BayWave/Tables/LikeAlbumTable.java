@@ -20,6 +20,9 @@ public class LikeAlbumTable {
         TableUtil.print(rs);
     }
 
+    /**
+     * Adds album to user's likes.
+     */
     public static void register(Connection connection, String user, String artist, String album) throws SQLException {
         try {
             Reset.lock.lock();

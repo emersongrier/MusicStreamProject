@@ -20,6 +20,9 @@ public class CollaborateAlbumTable {
         TableUtil.print(rs);
     }
 
+    /**
+     * Adds a collaborator to an album.
+     */
     public static void register(Connection connection, String collab, String primary, String album) throws SQLException {
         try {
             Reset.lock.lock();

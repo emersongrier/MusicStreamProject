@@ -20,6 +20,9 @@ public class PlaylistTable {
         TableUtil.print(rs);
     }
 
+    /**
+     * Creates a playlist, owned by the specified user.
+     */
     public static void register(Connection connection, String user, String name) throws SQLException {
         try {
             Reset.lock.lock();
@@ -84,6 +87,9 @@ public class PlaylistTable {
         }
     }
 
+    /**
+     * Updates the description of a playlist.
+     */
     public static void updateDesc(Connection connection, String user, String plyName, String desc) throws SQLException {
         try {
             Reset.lock.lock();

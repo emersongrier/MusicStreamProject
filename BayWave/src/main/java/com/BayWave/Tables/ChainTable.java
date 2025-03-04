@@ -273,6 +273,10 @@ public class ChainTable {
         }
     }
 
+    /**
+     * Gets the ID of a chain, given a specified playlist and
+     * track currently contained by the chain within that playlist.
+     */
     public static int getChainIdWithPlaylistAndTrack(Connection connection, String user, String playlist, String artist, String album, String track) throws SQLException {
         // get playlist ID
         int playlistId = TableUtil.getPlaylistID(connection, user, playlist);
@@ -330,6 +334,12 @@ public class ChainTable {
         return TableUtil.getTable(rs);
     }
 
+    /**
+     * Returns an ArrayList of strings, each representing a row in the TRACK table associated with the
+     * specified chain, and containing the following attributes in order starting from string index 0:
+     * trk_id, trk_name, trk_file, trk_pos, trk_lyrics, trk_len, trk_strms, trk_likes, alb_id.
+     * The first element of the ArrayList (index 0), is a header containing these attribute names.
+     */
     public static ArrayList<String[]> getTracksForChain(Connection connection, int chainId) throws SQLException {
         PreparedStatement ps = connection.prepareStatement("SELECT * FROM CHAIN_TRACK WHERE chn_id=?");
         ps.setInt(1, chainId);

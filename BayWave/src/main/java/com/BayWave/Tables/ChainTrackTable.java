@@ -444,6 +444,10 @@ public class ChainTrackTable {
 
     // any of these position changes should be mirrored in the playlist
 
+    /**
+     * Swaps the track with another track within its chain, at a given position relative to the chain.
+     * This will also adjust their positions within the playlist accordingly.
+     */
     public static void swapPosition(Connection connection, int chainId, String artist, String album, String track, int newPos) throws SQLException {
         try {
             Reset.lock.lock();
@@ -541,6 +545,10 @@ public class ChainTrackTable {
         }
     }
 
+    /**
+     * Inserts the track at a given position of another track within its chain,
+     * moving past it. This will also adjust their positions within the playlist accordingly.
+     */
     public static void insertAtPosition(Connection connection, int chainId, String artist, String album, String track, int newPos) throws SQLException {
         int trkId = TableUtil.getTrackID(connection, artist, album, track);
         if (trkId == -1) {
@@ -661,7 +669,11 @@ public class ChainTrackTable {
         connection.commit();
     }
 
-
+    /**
+     * Returns an ArrayList of String tables. Each string table represents a row in the CHAIN_TRACK table
+     * associated with the given chain, which represents all the tracks found within the chain.
+     * The first element (at index 0 of the ArrayList), is a header containing the attribute names.
+     */
     public static ArrayList<String[]> getTableForChain(Connection connection, int chainId) throws SQLException {
         PreparedStatement ps = connection.prepareStatement("SELECT * FROM CHAIN_TRACK WHERE chn_id=?");
         ps.setInt(1, chainId);

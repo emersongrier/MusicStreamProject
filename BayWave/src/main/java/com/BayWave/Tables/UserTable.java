@@ -10,6 +10,9 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 
 public class UserTable {
+    /**
+     * Register's a user's account, encrypting their password.
+     */
     public static void register(Connection connection, String username, String password) throws SQLException {
         try {
             Reset.lock.lock();
@@ -44,6 +47,9 @@ public class UserTable {
         }
     }
 
+    /**
+     * Returns true if a given username exists within the database.
+     */
     public static boolean usernameExists(Connection connection, String username) throws SQLException {
         try {
             Reset.lock.lock();
@@ -53,35 +59,6 @@ public class UserTable {
             ResultSet rs = query.executeQuery();
             //
             return rs.isBeforeFirst();
-        }
-        finally {
-            Reset.lock.unlock();
-        }
-    }
-
-    public static void delete(Connection connection, String username, String password) throws SQLException {
-        try {
-            Reset.lock.lock();
-            PreparedStatement query = connection.prepareStatement(
-                    "SELECT usr_name, usr_pass FROM USER_ WHERE LOWER(usr_name)=LOWER(?)");
-            query.setString(1, username);
-            ResultSet rs = query.executeQuery();
-            if (!rs.isBeforeFirst()) { // user does not exist
-                System.out.println("User does not exist");
-                return;
-            }
-            rs.next();
-            if (!rs.getString("usr_pass").equals(password)) {
-                System.out.println("Password does not match");
-                return;
-            }
-            // user found, password matches
-            PreparedStatement ps = connection.prepareStatement(
-                    "DELETE FROM USER_ WHERE LOWER(usr_name)=LOWER(?)");
-            ps.setString(1, username);
-            ps.executeUpdate();
-            connection.commit();
-            System.out.println("User deleted");
         }
         finally {
             Reset.lock.unlock();
@@ -110,6 +87,9 @@ public class UserTable {
         }
     }
 
+    /**
+     * Changes the email address of a user.
+     */
     public static void addEmail(Connection connection, String user, String email) throws SQLException {
         try {
             Reset.lock.lock();
@@ -130,6 +110,9 @@ public class UserTable {
         }
     }
 
+    /**
+     * Changes the phone number of a user.
+     */
     public static void addPhone(Connection connection, String user, String phoneNumber) throws SQLException {
         try {
             Reset.lock.lock();
@@ -151,6 +134,9 @@ public class UserTable {
         }
     }
 
+    /**
+     * Changes the username of a user.
+     */
     public static void updateUsername(Connection connection, String username, String newUsername) throws SQLException {
         try {
             Reset.lock.lock();
@@ -180,6 +166,9 @@ public class UserTable {
         }
     }
 
+    /**
+     * Changes the password of a user, encrypting it.
+     */
     public static void updatePassword(Connection connection, String user, String newPassword) throws SQLException {
         try {
             Reset.lock.lock();
@@ -207,6 +196,9 @@ public class UserTable {
         }
     }
 
+    /**
+     * Checks if the password matches a user's password.
+     */
     public static boolean passwordValid(Connection connection, String user, String password) throws SQLException {
         try {
             Reset.lock.lock();
@@ -226,6 +218,9 @@ public class UserTable {
         }
     }
 
+    /**
+     * Sets a user's email to null.
+     */
     public static void deleteEmail(Connection connection, String user) throws SQLException {
         try {
             Reset.lock.lock();
@@ -245,6 +240,9 @@ public class UserTable {
         }
     }
 
+    /**
+     * Sets a user's phone number to null.
+     */
     public static void deletePhone(Connection connection, String user) throws SQLException {
         try {
             Reset.lock.lock();

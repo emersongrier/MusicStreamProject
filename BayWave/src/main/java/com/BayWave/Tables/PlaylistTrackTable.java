@@ -20,6 +20,9 @@ public class PlaylistTrackTable {
         TableUtil.print(rs);
     }
 
+    /**
+     * Adds a track to a playlist.
+     */
     public static void register(Connection connection, String user, String playlist, String artist, String album, String track) throws SQLException {
         try {
             Reset.lock.lock();
@@ -113,6 +116,13 @@ public class PlaylistTrackTable {
        chain is automatically moved as if the chain was one song.
      */
 
+
+    /**
+     * Swaps the track with another track within its playlist, at a given position relative to the playlist.
+     * If the tracks are in a chain, this will also adjust their positions within the chain accordingly.
+     * If one track is in a chain, and the other track is not within that same chain, this will have
+     * no effect.
+     */
     public static void swapPosition(Connection connection, String user, String playlist, String artist, String album, String track, int newPos) throws SQLException {
         try {
             Reset.lock.lock();
@@ -204,6 +214,12 @@ public class PlaylistTrackTable {
         }
     }
 
+    /**
+     * Inserts the track at a given position of another track within its playlist, moving past it.
+     * If the tracks are in a chain, this will also adjust their positions within the chain accordingly.
+     * If one track is in a chain, and the other track is not within that same chain, this will have
+     * no effect.
+     */
     public static void insertAtPosition(Connection connection, String user, String playlist, String artist, String album, String track, int newPos) throws SQLException {
         int userId = TableUtil.getUserID(connection, user);
         if (userId == -1) {

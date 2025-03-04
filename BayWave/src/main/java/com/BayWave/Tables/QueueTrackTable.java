@@ -10,6 +10,9 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 
 public class QueueTrackTable {
+    /**
+     * Adds track to a user's queue.
+     */
     public static void register(Connection connection, String user, String artist, String album, String track) throws SQLException {
         try {
             Reset.lock.lock();
@@ -77,8 +80,9 @@ public class QueueTrackTable {
         }
     }
 
-
-
+    /**
+     * Swaps the track with another track within its queue, at a given position relative to the queue.
+     */
     public static void swapPosition(Connection connection, String artist, String album, String track, String user, int newPos) throws SQLException {
         try {
             Reset.lock.lock();
@@ -146,6 +150,9 @@ public class QueueTrackTable {
         }
     }
 
+    /**
+     * Inserts the track at a given position of another track within its queue, moving past it.
+     */
     public static void insertAtPosition(Connection connection, String artist, String album, String track, String user, int newPos) throws SQLException {
         int userId = TableUtil.getUserID(connection, user);
         if (userId == -1) {

@@ -20,6 +20,9 @@ public class AlbumTable {
         TableUtil.print(rs);
     }
 
+    /**
+     * Adds album to artist.
+     */
     public static void register(Connection connection, String artist, String album, String type) throws SQLException {
         try {
             Reset.lock.lock();
@@ -63,6 +66,9 @@ public class AlbumTable {
         }
     }
 
+    /**
+     * Changes an artist's name.
+     */
     public static void updateName(Connection connection, String artist, String album, String newName) throws SQLException {
         try {
             Reset.lock.lock();
@@ -101,6 +107,9 @@ public class AlbumTable {
         }
     }
 
+    /**
+     * Changes an album's type to one of three options ("Single", "EP", "LP"), case-sensitive.
+     */
     public static void updateType(Connection connection, String artist, String album, String newType) throws SQLException {
         try {
             Reset.lock.lock();
@@ -134,6 +143,9 @@ public class AlbumTable {
         }
     }
 
+    /**
+     * Changes the filepath to the album cover image.
+     */
     public static void updateCover(Connection connection, String artist, String album, String cover) throws SQLException {
         try {
             Reset.lock.lock();
@@ -192,6 +204,9 @@ public class AlbumTable {
         }
     }
 
+    /**
+     * Toggles the boolean value indicating whether the album is private (true = private, false = public).
+     */
     public static void togglePrivate(Connection connection, String artist, String album) throws SQLException {
         try {
             Reset.lock.lock();
@@ -238,6 +253,11 @@ public class AlbumTable {
         return TableUtil.getTable(rs);
     }
 
+    /**
+     * Returns a string representing the specified row in the ALBUM table,
+     * which contains the following attributes in order starting from index 0:
+     * alb_id, alb_type, alb_name, alb_cvr, alb_trks, alb_likes, alb_priv, art_id.
+     */
     public static String[] getAlbum(Connection connection, String artist, String album) throws SQLException {
         int albumId = TableUtil.getAlbumID(connection, artist, album);
         if (albumId == -1) {
@@ -253,6 +273,12 @@ public class AlbumTable {
         return TableUtil.getFirstStringTable(rs);
     }
 
+    /**
+     * Returns an ArrayList of strings, each representing a row in the TRACK table associated with the
+     * specified album, and containing the following attributes in order starting from string index 0:
+     * trk_id, trk_name, trk_file, trk_pos, trk_lyrics, trk_len, trk_strms, trk_likes, alb_id.
+     * The first element of the ArrayList (index 0), is a header containing these attribute names.
+     */
     public static ArrayList<String[]> getTracks(Connection connection, String artist, String album) throws SQLException {
         int albId = TableUtil.getAlbumID(connection, artist, album);
         if (albId == -1) {

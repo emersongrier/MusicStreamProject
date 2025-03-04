@@ -20,6 +20,9 @@ public class FollowPlaylistTable {
         TableUtil.print(rs);
     }
 
+    /**
+     * Adds user to playlist's followers.
+     */
     public static void register(Connection connection, String owner, String playlist, String follower) throws SQLException {
         try {
             Reset.lock.lock();

@@ -23,6 +23,9 @@ public class TrackTable {
         TableUtil.print(rs);
     }
 
+    /**
+     * Adds a track to an album.
+     */
     public static void register(Connection connection, String artist, String album, String track) throws SQLException {
         try {
             Reset.lock.lock();
@@ -94,6 +97,9 @@ public class TrackTable {
         }
     }
 
+    /**
+     * Changes the name of the track.
+     */
     public static void updateName(Connection connection, String artist, String album, String trkName, String newName) throws SQLException {
         try {
             Reset.lock.lock();
@@ -132,6 +138,9 @@ public class TrackTable {
         }
     }
 
+    /**
+     * Changes the filepath to the audio file of a track.
+     */
     public static void updateFile(Connection connection, String artist, String album, String trkName, String fileName) throws SQLException {
         try {
             Reset.lock.lock();
@@ -161,6 +170,9 @@ public class TrackTable {
         }
     }
 
+    /**
+     * Changes the filepath to the text file representing the lyrics of a track.
+     */
     public static void updateLyrics(Connection connection, String artist, String album, String trkName, String fileName) throws SQLException {
         try {
             Reset.lock.lock();
@@ -190,6 +202,9 @@ public class TrackTable {
         }
     }
 
+    /**
+     * Prints the lyrics of a track.
+     */
     public static void printLyrics(Connection connection, String artist, String album, String trkName) throws SQLException {
         try {
             Reset.lock.lock();
@@ -227,6 +242,9 @@ public class TrackTable {
         }
     }
 
+    /**
+     * Swaps the track with another track within its album, at a given position relative to the album.
+     */
     public static void swapPosition(Connection connection, String artist, String album, String name, int newPos) throws SQLException {
         try {
             Reset.lock.lock();
@@ -288,6 +306,9 @@ public class TrackTable {
         }
     }
 
+    /**
+     * Inserts the track at a given position of another track within its album, moving past it.
+     */
     public static void insertAtPosition(Connection connection, String artist, String album, String track, int newPos) throws SQLException {
         int albId = TableUtil.getAlbumID(connection, artist, album);
         if (albId == -1) {
@@ -380,6 +401,11 @@ public class TrackTable {
         connection.commit();
     }
 
+    /**
+     * Returns a string representing the specified row in the TRACK table,
+     * which contains the following attributes in order starting from index 0:
+     * trk_id, trk_name, trk_file, trk_pos, trk_lyrics, trk_len, trk_strms, trk_likes, alb_id.
+     */
     public static String[] getTrack(Connection connection, String artist, String album, String track) throws SQLException {
         int trackId = TableUtil.getTrackID(connection, artist, album, track);
         if (trackId == -1) {

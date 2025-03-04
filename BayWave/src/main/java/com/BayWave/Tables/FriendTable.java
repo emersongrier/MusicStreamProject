@@ -20,6 +20,9 @@ public class FriendTable {
         TableUtil.print(rs);
     }
 
+    /**
+     * Creates a friendship between two users.
+     */
     public static void register(Connection connection, String friend1, String friend2) throws SQLException {
         try {
             Reset.lock.lock();

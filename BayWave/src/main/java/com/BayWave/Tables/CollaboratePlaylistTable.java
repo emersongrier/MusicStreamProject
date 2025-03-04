@@ -20,6 +20,9 @@ public class CollaboratePlaylistTable {
         TableUtil.print(rs);
     }
 
+    /**
+     * Adds a collaborator to a playlist.
+     */
     public static void register(Connection connection, String collab, String owner, String playlist) throws SQLException {
         try {
             Reset.lock.lock();

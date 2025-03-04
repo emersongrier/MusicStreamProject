@@ -10,6 +10,9 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 
 public class ArtistTable {
+    /**
+     * Registers an artist.
+     */
     public static void register(Connection connection, String name) throws SQLException {
         try {
             Reset.lock.lock();
@@ -63,6 +66,9 @@ public class ArtistTable {
         }
     }
 
+    /**
+     * Changes an artist's bio.
+     */
     public static void updateBio(Connection connection, String name, String bio) throws SQLException {
         try {
             Reset.lock.lock();
@@ -83,6 +89,9 @@ public class ArtistTable {
         }
     }
 
+    /**
+     * Changes an artist's name.
+     */
     public static void updateName(Connection connection, String name, String newName) throws SQLException {
         try {
             Reset.lock.lock();
@@ -122,16 +131,44 @@ public class ArtistTable {
         TableUtil.print(rs);
     }
 
+    /**
+     * Prints the artist's bio to output.
+     */
     public static void printBio(Connection connection, String name) throws SQLException {
         PreparedStatement ps = connection.prepareStatement(
                 "SELECT art_bio FROM ARTIST WHERE LOWER(art_name)=LOWER(?)");
         ps.setString(1, name);
         ResultSet rs = ps.executeQuery();
+        if (!rs.isBeforeFirst()) {
+            System.err.println("No bio found");
+            return;
+        }
         rs.next();
         System.out.println(name + " Bio: ");
         System.out.println(rs.getString("art_bio"));
     }
 
+    /**
+     * Returns the artist's bio as a string.
+     */
+    public static String getBio(Connection connection, String name) throws SQLException {
+        PreparedStatement ps = connection.prepareStatement(
+                "SELECT art_bio FROM ARTIST WHERE LOWER(art_name)=LOWER(?)");
+        ps.setString(1, name);
+        ResultSet rs = ps.executeQuery();
+        if (!rs.isBeforeFirst()) {
+            System.err.println("No bio found");
+            return null;
+        }
+        rs.next();
+        return rs.getString("art_bio");
+    }
+
+    /**
+     * Returns a string representing the specified row in the ALBUM table,
+     * which contains the following attributes in order starting from index 0:
+     * art_id, art_name, art_bio, art_flwrs, art_mbrs.
+     */
     public static String[] getArtist(Connection connection, String artist) throws SQLException {
         int artistId = TableUtil.getArtistID(connection, artist);
         if (artistId == -1) {

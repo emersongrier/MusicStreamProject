@@ -20,6 +20,9 @@ public class TrackListenTable {
         TableUtil.print(rs);
     }
 
+    /**
+     * Adds a single listen for the specified track to a user's statistics.
+     */
     public static void register(Connection connection, String user, String artist, String album, String track) throws SQLException {
         try {
             Reset.lock.lock();
