@@ -10,4 +10,6 @@ Path to Database: MusicStreamProject/BayWave/src/main/java/com/BayWave
 
 PULLING DATABASE (BayWave): In my experience attempting to open the database IntelliJ project on a new computer for the first time, it doesn't
 come with the password encoding library (io.liquer.pencil.password.encoder) due to libraries being included in gitignore. You can add this library like so: 
-File > Project Structure > Modules > BayWave > Dependencies > + > Library > io.liquer.pencil.password.encoder > Add Selected
+File > Project Structure > Modules > BayWave > Libraries > + (left side) > From Maven > Search for "io.liquer.pencil:pencil-password-encoder:2.0.2"
+If it still doesn't work, you need to add it as a dependency:
+File > Project Structure > Modules > BayWave > Dependencies > + (right side) > Library > io.liquer.pencil.password.encoder > Add Selected
