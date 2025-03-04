@@ -1,3 +1,10 @@
+/**
+ * Helper functions for interacting with the ALBUM table. Each album is associated with an artist,
+ * and potentially multiple collaborating artists.
+ *
+ * Author: Bailey Inman
+ */
+
 package com.BayWave.Tables;
 
 import com.BayWave.Reset;

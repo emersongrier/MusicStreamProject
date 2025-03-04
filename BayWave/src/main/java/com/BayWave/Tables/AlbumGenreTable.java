@@ -1,3 +1,10 @@
+/**
+ * Helper functions for interacting with the ALBUM_GENRE table, which is an associative entity
+ * linking genres to albums.
+ *
+ * Author: Bailey Inman
+ */
+
 package com.BayWave.Tables;
 
 import com.BayWave.Reset;

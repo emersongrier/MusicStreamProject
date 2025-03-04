@@ -1,3 +1,9 @@
+/**
+ * When a member is deleted, this decrements that artist's member count.
+ *
+ * Author: Bailey Inman
+ */
+
 package com.BayWave.Triggers;
 
 import org.h2.api.Trigger;

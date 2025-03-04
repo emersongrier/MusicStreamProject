@@ -1,3 +1,12 @@
+/**
+ * Helper functions for interacting with the FOLLOW_ARTIST table, which is an associative entity
+ * linking users to artists, as followers.
+ *
+ * Author: Bailey Inman
+ */
+
+
+
 package com.BayWave.Tables;
 
 import com.BayWave.Reset;

@@ -1,3 +1,10 @@
+/**
+ * Helper functions for interacting with the QUEUE_TRACK table, which is an associative entity
+ * linking tracks to queues, indicating that the user added the track to their queue.
+ *
+ * Author: Bailey Inman
+ */
+
 package com.BayWave.Tables;
 
 import com.BayWave.Reset;

@@ -1,3 +1,10 @@
+/**
+ * Helper functions for interacting with the TRACK_GENRE table, which is an associative entity
+ * linking genres to tracks, indicating that the track has that genre.
+ *
+ * Author: Bailey Inman
+ */
+
 package com.BayWave.Tables;
 
 import com.BayWave.Reset;

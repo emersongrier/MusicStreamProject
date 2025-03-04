@@ -1,3 +1,10 @@
+/**
+ * Helper functions for interacting with the PLAYLIST_TRACK table, which is an associative entity
+ * linking tracks to playlists, indicating that the user added the track to the playlist.
+ *
+ * Author: Bailey Inman
+ */
+
 package com.BayWave.Tables;
 
 import com.BayWave.Reset;

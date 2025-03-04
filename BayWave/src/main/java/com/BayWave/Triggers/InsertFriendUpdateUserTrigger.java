@@ -1,3 +1,9 @@
+/**
+ * When a friendship is created, this increments the users' friend counts.
+ *
+ * Author: Bailey Inman
+ */
+
 package com.BayWave.Triggers;
 
 import org.h2.api.Trigger;

@@ -1,3 +1,9 @@
+/**
+ * Helper functions for interacting with the GENRE table.
+ *
+ * Author: Bailey Inman
+ */
+
 package com.BayWave.Tables;
 
 import com.BayWave.Reset;

@@ -1,3 +1,10 @@
+/**
+ * Helper functions for interacting with the FRIEND table, which is an associative entity
+ * linking users to other users, as friends.
+ *
+ * Author: Bailey Inman
+ */
+
 package com.BayWave.Tables;
 
 import com.BayWave.Reset;

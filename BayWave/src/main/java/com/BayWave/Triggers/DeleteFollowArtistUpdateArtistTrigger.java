@@ -1,3 +1,9 @@
+/**
+ * When a user stops following an artist, this decrements that artist's follower count.
+ *
+ * Author: Bailey Inman
+ */
+
 package com.BayWave.Triggers;
 
 import org.h2.api.Trigger;

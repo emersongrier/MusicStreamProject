@@ -1,3 +1,9 @@
+/**
+ * When a track is removed from a queue, this updates their track positions.
+ *
+ * Author: Bailey Inman
+ */
+
 package com.BayWave.Triggers;
 
 import org.h2.api.Trigger;

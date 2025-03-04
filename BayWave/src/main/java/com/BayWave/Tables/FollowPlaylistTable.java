@@ -1,3 +1,10 @@
+/**
+ * Helper functions for interacting with the FOLLOW_PLAYLIST table, which is an associative entity
+ * linking users to playlists, as followers.
+ *
+ * Author: Bailey Inman
+ */
+
 package com.BayWave.Tables;
 
 import com.BayWave.Reset;

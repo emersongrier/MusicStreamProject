@@ -1,3 +1,10 @@
+/**
+ * Helper functions for interacting with the MEMBER table, which is an associative entity
+ * linking users to artists, indicating that the user is a member of that artist.
+ *
+ * Author: Bailey Inman
+ */
+
 package com.BayWave.Tables;
 
 import com.BayWave.Reset;

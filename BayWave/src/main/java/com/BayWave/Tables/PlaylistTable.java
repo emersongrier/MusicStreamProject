@@ -1,3 +1,11 @@
+/**
+ * Helper functions for interacting with the PLAYLIST table. Each playlist is associated with one
+ * primary user (owner), and potentially multiple other users (collaborators). It can also be
+ * associated with many songs via the PLAYLIST_TRACK associative entity.
+ *
+ * Author: Bailey Inman
+ */
+
 package com.BayWave.Tables;
 
 import com.BayWave.Reset;

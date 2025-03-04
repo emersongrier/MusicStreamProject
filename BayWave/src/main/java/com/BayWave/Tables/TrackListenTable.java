@@ -1,3 +1,11 @@
+/**
+ * Helper functions for interacting with the TRACK_LISTEN table, which is an associative entity
+ * linking users to tracks for the purposes of recording their statistics, keeping track of
+ * each individual instance of them listening to a particular track, and on what date.
+ *
+ * Author: Bailey Inman
+ */
+
 package com.BayWave.Tables;
 
 import com.BayWave.Reset;

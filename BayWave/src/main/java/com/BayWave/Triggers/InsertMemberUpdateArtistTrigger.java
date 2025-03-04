@@ -1,3 +1,9 @@
+/**
+ * When a user is added as a member to an artist, this increments the artist's member count.
+ *
+ * Author: Bailey Inman
+ */
+
 package com.BayWave.Triggers;
 
 import org.h2.api.Trigger;

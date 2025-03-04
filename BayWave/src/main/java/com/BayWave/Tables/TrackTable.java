@@ -1,3 +1,10 @@
+/**
+ * Helper functions for interacting with the TRACK table. Each track is associated with one album,
+ * which is associated with an artist, and potentially multiple collaborating artists.
+ *
+ * Author: Bailey Inman
+ */
+
 package com.BayWave.Tables;
 
 import com.BayWave.Reset;

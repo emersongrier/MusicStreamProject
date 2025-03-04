@@ -1,3 +1,9 @@
+/**
+ * When a user is added to an artist's followers, this increments the artist's follower count.
+ *
+ * Author: Bailey Inman
+ */
+
 package com.BayWave.Triggers;
 
 import org.h2.api.Trigger;

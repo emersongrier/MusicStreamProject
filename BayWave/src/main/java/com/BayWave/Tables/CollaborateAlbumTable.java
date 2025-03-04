@@ -1,3 +1,11 @@
+/**
+ * Helper functions for interacting with the COLLABORATE_ALBUM table, which is an associative entity
+ * linking artists to albums, as collaborators.
+ *
+ * Author: Bailey Inman
+ */
+
+
 package com.BayWave.Tables;
 
 import com.BayWave.Reset;

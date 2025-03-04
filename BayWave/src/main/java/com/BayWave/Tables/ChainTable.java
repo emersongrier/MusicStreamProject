@@ -1,3 +1,11 @@
+/**
+ * Helper functions for interacting with the CHAIN table. Each chain is associated with one playlist,
+ * and at least two tracks via the CHAIN_TRACK associative entity.
+ *
+ * Author: Bailey Inman
+ */
+
+
 package com.BayWave.Tables;
 
 import com.BayWave.Reset;

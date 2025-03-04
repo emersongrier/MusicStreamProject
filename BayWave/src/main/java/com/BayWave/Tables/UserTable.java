@@ -1,3 +1,10 @@
+/**
+ * Helper functions for interacting with the USER table. Each user is associated with many other entities,
+ * either directly via foreign keys or indirectly via associative entities.
+ *
+ * Author: Bailey Inman
+ */
+
 package com.BayWave.Tables;
 
 import com.BayWave.Util.TableUtil;

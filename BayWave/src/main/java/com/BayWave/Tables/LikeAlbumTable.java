@@ -1,3 +1,10 @@
+/**
+ * Helper functions for interacting with the LIKE_ALBUM table, which is an associative entity
+ * linking users to albums, indicating that the user added the album to their likes.
+ *
+ * Author: Bailey Inman
+ */
+
 package com.BayWave.Tables;
 
 import com.BayWave.Reset;

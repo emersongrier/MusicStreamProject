@@ -1,3 +1,10 @@
+/**
+ * Helper functions for interacting with the ARTIST table.
+ *
+ * Author: Bailey Inman
+ */
+
+
 package com.BayWave.Tables;
 
 import com.BayWave.Util.TableUtil;

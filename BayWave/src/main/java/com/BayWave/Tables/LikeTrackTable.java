@@ -1,3 +1,10 @@
+/**
+ * Helper functions for interacting with the LIKE_TRACK table, which is an associative entity
+ * linking users to tracks, indicating that the user added the track to their likes.
+ *
+ * Author: Bailey Inman
+ */
+
 package com.BayWave.Tables;
 
 import com.BayWave.Reset;

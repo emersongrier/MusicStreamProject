@@ -1,3 +1,11 @@
+/**
+ * Helper functions for interacting with the CHAIN_TRACK table, which is an associative entity
+ * linking tracks to chains.
+ *
+ * Author: Bailey Inman
+ */
+
+
 package com.BayWave.Tables;
 
 import com.BayWave.Reset;
