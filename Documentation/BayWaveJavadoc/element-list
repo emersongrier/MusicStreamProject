@@ -1,0 +1,6 @@
+module:com.BayWave.baywave
+com.BayWave
+com.BayWave.Options
+com.BayWave.Tables
+com.BayWave.Triggers
+com.BayWave.Util
