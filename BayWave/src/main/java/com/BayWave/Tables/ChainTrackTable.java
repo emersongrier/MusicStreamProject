@@ -678,6 +678,23 @@ public class ChainTrackTable {
     }
 
     /**
+     * Returns true if the chain has that track.
+     */
+    public static Boolean contains(Connection connection, int chainId, String artist, String album, String track) throws SQLException {
+        Reset.lock.lock();
+        int trackId = TableUtil.getTrackID(connection, artist, album, track);
+        if (trackId == -1) {
+            System.err.println("Track not found");
+            return false;
+        }
+        PreparedStatement ps = connection.prepareStatement("SELECT * FROM CHAIN_TRACK WHERE trk_id=? AND chn_id=?");
+        ps.setInt(1, trackId);
+        ps.setInt(2, chainId);
+        ResultSet rs = ps.executeQuery();
+        return rs.isBeforeFirst();
+    }
+
+    /**
      * Returns an ArrayList of String tables. Each string table represents a row in the CHAIN_TRACK table
      * associated with the given chain, which represents all the tracks found within the chain.
      * The first element (at index 0 of the ArrayList), is a header containing the attribute names.
