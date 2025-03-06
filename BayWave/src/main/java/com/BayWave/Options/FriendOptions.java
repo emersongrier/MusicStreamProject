@@ -14,7 +14,8 @@ public class FriendOptions {
         System.out.println("1. Print FRIEND table");
         System.out.println("2. Register friends");
         System.out.println("3. Delete friends");
-        System.out.println("4. Return");
+        System.out.println("4. Check if users are friends");
+        System.out.println("5. Return");
     }
 
     public static void options(Connection connection) throws SQLException {
@@ -42,6 +43,13 @@ public class FriendOptions {
                     System.out.println("Enter friend 2 name: ");
                     friend2 = scanner.nextLine();
                     FriendTable.delete(connection, friend1, friend2);
+                    break;
+                case "4":
+                    System.out.println("Enter friend 1 name: ");
+                    friend1 = scanner.nextLine();
+                    System.out.println("Enter friend 2 name: ");
+                    friend2 = scanner.nextLine();
+                    System.out.println("Contains: " + FriendTable.contains(connection, friend1, friend2));
                     break;
                 default:
                     input = "-1";

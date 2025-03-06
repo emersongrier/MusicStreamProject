@@ -102,6 +102,27 @@ public class LikeTrackTable {
     }
 
     /**
+     * Returns true if user has that track in their likes.
+     */
+    public static Boolean contains(Connection connection, String user, String artist, String album, String track) throws SQLException {
+        int userId = TableUtil.getUserID(connection, user);
+        if (userId == -1) {
+            System.out.println("User not found");
+            return false;
+        }
+        int trackId = TableUtil.getTrackID(connection, artist, album, track);
+        if (trackId == -1) {
+            System.out.println("Track not found");
+            return false;
+        }
+        PreparedStatement ps = connection.prepareStatement("SELECT * FROM LIKE_TRACK WHERE usr_id=? AND trk_id=?");
+        ps.setInt(1, userId);
+        ps.setInt(2, trackId);
+        ResultSet rs = ps.executeQuery();
+        return rs.isBeforeFirst();
+    }
+
+    /**
      * Returns an ArrayList of String tables. Each string table represents a row in the LIKE_TRACK table,
      * except for the first one (at index 0 of the ArrayList), which is a header containing the attribute names.
      */

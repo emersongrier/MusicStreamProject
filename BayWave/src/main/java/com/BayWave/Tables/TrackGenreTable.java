@@ -100,6 +100,27 @@ public class TrackGenreTable {
     }
 
     /**
+     * Returns true if track has that genre.
+     */
+    public static Boolean contains(Connection connection, String artist, String album, String track, String genre) throws SQLException {
+        int trackId = TableUtil.getTrackID(connection, artist, album, track);
+        if (trackId == -1) {
+            System.out.println("Track not found");
+            return false;
+        }
+        int genreId = TableUtil.getGenreID(connection, genre);
+        if (genreId == -1) {
+            System.out.println("Genre not found");
+            return false;
+        }
+        PreparedStatement ps = connection.prepareStatement("SELECT * FROM TRACK_GENRE WHERE trk_id=? AND gen_id=?");
+        ps.setInt(1, trackId);
+        ps.setInt(2, genreId);
+        ResultSet rs = ps.executeQuery();
+        return rs.isBeforeFirst();
+    }
+
+    /**
      * Returns an ArrayList of String tables. Each string table represents a row in the TRACK_GENRE table,
      * except for the first one (at index 0 of the ArrayList), which is a header containing the attribute names.
      */

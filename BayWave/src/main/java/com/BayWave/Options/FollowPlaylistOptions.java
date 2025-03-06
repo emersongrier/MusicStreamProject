@@ -14,7 +14,8 @@ public class FollowPlaylistOptions {
         System.out.println("1. Print FOLLOW_PLAYLIST table");
         System.out.println("2. Set user as follower of playlist");
         System.out.println("3. Remove user as follower of playlist");
-        System.out.println("4. Return");
+        System.out.println("4. Check if user follows playlist");
+        System.out.println("5. Return");
     }
 
     public static void options(Connection connection) throws SQLException {
@@ -47,6 +48,15 @@ public class FollowPlaylistOptions {
                     System.out.println("Enter playlist follower: ");
                     follower = scanner.nextLine();
                     FollowPlaylistTable.delete(connection, owner, playlist, follower);
+                    break;
+                case "4":
+                    System.out.println("Enter playlist owner: ");
+                    owner = scanner.nextLine();
+                    System.out.println("Enter playlist name: ");
+                    playlist = scanner.nextLine();
+                    System.out.println("Enter playlist follower: ");
+                    follower = scanner.nextLine();
+                    System.out.println("Contains: " + FollowPlaylistTable.contains(connection, owner, playlist, follower));
                     break;
                 default:
                     input = "-1";

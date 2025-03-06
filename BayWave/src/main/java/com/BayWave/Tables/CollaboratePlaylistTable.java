@@ -114,6 +114,23 @@ public class CollaboratePlaylistTable {
     }
 
     /**
+     * Returns true if the playlist has that user as a collaborator.
+     */
+    public static Boolean contains(Connection connection, String user, String playlist, String collab) throws SQLException {
+        int playlistId = TableUtil.getPlaylistID(connection, user, playlist);
+        if (playlistId == -1) {
+            System.out.println("Playlist not found");
+            return false;
+        }
+        int collabId = TableUtil.getUserID(connection, collab);
+        PreparedStatement ps = connection.prepareStatement("SELECT * FROM COLLABORATE_PLAYLIST WHERE ply_id=? AND usr_id=?");
+        ps.setInt(1, playlistId);
+        ps.setInt(2, collabId);
+        ResultSet rs = ps.executeQuery();
+        return rs.isBeforeFirst();
+    }
+
+    /**
      * Returns an ArrayList of String tables. Each string table represents a row in the COLLABORATE_PLAYLIST table,
      * except for the first one (at index 0 of the ArrayList), which is a header containing the attribute names.
      */

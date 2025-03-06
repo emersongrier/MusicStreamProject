@@ -342,6 +342,27 @@ public class PlaylistTrackTable {
     }
 
     /**
+     * Returns true if playlist contains track.
+     */
+    public static Boolean contains(Connection connection, String user, String playlist, String artist, String album, String track) throws SQLException {
+        int playlistId = TableUtil.getPlaylistID(connection, user, playlist);
+        if (playlistId == -1) {
+            System.out.println("Playlist not found");
+            return false;
+        }
+        int trackId = TableUtil.getTrackID(connection, artist, album, track);
+        if (trackId == -1) {
+            System.out.println("Track not found");
+            return false;
+        }
+        PreparedStatement ps = connection.prepareStatement("SELECT * FROM PLAYLIST_TRACK WHERE ply_id=? AND trk_id=?");
+        ps.setInt(1, playlistId);
+        ps.setInt(2, trackId);
+        ResultSet rs = ps.executeQuery();
+        return rs.isBeforeFirst();
+    }
+
+    /**
      * Returns an ArrayList of String tables. Each string table represents a row in the PLAYLIST_TRACK table,
      * except for the first one (at index 0 of the ArrayList), which is a header containing the attribute names.
      */

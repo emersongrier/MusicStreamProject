@@ -277,6 +277,27 @@ public class QueueTrackTable {
         return TableUtil.getTable(rs);
     }
 
+    /**
+     * Returns true if the queue contains track
+     */
+    public static Boolean contains(Connection connection, String user, String artist, String album, String track) throws SQLException {
+        int userId = TableUtil.getUserID(connection, user);
+        if (userId == -1) {
+            System.out.println("User not found");
+            return false;
+        }
+        int trackId = TableUtil.getTrackID(connection, artist, album, track);
+        if (trackId == -1) {
+            System.out.println("Track not found");
+            return false;
+        }
+        PreparedStatement ps = connection.prepareStatement("SELECT * FROM QUEUE_TRACK WHERE usr_id=? AND trk_id=?");
+        ps.setInt(1, userId);
+        ps.setInt(2, trackId);
+        ResultSet rs = ps.executeQuery();
+        return rs.isBeforeFirst();
+    }
+
     public static ArrayList<String[]> getTableForUser(Connection connection, String user) throws SQLException {
         int userId = TableUtil.getUserID(connection, user);
         if (userId == -1) {

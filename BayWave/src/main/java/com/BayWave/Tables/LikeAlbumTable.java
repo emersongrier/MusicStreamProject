@@ -102,6 +102,27 @@ public class LikeAlbumTable {
     }
 
     /**
+     * Returns true if user has that album in their likes.
+     */
+    public static Boolean contains(Connection connection, String user, String artist, String album) throws SQLException {
+        int userId = TableUtil.getUserID(connection, user);
+        if (userId == -1) {
+            System.out.println("User not found");
+            return false;
+        }
+        int albumId = TableUtil.getAlbumID(connection, artist, album);
+        if (albumId == -1) {
+            System.out.println("Album not found");
+            return false;
+        }
+        PreparedStatement ps = connection.prepareStatement("SELECT * FROM LIKE_ALBUM WHERE usr_id=? AND alb_id=?");
+        ps.setInt(1, userId);
+        ps.setInt(2, albumId);
+        ResultSet rs = ps.executeQuery();
+        return rs.isBeforeFirst();
+    }
+
+    /**
      * Returns an ArrayList of String tables. Each string table represents a row in the LIKE_ALBUM table,
      * except for the first one (at index 0 of the ArrayList), which is a header containing the attribute names.
      */

@@ -170,6 +170,29 @@ public class FriendTable {
     }
 
     /**
+     * Returns true if users are friends.
+     */
+    public static Boolean contains(Connection connection, String user1, String user2) throws SQLException {
+        int userId1 = TableUtil.getUserID(connection, user1);
+        if (userId1 == -1) {
+            System.out.println("User not found");
+            return false;
+        }
+        int userId2 = TableUtil.getUserID(connection, user2);
+        if (userId2 == -1) {
+            System.out.println("User not found");
+            return false;
+        }
+        PreparedStatement ps = connection.prepareStatement("SELECT * FROM FRIEND WHERE (usr_id1=? AND usr_id2=?) OR (usr_id1=? AND usr_id2=?)");
+        ps.setInt(1, userId1);
+        ps.setInt(2, userId2);
+        ps.setInt(3, userId2);
+        ps.setInt(4, userId1);
+        ResultSet rs = ps.executeQuery();
+        return rs.isBeforeFirst();
+    }
+
+    /**
      * Returns an ArrayList of String tables. Each string table represents a row in the FRIEND table,
      * except for the first one (at index 0 of the ArrayList), which is a header containing the attribute names.
      */

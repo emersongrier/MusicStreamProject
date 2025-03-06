@@ -14,7 +14,8 @@ public class CollaborateAlbumOptions {
         System.out.println("1. Print COLLABORATE_ALBUM table");
         System.out.println("2. Set artist as collaborator for album");
         System.out.println("3. Remove artist as collaborator for playlist");
-        System.out.println("4. Return");
+        System.out.println("4. Check if album has collaborator");
+        System.out.println("5. Return");
     }
 
     public static void options(Connection connection) throws SQLException {
@@ -48,6 +49,14 @@ public class CollaborateAlbumOptions {
                     album = scanner.nextLine();
                     CollaborateAlbumTable.delete(connection, collab, primary, album);
                     break;
+                case "4":
+                    System.out.println("Enter name of collaborating artist: ");
+                    collab = scanner.nextLine();
+                    System.out.println("Enter name of primary album artist: ");
+                    primary = scanner.nextLine();
+                    System.out.println("Enter album name: ");
+                    album = scanner.nextLine();
+                    System.out.println("Contains: " + CollaborateAlbumTable.contains(connection, primary, album, collab));
                 default:
                     input = "-1";
             }

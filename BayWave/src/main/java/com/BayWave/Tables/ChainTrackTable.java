@@ -681,7 +681,6 @@ public class ChainTrackTable {
      * Returns true if the chain has that track.
      */
     public static Boolean contains(Connection connection, int chainId, String artist, String album, String track) throws SQLException {
-        Reset.lock.lock();
         int trackId = TableUtil.getTrackID(connection, artist, album, track);
         if (trackId == -1) {
             System.err.println("Track not found");
