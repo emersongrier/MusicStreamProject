@@ -11,6 +11,7 @@ import com.BayWave.Reset;
 import com.BayWave.Util.TableUtil;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.sql.Connection;
@@ -148,10 +149,15 @@ public class TrackTable {
     /**
      * Changes the filepath to the audio file of a track.
      */
-    public static void updateFile(Connection connection, String artist, String album, String trkName, String fileName) throws SQLException {
+    public static void updateFile(Connection connection, String artist, String album, String trkName, String filePath) throws SQLException {
         try {
             Reset.lock.lock();
             // TODO: Check if filepath is valid
+            File f = new File(filePath);
+            if (!f.exists()) {
+                System.out.println("Filepath does not exist");
+                return;
+            }
             // get album ID
             int albId = TableUtil.getAlbumID(connection, artist, album);
             if (albId == -1) {
@@ -161,7 +167,7 @@ public class TrackTable {
             // track name available
             PreparedStatement ps = connection.prepareStatement(
                     "UPDATE TRACK SET trk_file=? WHERE LOWER(trk_name)=LOWER(?) AND alb_id=?");
-            ps.setString(1, fileName);
+            ps.setString(1, filePath);
             ps.setString(2, trkName);
             ps.setInt(3, albId);
             int updated = ps.executeUpdate();

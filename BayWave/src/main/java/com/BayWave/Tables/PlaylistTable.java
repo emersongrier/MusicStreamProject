@@ -249,6 +249,27 @@ public class PlaylistTable {
     }
 
     /**
+     * Returns a string representing the specified row in the PLAYLIST table,
+     * which contains the following attributes in order starting from index 0:
+     * ply_id, ply_name, ply_desc, ply_cvr, ply_flwrs, ply_priv, usr_id.
+     */
+    public static String[] getPlaylist(Connection connection, String user, String playlist) throws SQLException {
+        int playlistId = TableUtil.getPlaylistID(connection, user, playlist);
+        if (playlistId == -1) {
+            System.err.println("Playlist not found");
+            return null;
+        }
+        PreparedStatement ps = connection.prepareStatement("SELECT * FROM PLAYLIST WHERE ply_id=?");
+        ps.setInt(1, playlistId);
+        ResultSet rs = ps.executeQuery();
+        if (!rs.isBeforeFirst()) {
+            System.err.println("Playlist not found");
+            return null;
+        }
+        return TableUtil.getFirstStringTable(rs);
+    }
+
+    /**
      * Returns an ArrayList of String tables. Each string table represents a row in the PLAYLIST table,
      * except for the first one (at index 0 of the ArrayList), which is a header containing the attribute names.
      */
