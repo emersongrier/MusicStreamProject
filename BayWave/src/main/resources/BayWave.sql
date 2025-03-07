@@ -89,7 +89,34 @@ CREATE TABLE GENRE (
     gen_name VARCHAR(255)
 );
 
+CREATE TABLE POST (
+    pst_id IDENTITY PRIMARY KEY,
+    usr_id BIGINT REFERENCES USER_(usr_id) ON DELETE CASCADE NOT NULL,
+    pst_text VARCHAR(255), -- should only be able to be null if no associated media
+    pst_likes INTEGER DEFAULT 0 NOT NULL, -- derived attribute, number of likes
+    pst_repls INTEGER DEFAULT 0 NOT NULL, -- derived attribute, number of replies
+    repl_pst_id BIGINT REFERENCES POST(pst_id) ON DELETE CASCADE -- can be null
+);
+
+CREATE TABLE MEDIA (
+    med_id IDENTITY PRIMARY KEY,
+    pst_id BIGINT REFERENCES POST (pst_id) ON DELETE CASCADE NOT NULL,
+    med_file VARCHAR(255) NOT NULL
+);
+
 -- associative entities:
+
+CREATE TABLE EMBED (
+    pst_id BIGINT REFERENCES POST(pst_id) ON DELETE CASCADE NOT NULL,
+    emb_type VARCHAR(50) CHECK (emb_type in ('ARTIST', 'ALBUM', 'TRACK', 'PLAYLIST')),
+    emb_id BIGINT,
+    UNIQUE (pst_id)
+);
+
+CREATE TABLE LIKE_POST (
+    usr_id BIGINT REFERENCES USER_(usr_id) ON DELETE CASCADE NOT NULL,
+    pst_id BIGINT REFERENCES POST(pst_id) ON DELETE CASCADE NOT NULL
+);
 
 CREATE TABLE FRIEND (
     usr_id1 BIGINT REFERENCES USER_(usr_id) ON DELETE CASCADE,

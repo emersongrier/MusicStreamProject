@@ -270,6 +270,27 @@ public class UserTable {
     }
 
     /**
+     * Returns a string representing the specified row in the USER table,
+     * which contains the following attributes in order starting from index 0:
+     * usr_id, usr_name, usr_pass, usr_email, usr_phone, usr_friends.
+     */
+    public static String[] getUser(Connection connection, String user) throws SQLException {
+        int userId = TableUtil.getUserID(connection, user);
+        if (userId == -1) {
+            System.err.println("User not found");
+            return null;
+        }
+        PreparedStatement ps = connection.prepareStatement("SELECT * FROM USER_ WHERE usr_id=?");
+        ps.setInt(1, userId);
+        ResultSet rs = ps.executeQuery();
+        if (!rs.isBeforeFirst()) {
+            System.err.println("User not found");
+            return null;
+        }
+        return TableUtil.getFirstStringTable(rs);
+    }
+
+    /**
      * Prints the USER table to output.
      */
     public static void print(Connection connection) throws SQLException {
