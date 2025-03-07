@@ -115,6 +115,27 @@ public class CollaborateAlbumTable {
     }
 
     /**
+     * Returns true if the album has that artist as a collaborator.
+     */
+    public static Boolean contains(Connection connection, String artist, String album, String collab) throws SQLException {
+        int albumId = TableUtil.getAlbumID(connection, artist, album);
+        if (albumId == -1) {
+            System.out.println("Album not found");
+            return false;
+        }
+        int collabId = TableUtil.getArtistID(connection, collab);
+        if (collabId == -1) {
+            System.out.println("Collaborator not found");
+            return false;
+        }
+        PreparedStatement ps = connection.prepareStatement("SELECT * FROM COLLABORATE_ALBUM WHERE alb_id=? AND art_id=?");
+        ps.setInt(1, albumId);
+        ps.setInt(2, collabId);
+        ResultSet rs = ps.executeQuery();
+        return rs.isBeforeFirst();
+    }
+
+    /**
      * Returns an ArrayList of String tables. Each string table represents a row in the COLLABORATE_ALBUM table,
      * except for the first one (at index 0 of the ArrayList), which is a header containing the attribute names.
      */

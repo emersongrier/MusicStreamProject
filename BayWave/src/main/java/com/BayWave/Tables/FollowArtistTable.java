@@ -104,6 +104,27 @@ public class FollowArtistTable {
     }
 
     /**
+     * Returns true if user follows that artist.
+     */
+    public static Boolean contains(Connection connection, String user, String artist) throws SQLException {
+        int userId = TableUtil.getUserID(connection, user);
+        if (userId == -1) {
+            System.out.println("User not found");
+            return false;
+        }
+        int artistId = TableUtil.getArtistID(connection, artist);
+        if (artistId == -1) {
+            System.out.println("Artist not found");
+            return false;
+        }
+        PreparedStatement ps = connection.prepareStatement("SELECT * FROM FOLLOW_ARTIST WHERE usr_id=? AND art_id=?");
+        ps.setInt(1, userId);
+        ps.setInt(2, artistId);
+        ResultSet rs = ps.executeQuery();
+        return rs.isBeforeFirst();
+    }
+
+    /**
      * Returns an ArrayList of String tables. Each string table represents a row in the FOLLOW_ARTIST table,
      * except for the first one (at index 0 of the ArrayList), which is a header containing the attribute names.
      */

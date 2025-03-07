@@ -103,7 +103,6 @@ public class AlbumGenreTable {
      * Returns true if the album has that genre.
      */
     public static Boolean contains(Connection connection, String artist, String album, String genre) throws SQLException {
-        Reset.lock.lock();
         int albumId = TableUtil.getAlbumID(connection, artist, album);
         if (albumId == -1) {
             System.out.println("Album not found");

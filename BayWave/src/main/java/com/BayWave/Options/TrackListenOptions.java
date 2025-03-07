@@ -14,7 +14,8 @@ public class TrackListenOptions {
         System.out.println("1. Print TRACK_LISTEN table");
         System.out.println("2. Add listen to track for user");
         System.out.println("3. Remove one (1) listen to track for user based on date (don't see any use case)");
-        System.out.println("4. Return");
+        System.out.println("4. Check if user has listened to track");
+        System.out.println("5. Return");
         System.out.println();
     }
 
@@ -56,6 +57,17 @@ public class TrackListenOptions {
                     System.out.println("Enter data (YYYY-MM-DD): ");
                     date = scanner.nextLine();
                     TrackListenTable.deleteOne(connection, user, artist, album, track, date);
+                    break;
+                case "4":
+                    System.out.println("Enter username: ");
+                    user = scanner.nextLine();
+                    System.out.println("Enter artist name: ");
+                    artist = scanner.nextLine();
+                    System.out.println("Enter album name: ");
+                    album = scanner.nextLine();
+                    System.out.println("Enter track name: ");
+                    track = scanner.nextLine();
+                    System.out.println("Contains: " + TrackListenTable.contains(connection, user, artist, album, track));
                     break;
                 default:
                     input = "-1";

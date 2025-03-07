@@ -15,7 +15,8 @@ public class ChainTrackOptions {
         System.out.println("3. Remove track from chain");
         System.out.println("4. Update track position (swap) (CHAIN_TRACK)");
         System.out.println("5. Update track position (insert) (CHAIN_TRACK)");
-        System.out.println("6. Return");
+        System.out.println("6. Check if chain has track");
+        System.out.println("7. Return");
         System.out.println();
     }
 
@@ -87,6 +88,18 @@ public class ChainTrackOptions {
                     newPos = scanner.nextInt();
                     scanner.nextLine();
                     ChainTrackTable.insertAtPosition(connection, chainId, artist, album, track, newPos);
+                    break;
+                case "6":
+                    System.out.println("Enter chain ID: ");
+                    chainId = scanner.nextInt();
+                    scanner.nextLine();
+                    System.out.println("Enter artist name: ");
+                    artist = scanner.nextLine();
+                    System.out.println("Enter album name: ");
+                    album = scanner.nextLine();
+                    System.out.println("Enter track name: ");
+                    track = scanner.nextLine();
+                    System.out.println("Contains: " + ChainTrackTable.contains(connection, chainId, artist, album, track));
                     break;
                 default:
                     input = "-1";

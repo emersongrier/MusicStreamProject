@@ -14,7 +14,8 @@ public class CollaboratePlaylistOptions {
         System.out.println("1. Print COLLABORATE_PLAYLIST table");
         System.out.println("2. Set user as collaborator for playlist");
         System.out.println("3. Remove user as collaborator for playlist");
-        System.out.println("4. Return");
+        System.out.println("4. Check if playlist has collaborator");
+        System.out.println("5. Return");
     }
 
     public static void options(Connection connection) throws SQLException {
@@ -47,6 +48,15 @@ public class CollaboratePlaylistOptions {
                     System.out.println("Enter playlist name: ");
                     playlist = scanner.nextLine();
                     CollaboratePlaylistTable.delete(connection, collab, owner, playlist);
+                    break;
+                case "4":
+                    System.out.println("Enter username of collaborator: ");
+                    collab = scanner.nextLine();
+                    System.out.println("Enter username of playlist owner: ");
+                    owner = scanner.nextLine();
+                    System.out.println("Enter playlist name: ");
+                    playlist = scanner.nextLine();
+                    System.out.println("Contains: " + CollaboratePlaylistTable.contains(connection, owner, playlist, collab));
                     break;
                 default:
                     input = "-1";

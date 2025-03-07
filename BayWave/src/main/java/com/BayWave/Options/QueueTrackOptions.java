@@ -18,7 +18,8 @@ public class QueueTrackOptions {
         System.out.println("4. Update track position (swap) (QUEUE_TRACK)");
         System.out.println("5. Update track position (insert) (QUEUE_TRACK)");
         System.out.println("6. Print queue for user");
-        System.out.println("7. Return");
+        System.out.println("7. Check if track is in queue");
+        System.out.println("8. Return");
         System.out.println();
     }
 
@@ -102,6 +103,17 @@ public class QueueTrackOptions {
                     else {
                         System.out.println("Queue does not have any tracks");
                     }
+                    break;
+                case "7":
+                    System.out.println("Enter username: ");
+                    name = scanner.nextLine();
+                    System.out.println("Enter artist name: ");
+                    artist = scanner.nextLine();
+                    System.out.println("Enter album name: ");
+                    album = scanner.nextLine();
+                    System.out.println("Enter track name: ");
+                    track = scanner.nextLine();
+                    System.out.println("Contains: " + QueueTrackTable.contains(connection, name, artist, album, track));
                     break;
                 default:
                     input = "-1";

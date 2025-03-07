@@ -107,6 +107,27 @@ public class FollowPlaylistTable {
     }
 
     /**
+     * Returns true if user follows that playlist.
+     */
+    public static Boolean contains(Connection connection, String owner, String playlist, String user) throws SQLException {
+        int userId = TableUtil.getUserID(connection, user);
+        if (userId == -1) {
+            System.out.println("User not found");
+            return false;
+        }
+        int playlistId = TableUtil.getPlaylistID(connection, owner, playlist);
+        if (playlistId == -1) {
+            System.out.println("Playlist not found");
+            return false;
+        }
+        PreparedStatement ps = connection.prepareStatement("SELECT * FROM FOLLOW_PLAYLIST WHERE usr_id=? AND ply_id=?");
+        ps.setInt(1, userId);
+        ps.setInt(2, playlistId);
+        ResultSet rs = ps.executeQuery();
+        return rs.isBeforeFirst();
+    }
+
+    /**
      * Returns an ArrayList of String tables. Each string table represents a row in the FOLLOW_PLAYLIST table,
      * except for the first one (at index 0 of the ArrayList), which is a header containing the attribute names.
      */

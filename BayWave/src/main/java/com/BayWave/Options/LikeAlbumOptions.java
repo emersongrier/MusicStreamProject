@@ -14,7 +14,8 @@ public class LikeAlbumOptions {
         System.out.println("1. Print LIKE_ALBUM table");
         System.out.println("2. Add album to user's likes");
         System.out.println("3. Remove album from user's likes");
-        System.out.println("4. Return");
+        System.out.println("4. Check if user has album in their likes");
+        System.out.println("5. Return");
         System.out.println();
     }
 
@@ -48,6 +49,15 @@ public class LikeAlbumOptions {
                     System.out.println("Enter album name: ");
                     album = scanner.nextLine();
                     LikeAlbumTable.delete(connection, user, artist, album);
+                    break;
+                case "4":
+                    System.out.println("Enter username: ");
+                    user = scanner.nextLine();
+                    System.out.println("Enter artist name: ");
+                    artist = scanner.nextLine();
+                    System.out.println("Enter album name: ");
+                    album = scanner.nextLine();
+                    System.out.println("Contains: " + LikeAlbumTable.contains(connection, user, artist, album));
                     break;
                 default:
                     input = "-1";
