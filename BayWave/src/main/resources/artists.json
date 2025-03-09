@@ -1,0 +1,13 @@
+{
+  "table_name": "ARTIST",
+  "data": [
+    {
+      "art_name": "My Chemical Romance",
+      "art_bio": "test"
+    },
+    {
+      "art_name": "Wave to Earth",
+      "art_bio": null
+    }
+  ]
+}

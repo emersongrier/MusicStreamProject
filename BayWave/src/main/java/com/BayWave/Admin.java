@@ -9,7 +9,7 @@ import java.util.Scanner;
 
 public class Admin {
     public static void main(String[] args) {
-        try (Connection connection = DriverManager.getConnection("jdbc:h2:~/test;")) { // :~/test
+        try (Connection connection = DriverManager.getConnection("jdbc:h2:~/test;AUTOCOMMIT=OFF;")) { // :~/test
             System.out.println("connection.isValid(0): " + connection.isValid(0));
             if (connection.isValid(0)) {
                 System.out.println("Connected to BayWave database as Admin");
