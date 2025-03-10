@@ -77,10 +77,12 @@
         android:layout_width="40dp"
         android:layout_height="40dp"
         android:src="@drawable/like_song"
-        android:background="@android:color/transparent"
+        android:background="@null"
         android:contentDescription="@string/like_song"
-        app:layout_constraintEnd_toEndOf="@id/seekBar"
-        app:layout_constraintBottom_toTopOf="@id/end_time"/>
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/end_time"
+        android:layout_marginEnd="40dp"
+        android:layout_marginBottom="24dp"/>
 
 
 
