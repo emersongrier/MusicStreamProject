@@ -9,4 +9,5 @@
     <color name="white">#FFFFFFFF</color>
     <color name="bayWave">#2f0068</color>
     <color name="light_gray">#6c6c6c</color>
+    <color name="background">#cbcbcb</color>
 </resources>

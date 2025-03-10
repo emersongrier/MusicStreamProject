@@ -12,17 +12,12 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import edu.commonwealthu.baywaves.data_objects.Song;
-
 public class SearchFragment extends Fragment {
 
     private EditText searchInput;
     private RecyclerView recyclerView;
-    private List<Song> allSongs;
-    private List<Song> filteredSongs = new ArrayList<>();
+   // private List<Track> allSongs;
+   // private List<Track> filteredSongs = new ArrayList<>();
 
     @Nullable
     @Override

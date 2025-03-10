@@ -24,6 +24,7 @@
     <!-- Play Screen -->
     <string name="start_time">0:00</string>
     <string name="end_time">End Time</string>
+    <string name="like_song">Adds song to library</string>
 
     <!-- Search Screen -->
     <string name="search_bar_text">Search songs or artists</string>

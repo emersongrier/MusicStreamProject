@@ -1,6 +1,6 @@
 package edu.commonwealthu.baywaves.data_objects;
 
-public class Song {
+public class Track {
 
     private int id;
     private String name;
@@ -12,7 +12,7 @@ public class Song {
     private int likes;
     private int albumId;
 
-    public Song(int id, String name, String filePath, int position, String lyrics, int length, int streams, int likes, int albumId){
+    public Track(int id, String name, String filePath, int position, String lyrics, int length, int streams, int likes, int albumId){
         this.id = id;
         this.name = name;
         this.filePath = filePath;
@@ -43,7 +43,4 @@ public class Song {
     public int getLikes(){return likes;}
     public void setAlbumId(int albumId) { this.albumId = albumId; }
     public int getAlbumId(){return albumId;}
-
-
-
 }
