@@ -215,7 +215,7 @@ public class TableUtil {
         ps.setInt(1, playlistId);
         ResultSet rs = ps.executeQuery();
         if (!rs.isBeforeFirst()) {
-            System.err.println("Chain not found");
+            System.out.println("Chain not found");
             return -1;
         }
         while (rs.next()) {

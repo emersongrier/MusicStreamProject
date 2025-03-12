@@ -22,7 +22,7 @@ public class ChainTable {
      * Prints the CHAIN table to output.
      */
     public static void print(Connection connection) throws SQLException {
-        PreparedStatement ps = connection.prepareStatement("select * from CHAIN_");
+        PreparedStatement ps = connection.prepareStatement("SELECT * FROM CHAIN_");
         ResultSet rs = ps.executeQuery();
         System.out.println("CHAIN TABLE:");
         TableUtil.print(rs);
@@ -38,89 +38,30 @@ public class ChainTable {
                                 String artist2, String album2, String track2) throws SQLException { // at least two tracks must be in chain
         try {
             Reset.lock.lock();
-            int userId = TableUtil.getUserID(connection, user);
-            if (userId == -1) {
-                System.out.println("User not found");
+            int plyId = TableUtil.getPlaylistID(connection, user, playlist);
+            if (plyId == -1) {
+                System.err.println("Playlist not found");
                 return;
             }
-            PreparedStatement ps = connection.prepareStatement("SELECT * FROM PLAYLIST WHERE usr_id=? AND lower(ply_name)=lower(?)");
-            ps.setInt(1, userId);
-            ps.setString(2, playlist);
-            ResultSet rs = ps.executeQuery();
-            if (!rs.isBeforeFirst()) {
-                System.out.println("Playlist not found");
-                return;
-            }
-            rs.next();
-            int plyId = rs.getInt("ply_id");
-            // make sure neither of those two tracks appear in a chain within that playlist
-            // but first, get artist ids, then album ids, then track ids
-            ps = connection.prepareStatement("SELECT * FROM ARTIST WHERE lower(art_name)=lower(?)");
-            ps.setString(1, artist1);
-            rs = ps.executeQuery();
-            if (!rs.isBeforeFirst()) {
-                System.out.println("Artist 1 not found");
-                return;
-            }
-            rs.next();
-            int artistId1 = rs.getInt("art_id");
-            ps = connection.prepareStatement("SELECT * FROM ARTIST WHERE lower(art_name)=lower(?)");
-            ps.setString(1, artist2);
-            rs = ps.executeQuery();
-            if (!rs.isBeforeFirst()) {
-                System.out.println("Artist 2 not found");
-                return;
-            }
-            rs.next();
-            int artistId2 = rs.getInt("art_id");
+            // we must make sure neither of those two tracks appear in a chain within that playlist
+            // but first, get track IDs
 
-            ps = connection.prepareStatement("SELECT * FROM ALBUM WHERE art_id=? AND lower(alb_name)=lower(?)");
-            ps.setInt(1, artistId1);
-            ps.setString(2, album1);
-            rs = ps.executeQuery();
-            if (!rs.isBeforeFirst()) {
-                System.out.println("Album 1 not found");
+            int trackId1 = TableUtil.getTrackID(connection, artist1, album1, track1);
+            if (trackId1 == -1) {
+                System.err.println("Track 1 not found");
                 return;
             }
-            rs.next();
-            int albumId1 = rs.getInt("alb_id");
-            ps = connection.prepareStatement("SELECT * FROM ALBUM WHERE art_id=? AND lower(alb_name)=lower(?)");
-            ps.setInt(1, artistId2);
-            ps.setString(2, album2);
-            rs = ps.executeQuery();
-            if (!rs.isBeforeFirst()) {
-                System.out.println("Album 2 not found");
+            int trackId2 = TableUtil.getTrackID(connection, artist2, album2, track2);
+            if (trackId2 == -1) {
+                System.err.println("Track 1 not found");
                 return;
             }
-            rs.next();
-            int albumId2 = rs.getInt("alb_id");
-
-            ps = connection.prepareStatement("SELECT * FROM TRACK WHERE alb_id=? AND lower(trk_name)=lower(?)");
-            ps.setInt(1, albumId1);
-            ps.setString(2, track1);
-            rs = ps.executeQuery();
-            if (!rs.isBeforeFirst()) {
-                System.out.println("Track 1 not found");
-                return;
-            }
-            rs.next();
-            int trackId1 = rs.getInt("trk_id");
-            ps = connection.prepareStatement("SELECT * FROM TRACK WHERE alb_id=? AND lower(trk_name)=lower(?)");
-            ps.setInt(1, albumId2);
-            ps.setString(2, track2);
-            rs = ps.executeQuery();
-            if (!rs.isBeforeFirst()) {
-                System.out.println("Track 2 not found");
-                return;
-            }
-            rs.next();
-            int trackId2 = rs.getInt("trk_id");
 
             // check if track IDs are already found within chains associated with that playlist
             // first, find all chains associated with that playlist
-            ps = connection.prepareStatement("SELECT * FROM CHAIN_ WHERE ply_id=?");
+            PreparedStatement ps = connection.prepareStatement("SELECT * FROM CHAIN_ WHERE ply_id=?");
             ps.setInt(1, plyId);
-            rs = ps.executeQuery();
+            ResultSet rs = ps.executeQuery();
             // iterate over all chains associated with that playlist,
             // checking associated track IDs
             while (rs.next()) {
@@ -157,8 +98,9 @@ public class ChainTable {
 
             // chain can now be created, with the two tracks associated
             ps = connection.prepareStatement("INSERT INTO CHAIN_ (ply_id) VALUES (?)", java.sql.PreparedStatement.RETURN_GENERATED_KEYS);
+            // the RETURN_GENERATED_KEYS statement allows us to obtain the new chain's id
             ps.setInt(1, plyId);
-            int result = ps.executeUpdate(); // executeQuery is used here instead of executeUpdate due to the RETURNING clause
+            int result = ps.executeUpdate();
             if (result == 0) {
                 System.out.println("Chain not added");
                 return;
@@ -171,21 +113,11 @@ public class ChainTable {
             }
             rs.next();
             int newChainId = rs.getInt(1);
-
-            ps = connection.prepareStatement("INSERT INTO CHAIN_TRACK (chn_id, trk_id) VALUES (?, ?)");
-            ps.setInt(1, newChainId);
-            ps.setInt(2, trackId1);
-            result = ps.executeUpdate();
-            if (result == 0) {
-                System.out.println("Track not added to chain");
+            // add both tracks to the chain. methods return true if operation fails
+            if (addTrackToChain(connection, trackId1, newChainId)) {
                 return;
             }
-            ps = connection.prepareStatement("INSERT INTO CHAIN_TRACK (chn_id, trk_id) VALUES (?, ?)");
-            ps.setInt(1, newChainId);
-            ps.setInt(2, trackId2);
-            result = ps.executeUpdate();
-            if (result == 0) {
-                System.out.println("Track not added to chain");
+            if (addTrackToChain(connection, trackId2, newChainId)) {
                 return;
             }
             // change playlist positions
@@ -210,6 +142,18 @@ public class ChainTable {
             rs.next();
             int plyPos2 = rs.getInt("ply_trk_pos");
 
+            /*
+            The way we update the playlist track positions depends on which one comes first,
+            due to the nature of the insertAtPosition function. Because inserting a track
+            at a new position always moves it past any elements on the way to that position,
+            we have different results depending on whether the track moves up or down the track list.
+            If track one comes BEFORE track two, and we try to move track two into track one's
+            exact position, track two will move past track one relative to its position,
+            reversing the order we want. As such, we want to move track two into track one's position
+            PLUS ONE. On the other hand, if track one comes AFTER track two, moving track two to track
+            one's position still causes track two to move past track one, but in this case
+            it is DESIRED BEHAVIOR, because this will result in track two coming after track one.
+            */
             if (plyPos1 < plyPos2) { // insert track 2 at plyPos1 + 1
                 PlaylistTrackTable.insertAtPosition(connection, user, playlist, artist2, album2, track2, plyPos1 + 1);
             }
@@ -247,7 +191,6 @@ public class ChainTable {
             the final CHAIN_TRACK should be deleted, resulting in the CHAIN_TRACK also
             being deleted.
 
-            TODO:
             If position within chain is changed, its position within the playlist should also be changed.
             If position within playlist in changed, and the track is within a chain, it should also
             change the position within the chain. If the new position is outside the chain, it
@@ -257,6 +200,19 @@ public class ChainTable {
         finally {
             Reset.lock.unlock();
         }
+    }
+
+    private static boolean addTrackToChain(Connection connection, int trackId1, int newChainId) throws SQLException {
+        PreparedStatement ps;
+        ps = connection.prepareStatement("INSERT INTO CHAIN_TRACK (chn_id, trk_id) VALUES (?, ?)");
+        ps.setInt(1, newChainId);
+        ps.setInt(2, trackId1);
+        int result = ps.executeUpdate();
+        if (result == 0) {
+            System.out.println("Track not added to chain");
+            return true;
+        }
+        return false;
     }
 
     /**
@@ -288,8 +244,16 @@ public class ChainTable {
     public static int getChainIdWithPlaylistAndTrack(Connection connection, String user, String playlist, String artist, String album, String track) throws SQLException {
         // get playlist ID
         int playlistId = TableUtil.getPlaylistID(connection, user, playlist);
+        if (playlistId == -1) {
+            System.err.println("Playlist not found");
+            return -1;
+        }
         // get track ID
         int trackId = TableUtil.getTrackID(connection, artist, album, track);
+        if (trackId == -1) {
+            System.err.println("Track not found");
+            return -1;
+        }
         PreparedStatement ps = connection.prepareStatement("SELECT * FROM CHAIN_ WHERE ply_id=?");
         ps.setInt(1, playlistId);
         ResultSet rs = ps.executeQuery();
