@@ -12,7 +12,8 @@ public class AdminUtil {
         System.out.println("6. QUEUE_TRACK");
         System.out.println("7. CHAIN");
         System.out.println("8. GENRE");
-        System.out.println("9. Quit");
+        System.out.println("9. POST");
+        System.out.println("10. Quit");
         System.out.println();
     }
 }

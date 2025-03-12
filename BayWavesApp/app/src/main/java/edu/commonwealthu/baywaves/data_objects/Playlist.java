@@ -10,9 +10,9 @@ public class Playlist {
     private String cover;
     private int followers;
     private int userId;
-    private List<Song> songs;
+    private List<Track> songs;
 
-    public Playlist(int id, String name, String description, String cover, int followers, int userId, List<Song> songs) {
+    public Playlist(int id, String name, String description, String cover, int followers, int userId, List<Track> songs) {
         this.id = id;
         this.name = name;
         this.description = description;
@@ -34,14 +34,14 @@ public class Playlist {
     public int getFollowers() {return followers;}
     public void setUserId(int userId) { this.userId = userId; }
     public int getUserId() {return userId;}
-    public void setSongs(List<Song> songs) {this.songs = songs;}
-    public List<Song> getSongs() {return songs;}
+    public void setSongs(List<Track> songs) {this.songs = songs;}
+    public List<Track> getSongs() {return songs;}
 
-    public void addSong(Song song) {
+    public void addSong(Track song) {
         this.songs.add(song);
     }
 
-    public void removeSong(Song song) {
+    public void removeSong(Track song) {
         this.songs.remove(song);
     }
 

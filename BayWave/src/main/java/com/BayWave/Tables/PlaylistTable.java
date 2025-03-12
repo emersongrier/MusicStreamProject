@@ -22,7 +22,7 @@ public class PlaylistTable {
      * Prints the PLAYLIST table to output.
      */
     public static void print(Connection connection) throws SQLException {
-        PreparedStatement ps = connection.prepareStatement("select * from PLAYLIST");
+        PreparedStatement ps = connection.prepareStatement("SELECT * FROM PLAYLIST");
         ResultSet rs = ps.executeQuery();
         System.out.println("PLAYLIST TABLE:");
         TableUtil.print(rs);

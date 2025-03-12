@@ -15,14 +15,14 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.util.ArrayList;
 import java.util.List;
 
-import edu.commonwealthu.baywaves.data_objects.Song;
+import edu.commonwealthu.baywaves.data_objects.Track;
 
 public class SearchFragment extends Fragment {
 
     private EditText searchInput;
     private RecyclerView recyclerView;
-    private List<Song> allSongs;
-    private List<Song> filteredSongs = new ArrayList<>();
+    private List<Track> allsongs;
+    private List<Track> filteredSongs = new ArrayList<>();
 
     @Nullable
     @Override

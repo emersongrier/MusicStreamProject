@@ -8,11 +8,11 @@ public class Album {
     private String type;
     private String name;
     private String cover;
-    private List<Song> tracks;
+    private List<Track> tracks;
     private int likes;
     private int artistId;
 
-    public Album(int id, String type, String name, String cover, List<Song> tracks, int likes, int artistId) {
+    public Album(int id, String type, String name, String cover, List<Track> tracks, int likes, int artistId) {
         this.id = id;
         this.type = type;
         this.name = name;
@@ -30,19 +30,19 @@ public class Album {
     public String getName() { return name; }
     public void setCover(String cover) { this.cover = cover; }
     public String getCover() { return cover; }
-    public void setTracks(List<Song> tracks) { this.tracks = tracks; }
-    public List<Song> getTracks() { return tracks; }
+    public void setTracks(List<Track> tracks) { this.tracks = tracks; }
+    public List<Track> getTracks() { return tracks; }
     public void setLikes(int likes) { this.likes = likes; }
     public int getLikes() { return likes; }
     public void setArtistId(int artistId) { this.artistId = artistId; }
     public int getArtistId() { return artistId; }
 
 
-    public void addSong(Song song) {
+    public void addSong(Track song) {
         this.tracks.add(song);
     }
 
-    public void removeSong(Song song) {
+    public void removeSong(Track song) {
         this.tracks.remove(song);
     }
 
