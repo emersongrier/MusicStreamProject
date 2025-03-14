@@ -199,18 +199,7 @@ public class TableUtil {
         return rs.getInt("usr_id");
     }
 
-    public static int getChainPos(Connection connection, String user, String playlist, String artist, String album, String track) throws SQLException {
-        int playlistId = getPlaylistID(connection, user, playlist);
-        if (playlistId == -1) {
-            System.err.println("Playlist not found");
-            return -1;
-        }
-
-        int trackId = getTrackID(connection, artist, album, track);
-        if (trackId == -1) {
-            System.err.println("Track not found");
-            return -1;
-        }
+    public static int getChainPos(Connection connection, int playlistId, int trackId) throws SQLException {
         PreparedStatement ps = connection.prepareStatement("SELECT * FROM CHAIN_ WHERE ply_id=?");
         ps.setInt(1, playlistId);
         ResultSet rs = ps.executeQuery();
@@ -231,7 +220,7 @@ public class TableUtil {
         return -1;
     }
 
-    public static int getChainID(Connection connection, String user, String playlist, String artist, String album, String track) throws SQLException {
+    public static int getChainPos(Connection connection, String user, String playlist, String artist, String album, String track) throws SQLException {
         int playlistId = getPlaylistID(connection, user, playlist);
         if (playlistId == -1) {
             System.err.println("Playlist not found");
@@ -243,6 +232,10 @@ public class TableUtil {
             System.err.println("Track not found");
             return -1;
         }
+        return getChainPos(connection, playlistId, trackId);
+    }
+
+    public static int getChainID(Connection connection, int playlistId, int trackId) throws SQLException {
         PreparedStatement ps = connection.prepareStatement("SELECT * FROM CHAIN_ WHERE ply_id=?");
         ps.setInt(1, playlistId);
         ResultSet rs = ps.executeQuery();
@@ -261,6 +254,20 @@ public class TableUtil {
             }
         }
         return -1;
+    }
+
+    public static int getChainID(Connection connection, String user, String playlist, String artist, String album, String track) throws SQLException {
+        int playlistId = getPlaylistID(connection, user, playlist);
+        if (playlistId == -1) {
+            System.err.println("Playlist not found");
+            return -1;
+        }
+        int trackId = getTrackID(connection, artist, album, track);
+        if (trackId == -1) {
+            System.err.println("Track not found");
+            return -1;
+        }
+        return getChainID(connection, playlistId, trackId);
     }
 
     public static int getGenreID(Connection connection, String genre) throws SQLException {
