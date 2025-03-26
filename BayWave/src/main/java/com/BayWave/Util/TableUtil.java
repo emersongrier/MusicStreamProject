@@ -286,6 +286,13 @@ public class TableUtil {
         return Objects.equals(type, "Single") || Objects.equals(type, "EP") || Objects.equals(type, "LP");
     }
 
+    public static boolean isValidPost(Connection connection, int postId) throws SQLException {
+        PreparedStatement ps = connection.prepareStatement("SELECT * FROM POST WHERE pst_id=?");
+        ps.setInt(1, postId);
+        ResultSet rs = ps.executeQuery();
+        return rs.isBeforeFirst();
+    }
+
     public static ArrayList<String[]> getTable(ResultSet rs) throws SQLException {
         if (!rs.isBeforeFirst()) {
             return null;

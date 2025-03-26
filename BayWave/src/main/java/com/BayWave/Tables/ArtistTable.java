@@ -34,7 +34,7 @@ public class ArtistTable {
             ps.setString(1, name);
             ResultSet rs = ps.executeQuery();
             if (rs.isBeforeFirst()) { // ResultSet is not empty, name unavailable
-                System.out.println("Artist name already exists, user not registered");
+                System.out.println("Artist name already exists, artist not registered");
                 return;
             }
 
