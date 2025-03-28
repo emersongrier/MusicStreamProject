@@ -14,7 +14,7 @@ public class MediaTable {
      * Prints the MEDIA table to output.
      */
     public static void print(Connection connection) throws SQLException {
-        PreparedStatement ps = connection.prepareStatement("select * from MEDIA");
+        PreparedStatement ps = connection.prepareStatement("SELECT * FROM MEDIA");
         ResultSet rs = ps.executeQuery();
         System.out.println("MEDIA TABLE:");
         TableUtil.print(rs);

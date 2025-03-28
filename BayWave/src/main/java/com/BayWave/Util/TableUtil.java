@@ -286,11 +286,21 @@ public class TableUtil {
         return Objects.equals(type, "Single") || Objects.equals(type, "EP") || Objects.equals(type, "LP");
     }
 
+    public static boolean isValidEmbed(String type) {
+        return Objects.equals(type, "Artist") || Objects.equals(type, "Album") ||
+                Objects.equals(type, "Track") || Objects.equals(type, "Playlist");
+    }
+
     public static boolean isValidPost(Connection connection, int postId) throws SQLException {
         PreparedStatement ps = connection.prepareStatement("SELECT * FROM POST WHERE pst_id=?");
         ps.setInt(1, postId);
         ResultSet rs = ps.executeQuery();
         return rs.isBeforeFirst();
+    }
+
+    public static boolean embedExists(Connection connection, String embedType, int embedId) throws SQLException {
+        // TODO: Validate that the embedded content exists.
+        return true;
     }
 
     public static ArrayList<String[]> getTable(ResultSet rs) throws SQLException {

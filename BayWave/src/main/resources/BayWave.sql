@@ -116,7 +116,8 @@ CREATE TABLE EMBED (
     pst_id BIGINT REFERENCES POST(pst_id) ON DELETE CASCADE NOT NULL,
     emb_type ENUM('ARTIST', 'ALBUM', 'TRACK', 'PLAYLIST') NOT NULL,
     emb_id BIGINT,
-    UNIQUE (pst_id)
+    UNIQUE (pst_id),
+    PRIMARY KEY (pst_id)
 );
 
 CREATE TABLE LIKE_POST (
