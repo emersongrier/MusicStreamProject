@@ -43,6 +43,34 @@ public class PostTable {
         }
     }
 
+    public static void reply(Connection connection, String user, String text, int postId) throws SQLException {
+        try {
+            Reset.lock.lock();
+            if (!TableUtil.isValidPost(connection, postId)) {
+                System.err.println("Post not found");
+                return;
+            }
+            int userId = TableUtil.getUserID(connection, user);
+            if (userId == -1) {
+                System.err.println("User not found");
+                return;
+            }
+            PreparedStatement ps = connection.prepareStatement("INSERT INTO POST (usr_id, pst_text, repl_pst_id) VALUES (?, ?, ?)");
+            ps.setInt(1, userId);
+            ps.setString(2, text);
+            ps.setInt(3, postId);
+            int result = ps.executeUpdate();
+            if (result == 0) {
+                System.err.println("Post not added");
+            }
+            connection.commit();
+            System.out.println("Post added");
+        }
+        finally {
+            Reset.lock.unlock();
+        }
+    }
+
     public static void delete(Connection connection, int postId) throws SQLException {
         try {
             Reset.lock.lock();

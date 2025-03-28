@@ -114,9 +114,10 @@ CREATE TABLE MEDIA (
 
 CREATE TABLE EMBED (
     pst_id BIGINT REFERENCES POST(pst_id) ON DELETE CASCADE NOT NULL,
-    emb_type VARCHAR(50) CHECK (emb_type in ('ARTIST', 'ALBUM', 'TRACK', 'PLAYLIST')),
+    emb_type ENUM('ARTIST', 'ALBUM', 'TRACK', 'PLAYLIST') NOT NULL,
     emb_id BIGINT,
-    UNIQUE (pst_id)
+    UNIQUE (pst_id),
+    PRIMARY KEY (pst_id)
 );
 
 CREATE TABLE LIKE_POST (
@@ -280,6 +281,15 @@ CREATE TRIGGER DELETE_CHAIN_TRACK_UPDATE_POS
     AFTER DELETE
     ON CHAIN_TRACK
     FOR EACH ROW CALL "com.BayWave.Triggers.DeleteChainTrackUpdatePosTrigger";
+
+CREATE TRIGGER INSERT_POST_UPDATE_POST
+    AFTER INSERT
+    ON POST
+    FOR EACH ROW CALL "com.BayWave.Triggers.InsertPostUpdatePostTrigger";
+CREATE TRIGGER DELETE_POST_UPDATE_POST
+    AFTER DELETE
+    ON POST
+    FOR EACH ROW CALL "com.BayWave.Triggers.DeletePostUpdatePostTrigger";
 
 
 COMMIT;
