@@ -1,4 +1,4 @@
-package edu.commonwealthu.baywaves.data_objects;
+package edu.commonwealthu.baywaves;
 
 import java.util.List;
 
@@ -16,7 +16,7 @@ public class Album {
         this.id = id;
         this.type = type;
         this.name = name;
-        this. cover = cover;
+        this.cover = cover;
         this.tracks = tracks;
         this.likes = likes;
         this.artistId = artistId;

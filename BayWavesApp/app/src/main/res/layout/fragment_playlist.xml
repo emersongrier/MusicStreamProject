@@ -12,4 +12,7 @@
         android:text="@string/hello_blank_fragment"
         android:layout_gravity="center"/>
 
+
+    <include layout="@layout/playlist_screen"/>
+
 </FrameLayout>

@@ -1,4 +1,4 @@
-package edu.commonwealthu.baywaves.data_objects;
+package edu.commonwealthu.baywaves;
 
 public class Track {
 
@@ -11,6 +11,8 @@ public class Track {
     private int streams;
     private int likes;
     private int albumId;
+
+    private transient boolean isLikedLocally = false;
 
     public Track(int id, String name, String filePath, int position, String lyrics, int length, int streams, int likes, int albumId){
         this.id = id;
@@ -43,4 +45,12 @@ public class Track {
     public int getLikes(){return likes;}
     public void setAlbumId(int albumId) { this.albumId = albumId; }
     public int getAlbumId(){return albumId;}
+
+    public void setLocalLikedState(boolean liked) {
+        this.isLikedLocally = liked;
+    }
+
+    public boolean isLocalLikedState() {
+        return this.isLikedLocally;
+    }
 }

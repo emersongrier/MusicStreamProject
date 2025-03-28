@@ -44,6 +44,8 @@ dependencies {
 
     implementation ("com.github.bumptech.glide:glide:4.16.0")
 
+    implementation ("com.h2database:h2:1.4.200")
+    implementation ("mysql:mysql-connector-java:8.0.33")
 
     implementation(libs.appcompat)
     implementation(libs.material)

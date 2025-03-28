@@ -2,6 +2,8 @@ package edu.commonwealthu.baywaves.data_objects;
 
 import java.util.List;
 
+import edu.commonwealthu.baywaves.Track;
+
 public class Playlist {
 
     private int id;
