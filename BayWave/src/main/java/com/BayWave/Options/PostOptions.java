@@ -70,15 +70,10 @@ public class PostOptions {
                 case "6":
                     LikePostOptions.options(connection);
                     break;
-                    /*
-                case "6":
-                    String newName;
-                    System.out.println("Enter current artist name: ");
-                    name = scanner.nextLine();
-                    System.out.println("Enter new artist name: ");
-                    newName = scanner.nextLine();
-                    ArtistTable.updateName(connection, name, newName);
+                case "7":
+                    MediaOptions.options(connection);
                     break;
+                    /*
                 case "7":
                     MemberOptions.options(connection);
                     break;*/
