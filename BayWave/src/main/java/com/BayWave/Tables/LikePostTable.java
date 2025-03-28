@@ -66,6 +66,12 @@ public class LikePostTable {
             ps = connection.prepareStatement("UPDATE POST SET pst_likes=? WHERE pst_id=?");
             ps.setInt(1, numLikes + 1);
             ps.setInt(2, postId);
+            result = ps.executeUpdate();
+            if (result == 0) {
+                System.err.println("Likes not updated");
+                return;
+            }
+
             connection.commit();
             System.out.println("Added post to user's likes");
         }
@@ -90,6 +96,26 @@ public class LikePostTable {
                 System.err.println("Like not deleted");
                 return;
             }
+
+            // decrement like count
+            ps = connection.prepareStatement("SELECT pst_likes FROM POST WHERE pst_id=?");
+            ps.setInt(1, postId);
+            ResultSet rs = ps.executeQuery();
+            if (!rs.isBeforeFirst()) {
+                System.err.println("Post not found");
+                return;
+            }
+            rs.next();
+            int numLikes = rs.getInt("pst_likes");
+            ps = connection.prepareStatement("UPDATE POST SET pst_likes=? WHERE pst_id=?");
+            ps.setInt(1, numLikes - 1);
+            ps.setInt(2, postId);
+            result = ps.executeUpdate();
+            if (result == 0) {
+                System.err.println("Likes not updated");
+                return;
+            }
+
             connection.commit();
             System.out.println("Removed post from user's likes");
         }

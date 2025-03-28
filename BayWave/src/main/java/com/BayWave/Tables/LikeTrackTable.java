@@ -61,6 +61,7 @@ public class LikeTrackTable {
                 System.out.println("Track like not registered");
                 return;
             }
+
             connection.commit();
             System.out.println("Track like registered");
         }
