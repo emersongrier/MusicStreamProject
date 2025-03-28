@@ -67,12 +67,10 @@ public class PostOptions {
                     text = scanner.nextLine();
                     PostTable.edit(connection, id, text);
                     break;
-                    /*
-                case "5":
-                    System.out.println("Enter artist name: ");
-                    name = scanner.nextLine();
-                    ArtistTable.printBio(connection, name);
+                case "6":
+                    LikePostOptions.options(connection);
                     break;
+                    /*
                 case "6":
                     String newName;
                     System.out.println("Enter current artist name: ");

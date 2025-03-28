@@ -10,10 +10,11 @@ import java.util.Scanner;
 public class LikePostOptions {
     public static void printOptions() {
         System.out.println();
-        System.out.println("POST Options:");
-        System.out.println("1. Add post to user's likes");
-        System.out.println("2. Remove post from user's likes");
-        System.out.println("3. Return");
+        System.out.println("LIKE_POST Options:");
+        System.out.println("1. Print LIKE_POST table");
+        System.out.println("2. Add post to user's likes");
+        System.out.println("3. Remove post from user's likes");
+        System.out.println("4. Return");
         System.out.println();
     }
 
@@ -27,20 +28,23 @@ public class LikePostOptions {
             input = scanner.nextLine();
             switch (input) {
                 case "1":
-                    System.out.println("Enter username: ");
-                    user = scanner.nextLine();
-                    System.out.println("Enter post ID: ");
-                    id = Integer.parseInt(scanner.nextLine());
-                    scanner.nextLine();
-                    LikePostTable.register(connection, user, id);
+                    LikePostTable.print(connection);
                     break;
                 case "2":
                     System.out.println("Enter username: ");
                     user = scanner.nextLine();
                     System.out.println("Enter post ID: ");
-                    id = Integer.parseInt(scanner.nextLine());
+                    id = scanner.nextInt();
                     scanner.nextLine();
-                    // LikePostTable.delete(connection, user, id);
+                    LikePostTable.register(connection, user, id);
+                    break;
+                case "3":
+                    System.out.println("Enter username: ");
+                    user = scanner.nextLine();
+                    System.out.println("Enter post ID: ");
+                    id = scanner.nextInt();
+                    scanner.nextLine();
+                    LikePostTable.delete(connection, user, id);
                     break;
                 default:
                     input = "-1";
