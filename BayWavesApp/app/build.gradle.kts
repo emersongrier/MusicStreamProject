@@ -47,6 +47,9 @@ dependencies {
     implementation ("com.h2database:h2:1.4.200")
     implementation ("mysql:mysql-connector-java:8.0.33")
 
+    implementation ("androidx.appcompat:appcompat:1.4.1")
+    implementation ("com.android.support:support-annotations:28.0.0")
+
     implementation(libs.appcompat)
     implementation(libs.material)
     implementation(libs.constraintlayout)
