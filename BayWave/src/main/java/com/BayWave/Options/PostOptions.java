@@ -73,10 +73,9 @@ public class PostOptions {
                 case "7":
                     MediaOptions.options(connection);
                     break;
-                    /*
-                case "7":
-                    MemberOptions.options(connection);
-                    break;*/
+                case "8":
+                    EmbedOptions.options(connection);
+                    break;
                 default:
                     input = "-1";
             }
