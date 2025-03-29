@@ -1,4 +1,8 @@
+//command to run:
+//java --module-path "C:\Users\emcke\Downloads\openjfx-21.0.6_windows-x64_bin-sdk\javafx-sdk-21.0.6\lib" --add-modules javafx.controls,javafx.fxml,javafx.graphics -cp bin DesktopFrontend
+
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
@@ -16,7 +20,7 @@ import javafx.geometry.Pos;
 //import javafx.collections.ObservableList;
 import javafx.geometry.Side;
 
-public class DesktopFrontend extends Application {
+public class DesktopFrontend extends Application{
 
         // private Stage window;
         private Scene mainScene, loginScene;
@@ -181,8 +185,12 @@ public class DesktopFrontend extends Application {
                 trackProgress.setPadding(new Insets(10));
                 Label timeElapsed = new Label("5:56");
                 timeElapsed.setStyle("-fx-text-fill: silver");
-                double percentSongOver = ((int) (356 / 409 * 100)) / 100;
+                double percentSongOver = (double)(356.0/409.0);
                 ProgressBar progress = new ProgressBar(percentSongOver);
+                //ProgressUpdater progressBarUpdater = new ProgressUpdater();
+                //progressBarUpdater.start();
+                new ProgressThread(progress).start();
+
                 progress.setStyle("-fx-accent: green;");
                 Label trackLength = new Label("6:49");
                 trackLength.setStyle("-fx-text-fill: silver");
@@ -192,8 +200,8 @@ public class DesktopFrontend extends Application {
                 bottom.getChildren().addAll(smallAlbumCover, trackDesc, playback);
                 root.setBottom(bottom);
 
-                loginScene = new Scene(loginPage, 600, 600);
-                mainScene = new Scene(root, 600, 600);
+                loginScene = new Scene(loginPage, 1000, 600);
+                mainScene = new Scene(root, 1000, 600);
                 primaryStage.setScene(loginScene);
                 primaryStage.setTitle("UI");
                 primaryStage.show();
@@ -217,4 +225,37 @@ public class DesktopFrontend extends Application {
                 Button button = new Button(text, icon);
                 return button;
         }
+
+        //------------------------------------------------------------------------------------------------------
+        /**
+         * This class/thread is meant to handle updating the progress bar as time goes on
+         */
+        static class ProgressThread extends Thread {
+                private final ProgressBar progressBar;
+
+                public ProgressThread(ProgressBar progressBar) {
+                        this.progressBar = progressBar;
+                }
+
+                @Override
+                public void run() {
+                        for (int i = 0; i <= 100; i++) {
+                                double progress = i / 100.0;
+                                // Update UI safely using Platform.runLater
+                                Platform.runLater(() -> progressBar.setProgress(progress));
+
+                                try {
+                                        Thread.sleep(50); // Simulate work
+                                } catch (InterruptedException e) {
+                                e.printStackTrace();
+                                }
+                        }
+
+                        while(true){
+                                Platform.runLater(() -> progressBar.setProgress(songElapsed/songLength));
+                                Thread.sleep(500);
+                        }
+                }
+        }
 }
+
