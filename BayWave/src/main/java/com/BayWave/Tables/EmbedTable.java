@@ -56,6 +56,25 @@ public class EmbedTable {
         System.out.println("Content embedded to post.");
     }
 
+    /**
+     * Returns a string representing the specified row in the EMBED table,
+     * which contains the following attributes in order starting from index 0:
+     * pst_id, emb_id, emb_type.
+     */
+    public static String[] getEmbedForPost(Connection connection, int postId) throws SQLException {
+        PreparedStatement ps = connection.prepareStatement("SELECT * FROM EMBED WHERE pst_id=?");
+        ps.setInt(1, postId);
+        ResultSet rs = ps.executeQuery();
+        if (!rs.isBeforeFirst()) {
+            System.err.println("Embedded content not found");
+            return null;
+        }
+        return TableUtil.getFirstStringTable(rs);
+    }
+
+    /**
+     * Removes embedded content from a post.
+     */
     public static void delete(Connection connection, int postId) throws SQLException {
         PreparedStatement ps = connection.prepareStatement("DELETE FROM EMBED WHERE pst_id=?");
         ps.setInt(1, postId);
