@@ -9,12 +9,24 @@ import java.util.Scanner;
 
 public class Admin {
     public static void main(String[] args) {
-        try (Connection connection = DriverManager.getConnection("jdbc:h2:~/test;AUTOCOMMIT=OFF;")) { // :~/test
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("1. Embedded");
+        System.out.println("2. Server");
+        System.out.println("Enter connection mode: ");
+        String connectionString;
+        String mode = scanner.nextLine();
+        if (Objects.equals(mode, "1")) {
+            connectionString = "jdbc:h2:~/test;AUTOCOMMIT=OFF;";
+        }
+        else {
+            connectionString = "jdbc:h2:tcp://140.82.13.163:9092/./test;AUTOCOMMIT=OFF;";
+        }
+        // try (Connection connection = DriverManager.getConnection("jdbc:h2:~/test;AUTOCOMMIT=OFF;")) { // :~/test
+        try (Connection connection = DriverManager.getConnection(connectionString)) { // :~/test
             System.out.println("connection.isValid(0): " + connection.isValid(0));
             if (connection.isValid(0)) {
                 System.out.println("Connected to BayWave database as Admin");
             }
-            Scanner scanner = new Scanner(System.in);
             String input;
             do {
                 AdminUtil.printOptions();

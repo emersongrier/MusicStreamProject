@@ -299,8 +299,31 @@ public class TableUtil {
     }
 
     public static boolean embedExists(Connection connection, String embedType, int embedId) throws SQLException {
-        // TODO: Validate that the embedded content exists.
-        return true;
+        if (Objects.equals(embedType, "Artist")) {
+            PreparedStatement ps = connection.prepareStatement("SELECT * FROM ARTIST WHERE art_id=?");
+            ps.setInt(1, embedId);
+            ResultSet rs = ps.executeQuery();
+            return rs.isBeforeFirst();
+        }
+        else if (Objects.equals(embedType, "Album")) {
+            PreparedStatement ps = connection.prepareStatement("SELECT * FROM ALBUM WHERE alb_id=?");
+            ps.setInt(1, embedId);
+            ResultSet rs = ps.executeQuery();
+            return rs.isBeforeFirst();
+        }
+        else if (Objects.equals(embedType, "Track")) {
+            PreparedStatement ps = connection.prepareStatement("SELECT * FROM TRACK WHERE trk_id=?");
+            ps.setInt(1, embedId);
+            ResultSet rs = ps.executeQuery();
+            return rs.isBeforeFirst();
+        }
+        else if (Objects.equals(embedType, "Playlist")) {
+            PreparedStatement ps = connection.prepareStatement("SELECT * FROM PLAYLIST WHERE ply_id=?");
+            ps.setInt(1, embedId);
+            ResultSet rs = ps.executeQuery();
+            return rs.isBeforeFirst();
+        }
+        return false;
     }
 
     public static ArrayList<String[]> getTable(ResultSet rs) throws SQLException {

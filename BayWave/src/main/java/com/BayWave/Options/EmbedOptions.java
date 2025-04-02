@@ -41,14 +41,12 @@ public class EmbedOptions {
                     scanner.nextLine();
                     EmbedTable.register(connection, post, type, content);
                     break;
-                    /*
                 case "3":
-                    int mediaId;
-                    System.out.println("Enter media ID: ");
-                    mediaId = scanner.nextInt();
+                    System.out.println("Enter post ID: ");
+                    post = scanner.nextInt();
                     scanner.nextLine();
-                    MediaTable.delete(connection, mediaId);
-                    break;*/
+                    EmbedTable.delete(connection, post);
+                    break;
                 default:
                     input = "-1";
             }
