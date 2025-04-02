@@ -45,14 +45,17 @@ public class HomeFragment extends Fragment {
     private TextView endTime;
     private TextView songName;
     private TextView artistName;
+    private ImageView albumCover;
     private ImageView circularVisualizer;
 
     private Track currentTrack;
     private TrackRepository trackRepository;
     private Artist currentArtist;
     private ArtistRepository artistRepository;
+    private AlbumRepository albumRepository;
 
     private int currentTrackID;
+
 
     @Nullable
     @Override
@@ -63,6 +66,8 @@ public class HomeFragment extends Fragment {
         startTime = view.findViewById(R.id.start_time);
         endTime = view.findViewById(R.id.end_time);
         songName = view.findViewById(R.id.title_text);
+        artistName = view.findViewById(R.id.artist_name);
+        albumCover = view.findViewById(R.id.album_art);
         playPauseButton = view.findViewById(R.id.play_pause);
         nextSong = view.findViewById(R.id.skip_button);
         lastSong = view.findViewById(R.id.unskip_button);
@@ -71,11 +76,20 @@ public class HomeFragment extends Fragment {
         circularVisualizer = view.findViewById(R.id.circle_visualizer);
         currentTrackID = 0;
 
-        // Initialize TrackRepository
+        // Initialize repositories
         artistRepository = ArtistRepository.getInstance();
         trackRepository = TrackRepository.getInstance();
+        albumRepository = AlbumRepository.getInstance();
+
         boolean isConnected = trackRepository.isDatabaseConnected();
         String connectionMessage = trackRepository.getConnectionErrorMessage();
+
+        if (isConnected) {
+            showCustomToast(connectionMessage);
+        } else {
+            showCustomToast(connectionMessage);
+        }
+
 
         // Load the first track from the repository
         loadTrack(trackRepository.getAllTracks().get(currentTrackID));
@@ -106,8 +120,6 @@ public class HomeFragment extends Fragment {
         // Setup like button
         likeSong.setOnClickListener(v -> addSong());
 
-        showCustomToast(connectionMessage);
-
         // Setup seekBar
         seekBar.setMax(100);
         seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
@@ -133,6 +145,7 @@ public class HomeFragment extends Fragment {
         return view;
     }
 
+
     private void loadTrack(Track track) {
         // Update current track
         currentTrack = track;
@@ -150,16 +163,34 @@ public class HomeFragment extends Fragment {
         exoPlayer.setMediaItem(mediaItem);
         exoPlayer.prepare();
 
+        // Load the corresponding artist for this track
+        loadArtistForTrack(track);
+
         // Update UI elements with track metadata
         updateTrackMetadata(track);
+        updateAlbumCover(track);
+
 
         // Reset like state
-        isLiked = track.getLikes() > 0 || track.isLocalLikedState();
+        isLiked = track.getLikes() > 0 || trackRepository.isTrackLiked(track.getId());
         updateLikeButton();
     }
 
-    private void updateTrackMetadata(Track track) {
+    private void loadArtistForTrack(Track track) {
+        int artistId = track.getArtistId();
 
+        // Get artist from repository
+        Artist artist = artistRepository.getArtistById(artistId);
+
+        if (artist != null) {
+            currentArtist = artist;
+        } else {
+            // Fallback if artist not found
+            currentArtist = new Artist(0, "Unknown Artist", "No bio available", 0, 1);
+        }
+    }
+
+    private void updateTrackMetadata(Track track) {
         track.setLength((int) exoPlayer.getDuration());
 
         // Set initial time displays
@@ -173,15 +204,39 @@ public class HomeFragment extends Fragment {
         // Update seekBar functionality
         updateSeekBar();
 
+        // Update track name display
         songName.setText(track.getName());
-        //artistName.setText();
+
+        // Update artist name display
+        if (currentArtist != null) {
+            artistName.setText(currentArtist.getName());
+        } else {
+            artistName.setText("Unknown Artist");
+        }
     }
+
+
 
     private void updateLikeButton() {
         Glide.with(requireContext())
                 .load(isLiked ? R.drawable.liked_song : R.drawable.like_song)
                 .dontAnimate()
                 .into(likeSong);
+    }
+
+    private void updateAlbumCover(Track track) {
+        // Get the album ID from the track
+        int albumId = track.getAlbumId();
+
+        // Get the album cover resource ID
+        int coverResourceId = albumRepository.getAlbumCoverResourceId(albumId);
+
+        // Load the album cover using Glide
+        Glide.with(requireContext())
+                .load(coverResourceId)
+                .placeholder(R.drawable.the_fonky_things)  // Default placeholder
+                .error(R.drawable.the_fonky_things)  // If loading fails
+                .into(albumCover);
     }
 
     // Method to change track (you can call this when you want to switch tracks)
@@ -260,6 +315,7 @@ public class HomeFragment extends Fragment {
                                             .into(likeSong);
 
                                     isLiked = true;
+                                    trackRepository.setTrackLiked(currentTrack.getId(), isLiked);
                                 }
                             });
                             return false;
@@ -280,6 +336,7 @@ public class HomeFragment extends Fragment {
             trackRepository.updateTrack(currentTrack);
 
             isLiked = false;
+            trackRepository.setTrackLiked(currentTrack.getId(), isLiked);
             showCustomToast(getString(R.string.song_unliked));
         }
     }

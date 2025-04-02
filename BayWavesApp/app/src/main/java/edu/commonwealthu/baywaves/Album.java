@@ -1,5 +1,7 @@
 package edu.commonwealthu.baywaves;
 
+import android.widget.ImageView;
+
 import java.util.List;
 
 public class Album {
@@ -7,12 +9,12 @@ public class Album {
     private int id;
     private String type;
     private String name;
-    private String cover;
+    private ImageView cover;
     private List<Track> tracks;
     private int likes;
     private int artistId;
 
-    public Album(int id, String type, String name, String cover, List<Track> tracks, int likes, int artistId) {
+    public Album(int id, String type, String name, ImageView cover, List<Track> tracks, int likes, int artistId) {
         this.id = id;
         this.type = type;
         this.name = name;
@@ -28,8 +30,8 @@ public class Album {
     public String getType() { return type; }
     public void setName(String name) { this.name = name; }
     public String getName() { return name; }
-    public void setCover(String cover) { this.cover = cover; }
-    public String getCover() { return cover; }
+    public void setCover(ImageView cover) { this.cover = cover; }
+    public ImageView getCover() { return cover; }
     public void setTracks(List<Track> tracks) { this.tracks = tracks; }
     public List<Track> getTracks() { return tracks; }
     public void setLikes(int likes) { this.likes = likes; }

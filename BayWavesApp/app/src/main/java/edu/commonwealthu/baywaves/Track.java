@@ -11,10 +11,11 @@ public class Track {
     private int streams;
     private int likes;
     private int albumId;
+    private int artistId;
 
     private transient boolean isLikedLocally = false;
 
-    public Track(int id, String name, String filePath, int position, String lyrics, int length, int streams, int likes, int albumId){
+    public Track(int id, String name, String filePath, int position, String lyrics, int length, int streams, int likes, int albumId, int artistId){
         this.id = id;
         this.name = name;
         this.filePath = filePath;
@@ -24,6 +25,7 @@ public class Track {
         this.streams = streams;
         this.likes = likes;
         this.albumId = albumId;
+        this.artistId = artistId;
     }
 
     // Getters and setters
@@ -45,6 +47,8 @@ public class Track {
     public int getLikes(){return likes;}
     public void setAlbumId(int albumId) { this.albumId = albumId; }
     public int getAlbumId(){return albumId;}
+    public void setArtistId(int artistId) { this.artistId = artistId; }
+    public int getArtistId(){return artistId;}
 
     public void setLocalLikedState(boolean liked) {
         this.isLikedLocally = liked;

@@ -30,4 +30,11 @@
 
     <!-- Search Screen -->
     <string name="search_bar_text">Search songs or artists</string>
+
+    <!-- Playlist Screen -->
+    <string name="playlist_cover_desc">Cover of Playlist</string>
+    <string name="playlist_name">Playlist Name</string>
+    <string name="liked_songs">Liked Songs</string>
+    <string name="liked_songs_desc">Default Playlist</string>
+
 </resources>
