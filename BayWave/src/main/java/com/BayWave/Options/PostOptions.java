@@ -67,23 +67,15 @@ public class PostOptions {
                     text = scanner.nextLine();
                     PostTable.edit(connection, id, text);
                     break;
-                    /*
-                case "5":
-                    System.out.println("Enter artist name: ");
-                    name = scanner.nextLine();
-                    ArtistTable.printBio(connection, name);
-                    break;
                 case "6":
-                    String newName;
-                    System.out.println("Enter current artist name: ");
-                    name = scanner.nextLine();
-                    System.out.println("Enter new artist name: ");
-                    newName = scanner.nextLine();
-                    ArtistTable.updateName(connection, name, newName);
+                    LikePostOptions.options(connection);
                     break;
                 case "7":
-                    MemberOptions.options(connection);
-                    break;*/
+                    MediaOptions.options(connection);
+                    break;
+                case "8":
+                    EmbedOptions.options(connection);
+                    break;
                 default:
                     input = "-1";
             }
