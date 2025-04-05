@@ -153,7 +153,7 @@ public class TrackRepository {
                 0,
                 750,
                 0,
-                1,  // Same Album ID for "Waves"
+                3,
                 1   // Same Artist ID for Aves
         ));
 

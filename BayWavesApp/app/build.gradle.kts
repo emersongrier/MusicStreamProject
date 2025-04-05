@@ -50,6 +50,9 @@ dependencies {
     implementation ("androidx.appcompat:appcompat:1.4.1")
     implementation ("com.android.support:support-annotations:28.0.0")
 
+    implementation ("androidx.core:core-splashscreen:1.0.0-alpha01")
+    implementation ("androidx.core:core-splashscreen:1.0.1")
+
     implementation(libs.appcompat)
     implementation(libs.material)
     implementation(libs.constraintlayout)

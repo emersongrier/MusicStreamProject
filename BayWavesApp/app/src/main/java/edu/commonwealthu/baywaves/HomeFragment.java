@@ -84,11 +84,11 @@ public class HomeFragment extends Fragment {
         boolean isConnected = trackRepository.isDatabaseConnected();
         String connectionMessage = trackRepository.getConnectionErrorMessage();
 
-        if (isConnected) {
+       /* if (isConnected) {
             showCustomToast(connectionMessage);
         } else {
             showCustomToast(connectionMessage);
-        }
+        }*/
 
 
         // Load the first track from the repository
@@ -234,8 +234,6 @@ public class HomeFragment extends Fragment {
         // Load the album cover using Glide
         Glide.with(requireContext())
                 .load(coverResourceId)
-                .placeholder(R.drawable.the_fonky_things)  // Default placeholder
-                .error(R.drawable.the_fonky_things)  // If loading fails
                 .into(albumCover);
     }
 

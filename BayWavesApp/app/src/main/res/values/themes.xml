@@ -7,6 +7,12 @@
 
     <style name="Theme.BayWaves" parent="Base.Theme.BayWaves" />
 
+    <style name="Theme.App.Starting" parent="Theme.SplashScreen">
+        <item name="windowSplashScreenBackground">@color/bayWave</item>
+        <item name="windowSplashScreenAnimatedIcon">@mipmap/ic_launcher</item>
+        <item name="postSplashScreenTheme">@style/Base.Theme.BayWaves</item>
+    </style>
+
     <style name="ToolbarTitleStyle">
         <item name="android:fontFamily">@font/smooth_line_7</item>
         <item name="android:textSize">28sp</item>
