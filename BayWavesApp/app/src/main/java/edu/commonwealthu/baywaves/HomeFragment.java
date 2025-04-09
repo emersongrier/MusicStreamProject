@@ -23,6 +23,7 @@ import androidx.vectordrawable.graphics.drawable.Animatable2Compat;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.DataSource;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.load.engine.GlideException;
 import com.bumptech.glide.load.resource.gif.GifDrawable;
 import com.bumptech.glide.request.RequestListener;
@@ -225,15 +226,18 @@ public class HomeFragment extends Fragment {
     }
 
     private void updateAlbumCover(Track track) {
-        // Get the album ID from the track
-        int albumId = track.getAlbumId();
 
-        // Get the album cover resource ID
+        int albumId = track.getAlbumId();
         int coverResourceId = albumRepository.getAlbumCoverResourceId(albumId);
 
-        // Load the album cover using Glide
+        // Clear any existing images from Glide's cache for this view
+        Glide.with(requireContext()).clear(albumCover);
+
+        // Load the album cover using Glide with no caching
         Glide.with(requireContext())
                 .load(coverResourceId)
+                .skipMemoryCache(true)  // Skip memory cache
+                .diskCacheStrategy(DiskCacheStrategy.NONE)  // Skip disk cache
                 .into(albumCover);
     }
 

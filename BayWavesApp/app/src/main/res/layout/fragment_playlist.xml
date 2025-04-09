@@ -19,7 +19,8 @@
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
             app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
-            android:background="@color/bayWave"/>
+            android:background="@color/bayWave"
+            android:title="@string/playlist_toolbar_text"/>
 
     </com.google.android.material.appbar.AppBarLayout>
 

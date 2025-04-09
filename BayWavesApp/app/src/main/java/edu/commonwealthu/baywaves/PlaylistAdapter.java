@@ -22,6 +22,8 @@ public class PlaylistAdapter extends RecyclerView.Adapter<PlaylistAdapter.Playli
     // Interface for click listener
     public interface OnPlaylistClickListener {
         void onPlaylistClick(Playlist playlist);
+
+        //boolean onCreateOptionsMenu(Menu menu);
     }
 
     public PlaylistAdapter(List<Playlist> playlists, OnPlaylistClickListener listener) {

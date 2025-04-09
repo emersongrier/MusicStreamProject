@@ -143,19 +143,6 @@ public class TrackRepository {
                 1   // Artist ID for Aves
         ));
 
-        // Additional track from Aves in the same album
-        fallbackTracks.add(new Track(
-                3,
-                "The Frog Walk",
-                "android.resource://edu.commonwealthu.baywaves/" + R.raw.aves_the_frog_walk,
-                3,
-                "Lyrics for The Frog Walk by Aves",
-                0,
-                750,
-                0,
-                3,
-                1   // Same Artist ID for Aves
-        ));
 
         // Track from Yarin Primak in a different album
         fallbackTracks.add(new Track(
@@ -169,6 +156,20 @@ public class TrackRepository {
                 0,
                 2,  // Album ID for "Special Collection"
                 2   // Artist ID for Yarin Primak
+        ));
+
+        // Additional track from Aves in the same album
+        fallbackTracks.add(new Track(
+                3,
+                "The Frog Walk",
+                "android.resource://edu.commonwealthu.baywaves/" + R.raw.aves_the_frog_walk,
+                3,
+                "Lyrics for The Frog Walk by Aves",
+                0,
+                750,
+                0,
+                3,
+                1   // Same Artist ID for Aves
         ));
 
         return fallbackTracks;

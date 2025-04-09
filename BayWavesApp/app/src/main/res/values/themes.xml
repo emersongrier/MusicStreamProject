@@ -16,6 +16,7 @@
     <style name="ToolbarTitleStyle">
         <item name="android:fontFamily">@font/smooth_line_7</item>
         <item name="android:textSize">28sp</item>
+        <item name="android:text">@string/playlist_toolbar_text</item>
     </style>
 
 </resources>

@@ -36,5 +36,10 @@
     <string name="playlist_name">Playlist Name</string>
     <string name="liked_songs">Liked Songs</string>
     <string name="liked_songs_desc">Default Playlist</string>
+    <string name="new_playlist">New Playlist</string>
+    <string name="playlist_toolbar_text">Your Playlists</string>
+    <string name="new_playlist_hint">Enter Name Here</string>
+    <string name="create_playlist">Create</string>
+
 
 </resources>

@@ -270,7 +270,7 @@ public class AlbumRepository {
         Integer resourceId = albumCoverResourceIds.get(albumId);
         if (resourceId == null) {
             // Return a default resource ID if not found
-            return R.drawable.default_playlist;
+            return R.drawable.dafault_album_cover;
         }
         return resourceId;
     }
