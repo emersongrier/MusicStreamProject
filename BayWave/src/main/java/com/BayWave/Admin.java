@@ -11,7 +11,7 @@ public class Admin {
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
         System.out.println("1. Embedded");
-        System.out.println("2. Server");
+        System.out.println("2. Server (non-functional)");
         System.out.println("Enter connection mode: ");
         String connectionString;
         String mode = scanner.nextLine();
