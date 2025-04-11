@@ -291,5 +291,25 @@ CREATE TRIGGER DELETE_POST_UPDATE_POST
     ON POST
     FOR EACH ROW CALL "com.BayWave.Triggers.DeletePostUpdatePostTrigger";
 
+CREATE TRIGGER DELETE_PLAYLIST_DELETE_EMBED
+    AFTER DELETE
+    ON PLAYLIST
+    FOR EACH ROW CALL "com.BayWave.Triggers.DeletePlaylistDeleteEmbedTrigger";
+
+CREATE TRIGGER DELETE_TRACK_DELETE_EMBED
+    AFTER DELETE
+    ON TRACK
+    FOR EACH ROW CALL "com.BayWave.Triggers.DeleteTrackDeleteEmbedTrigger";
+
+CREATE TRIGGER DELETE_ARTIST_DELETE_EMBED
+    AFTER DELETE
+    ON ARTIST
+    FOR EACH ROW CALL "com.BayWave.Triggers.DeleteArtistDeleteEmbedTrigger";
+
+CREATE TRIGGER DELETE_ALBUM_DELETE_EMBED
+    AFTER DELETE
+    ON ALBUM
+    FOR EACH ROW CALL "com.BayWave.Triggers.DeleteAlbumDeleteEmbedTrigger";
+
 
 COMMIT;
