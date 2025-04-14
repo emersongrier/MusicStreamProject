@@ -1,13 +1,17 @@
 //command to run:
-//java --module-path "C:\Users\emcke\Downloads\openjfx-21.0.6_windows-x64_bin-sdk\javafx-sdk-21.0.6\lib" --add-modules javafx.controls,javafx.fxml,javafx.graphics,java.media -cp bin DesktopFrontend
+//java --module-path "C:\Users\emcke\Downloads\openjfx-21.0.6_windows-x64_bin-sdk\javafx-sdk-21.0.6\lib" --add-modules javafx.controls,javafx.fxml,javafx.graphics,javafx.media -cp bin DesktopFrontend
 
 import java.nio.file.Path;
 import java.util.List;
 import java.util.stream.Collectors;
-
+import javafx.scene.Node;
 import javax.swing.plaf.synth.Region;
-import javax.swing.text.html.ListView;
-
+import javafx.scene.control.ListView;
+import javafx.util.Duration;
+import javafx.animation.KeyFrame;
+import javafx.animation.KeyValue;
+import javafx.animation.Interpolator;
+import javafx.scene.effect.ColorAdjust;
 import java.io.File;
 import javafx.animation.Animation;
 import javafx.animation.Interpolator;
@@ -326,7 +330,7 @@ public class DesktopFrontend extends Application {
                 });
 
                 //SCENE SETTING
-                applyWaveAnimation(root);
+                applyWaveAnimation((Node)root);
 
                 sp.getChildren().addAll(root, listView);
                 loginScene = new Scene(loginPage, 1000, 600);
@@ -406,7 +410,7 @@ public class DesktopFrontend extends Application {
          * Causes the background (of whatever tier) to slowly pulse by changing opacity
          * @param region scene, vbox, ... what should pulse
          */
-        private void applyWaveAnimation(Region region) {
+        private void applyWaveAnimation(Node region) {
                 Timeline waveTimeline = new Timeline(
                 new KeyFrame(Duration.seconds(0),
                         new KeyValue(region.opacityProperty(), 0.9)),
