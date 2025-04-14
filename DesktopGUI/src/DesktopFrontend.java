@@ -1,5 +1,19 @@
+//command to run:
+//java --module-path "C:\Users\emcke\Downloads\openjfx-21.0.6_windows-x64_bin-sdk\javafx-sdk-21.0.6\lib" --add-modules javafx.controls,javafx.fxml,javafx.graphics,java.media -cp bin DesktopFrontend
+
+import java.nio.file.Path;
+import java.util.List;
+import java.util.stream.Collectors;
 import java.io.File;
+import javafx.animation.Animation;
+import javafx.animation.Interpolator;
+import javafx.animation.KeyFrame;
+import javafx.animation.KeyValue;
+import javafx.animation.Timeline;
 import javafx.application.Application;
+import javafx.application.Platform;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
@@ -7,14 +21,15 @@ import javafx.scene.image.ImageView;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
+import javafx.scene.media.Media;
+import javafx.scene.media.MediaPlayer;
+import javafx.scene.paint.Color;
 import javafx.scene.paint.CycleMethod;
 import javafx.scene.paint.LinearGradient;
 import javafx.scene.paint.Stop;
 import javafx.scene.shape.Circle;
 import javafx.stage.Stage;
 import javafx.geometry.Pos;
-//import javafx.collections.FXCollections;
-//import javafx.collections.ObservableList;
 import javafx.geometry.Side;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
@@ -30,9 +45,41 @@ public class DesktopFrontend extends Application {
 
         // private Stage window;
         private Scene mainScene, loginScene;
-        
+        private static double songElapsed, songLength;
+        private static String currentSong, currentArtist, currentAlbumCover, currentSongPath; 
+        private static Label timeElapsed, trackLength;
+        private static boolean playing = false;
+
+        private final List<String> songList = List.of(
+                "022.mp3", "Invariance.mp3", "8bit Dungeon Boss.mp3", "Investigations.mp3",
+                "8bit Dungeon Level.mp3", "Iron Bacon.mp3", "A Little Faith.mp3", "Iron Horse - Distressed.mp3",
+                "A Mission.mp3", "Iron Horse.mp3", "A Singular Perversion.mp3", "Irregular.mp3",
+                "A Turn for the Worse.mp3", "Ishikari Lore.mp3", "A Very Brady Special.mp3", "Island Meet and Greet.mp3",
+                "Accralate.mp3", "Isolated.mp3", "Aces High.mp3", "It Came Upon a Midnight Clear.mp3",
+                "Achaidh Cheide.mp3", "It is Lost.mp3", "Achilles.mp3", "Itty Bitty 8 Bit.mp3",
+                "AcidJazz.mp3", "Jalandhar.mp3", "Action.mp3", "Jarvic 8.mp3",
+                "Adding the Sun.mp3", "Jaunty Gumption.mp3", "Adventure Meme.mp3", "Jazz Brunch.mp3",
+                "Aftermath.mp3", "Jellyfish in Space.mp3", "Aggressor.mp3", "Jerry Five.mp3",
+                "Agnus Dei X.mp3", "Jet Fueled Vixen.mp3", "AhDah.mp3", "Jingle Bells 3.mp3",
+                "Air Prelude.mp3", "Jingle Bells Calm.mp3", "Airport Lounge.mp3", "Jingle Bells.mp3",
+                "Airship Serenity.mp3", "Juniper.mp3", "Alchemists Tower.mp3", "Junkyard Tribe.mp3",
+                "Alien Restaurant.mp3", "Just As Soon.mp3", "All This.mp3", "Just Nasty.mp3"
+        );
+
         @Override
         public void start(Stage primaryStage) {
+                Font.loadFont(getClass().getResourceAsStream("/resources/fonts/smooth_line_7.ttf"), 12);
+
+                //sample initialization of global variables
+                currentArtist = "Riley Simmons";
+                currentSong = "A Giant Goliath Ate My Car!";
+                currentSongPath = "Jalandhar.mp3";
+                currentAlbumCover = "/resources/images/aGiantGoliathAteMyCar.jpg";
+                String defaultMusicImage = "/resources/images/defaultMusicPlaying.png";
+                songLength = 88615;
+                songElapsed = 70000;
+                String user = "Eli McKercher";
+                
                 // SIGN IN LANDING PAGE //
                 VBox loginPage = new VBox(10);
                 loginPage.setPadding(new Insets(10));
@@ -73,6 +120,8 @@ public class DesktopFrontend extends Application {
                 loginPage.getChildren().addAll(iview, loginTitle, loginDesc, userLabel, usernameInput, passLabel, passwordInput, signIn, errorMsg);
         
                 // MAIN PAGE //
+                StackPane sp = new StackPane();
+
                 BorderPane root = new BorderPane();
 
                 // Main Page Gradient Background
@@ -87,11 +136,28 @@ public class DesktopFrontend extends Application {
                 menuBar.setPadding(new Insets(10));
                 menuBar.setMaxHeight(50);
                 menuBar.setStyle("-fx-border-color: black;");
-                Button homeButton = createImageButton("",
-                                "C:/Users/emcke/Pictures/Screenshots/Screenshot 2024-09-09 100439.png");
-                homeButton.setMaxSize(10, 10);
+                Button homeButton = new Button("\u2302");
+                homeButton.setMaxSize(50, 50);
+                addRippleEffect(homeButton);
+                //VBox searchBarResults = new VBox(10);
                 TextField searchBar = new TextField();
                 searchBar.setAlignment(Pos.CENTER);
+                ListView<String> listView = new ListView<>();
+                ObservableList<String> filteredList = FXCollections.observableArrayList(songList);
+                listView.setItems(filteredList);
+                listView.setVisible(false);
+                listView.setPrefHeight(96); // ~4 rows * 24px row height
+                listView.setMaxHeight(96);
+                listView.setFixedCellSize(24);
+                searchBar.textProperty().addListener((obs, oldVal, newVal) -> {
+                        List<String> matches = songList.stream()
+                                .filter(song -> song.toLowerCase().contains(newVal.toLowerCase()))
+                                .collect(Collectors.toList());
+                        filteredList.setAll(matches);
+                        listView.setVisible(!matches.isEmpty() && !newVal.isEmpty());
+                });
+                //searchBarResults.getChildren().addAll(searchBar, listView);
+                //searchBar.setStyle("-fx-background-color: lightsteelblue;;");
                 Button createButton = new Button("+");
                 createButton.setShape(new Circle(15));
                 Button profileButton = new Button("E");
@@ -112,6 +178,8 @@ public class DesktopFrontend extends Application {
                 profileBtnDD.getItems().addAll(viewProfile, logOut);
                 profileButton.setOnAction(e -> profileBtnDD.show(profileButton, Side.BOTTOM, 0, 0));
                 logOut.setOnAction(e -> primaryStage.setScene(loginScene));
+
+                
 
                 // LEFT
                 VBox recents = new VBox(10);
@@ -218,8 +286,39 @@ public class DesktopFrontend extends Application {
                 bottom.getChildren().addAll(smallAlbumCover, trackDesc, playback);
                 root.setBottom(bottom);
 
-                loginScene = new Scene(loginPage, 600, 600);
-                mainScene = new Scene(root, 600, 600);
+                MusicClient client = new MusicClient();
+                Path songPath = null;
+                try {
+                        songPath = client.downloadSong(currentSongPath);
+                } catch (Exception e) {
+                        // TODO Auto-generated catch block
+                        e.printStackTrace();
+                }
+                Media media = new Media(songPath.toUri().toString());
+                MediaPlayer mediaPlayer = new MediaPlayer(media);
+
+                plause.setOnAction(e ->{
+                        if(playing){
+                                plause.setText("\u23f5");
+                                playing = false;
+                                mediaPlayer.pause();
+                        }
+                        else{
+                                plause.setText("\u23f8");
+                                playing = true;
+                                new ProgressThread(progress).start();
+                                mediaPlayer.play();
+                        }
+                });
+
+                //SCENE SETTING
+                applyWaveAnimation(root);
+
+                sp.getChildren().addAll(root, listView);
+                loginScene = new Scene(loginPage, 1000, 600);
+                loginScene.getStylesheets().add(getClass().getResource("style.css").toExternalForm());
+                mainScene = new Scene(sp, 1000, 600);
+                mainScene.getStylesheets().add(getClass().getResource("style.css").toExternalForm());
                 primaryStage.setScene(loginScene);
                 primaryStage.setTitle("UI");
                 primaryStage.show();
