@@ -4,6 +4,10 @@
 import java.nio.file.Path;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import javax.swing.plaf.synth.Region;
+import javax.swing.text.html.ListView;
+
 import java.io.File;
 import javafx.animation.Animation;
 import javafx.animation.Interpolator;
@@ -275,9 +279,19 @@ public class DesktopFrontend extends Application {
                 trackProgress.setPadding(new Insets(10));
                 Label timeElapsed = new Label("5:56");
                 timeElapsed.setStyle("-fx-text-fill: silver");
-                double percentSongOver = ((int) (356 / 409 * 100)) / 100;
-                ProgressBar progress = new ProgressBar(percentSongOver);
-                progress.setStyle("-fx-accent: green;");
+                ProgressBar progress = new ProgressBar();
+                new ProgressThread(progress).start();
+                //progress.setStyle("-fx-accent: green;");
+                progress.setVisible(true);
+                progress.setManaged(true);
+                Timeline PBTimeline = new Timeline(
+                        new KeyFrame(Duration.ZERO,
+                                new KeyValue(progress.styleProperty(), "-fx-background-position: 0 0;")),
+                        new KeyFrame(Duration.seconds(1),
+                                new KeyValue(progress.styleProperty(), "-fx-background-position: -50px 0;"))
+                );
+                PBTimeline.setCycleCount(Animation.INDEFINITE);
+                PBTimeline.play();
                 Label trackLength = new Label("6:49");
                 trackLength.setStyle("-fx-text-fill: silver");
                 trackProgress.getChildren().addAll(timeElapsed, progress, trackLength);
@@ -367,5 +381,70 @@ public class DesktopFrontend extends Application {
 
                 Button button = new Button(text, icon);
                 return button;
+        }
+
+        /**
+         * adds animation to the botton called upon clicking by darking and lightening it
+         * @param button button to be given the animation
+         */
+        private void addRippleEffect(Button button) {
+                ColorAdjust colorAdjust = new ColorAdjust();
+                button.setEffect(colorAdjust);
+
+                Timeline rippleTimeline = new Timeline(
+                        new KeyFrame(Duration.ZERO, new KeyValue(colorAdjust.brightnessProperty(), 0, Interpolator.EASE_BOTH)),
+                        new KeyFrame(Duration.millis(400), new KeyValue(colorAdjust.brightnessProperty(), -0.3, Interpolator.EASE_BOTH)) // Darken smoothly
+                );
+
+                rippleTimeline.setAutoReverse(true);
+                rippleTimeline.setCycleCount(2); // One forward, one backward
+                button.setOnMousePressed(e -> rippleTimeline.play());
+                //button.setOnMouseReleased(e -> ri4pleTimeline.stop());
+        }
+
+        /**
+         * Causes the background (of whatever tier) to slowly pulse by changing opacity
+         * @param region scene, vbox, ... what should pulse
+         */
+        private void applyWaveAnimation(Region region) {
+                Timeline waveTimeline = new Timeline(
+                new KeyFrame(Duration.seconds(0),
+                        new KeyValue(region.opacityProperty(), 0.9)),
+                new KeyFrame(Duration.seconds(3),
+                        new KeyValue(region.opacityProperty(), 1.0))
+                );
+                waveTimeline.setCycleCount(Animation.INDEFINITE);
+                waveTimeline.setAutoReverse(true);
+                waveTimeline.play();
+        }
+
+         //------------------------------------------------------------------------------------------------------
+        /**
+         * This class/thread is meant to handle updating the progress bar as time goes on
+         */
+        static class ProgressThread extends Thread {
+                private final ProgressBar progressBar;
+
+                public ProgressThread(ProgressBar progressBar) {
+                        this.progressBar = progressBar;
+                }
+
+                @Override
+                public void run() {
+                        while(playing){
+                                Platform.runLater(() -> progressBar.setProgress(songElapsed/songLength));
+                                Platform.runLater(() -> timeElapsed.setText(
+                                        ((int) songElapsed)/1000/60 + ":" + ((int) songElapsed)/1000%60));
+                                Platform.runLater(() -> trackLength.setText(
+                                        ((int) songLength)/1000/60 + ":" + ((int) songLength)/1000%60));
+                                try {
+                                        Thread.sleep(500);
+                                } catch (InterruptedException e) {
+                                        // TODO Auto-generated catch block
+                                        e.printStackTrace();
+                                }
+                        }
+                        System.out.println("terminating thread");
+                }
         }
 }
