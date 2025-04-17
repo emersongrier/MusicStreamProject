@@ -4,6 +4,7 @@ import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -82,14 +83,16 @@ public class HomeFragment extends Fragment {
         trackRepository = TrackRepository.getInstance();
         albumRepository = AlbumRepository.getInstance();
 
+        trackRepository.setContext(requireContext());
+
         boolean isConnected = trackRepository.isDatabaseConnected();
         String connectionMessage = trackRepository.getConnectionErrorMessage();
 
-       /* if (isConnected) {
+        if (isConnected) {
             showCustomToast(connectionMessage);
         } else {
             showCustomToast(connectionMessage);
-        }*/
+        }
 
 
         // Load the first track from the repository
@@ -151,8 +154,12 @@ public class HomeFragment extends Fragment {
         // Update current track
         currentTrack = track;
 
-        // Set up ExoPlayer with the track's file path
-        MediaItem mediaItem = MediaItem.fromUri(Uri.parse(track.getFilePath()));
+        // Get the streaming URI
+        String streamingUri = trackRepository.getStreamingUri(track);
+        Log.d("HomeFragment", "Loading track with URI: " + streamingUri);
+
+        // Set up ExoPlayer with the track's streaming URI
+        MediaItem mediaItem = MediaItem.fromUri(Uri.parse(streamingUri));
 
         // Release any existing player
         if (exoPlayer != null) {
@@ -164,13 +171,10 @@ public class HomeFragment extends Fragment {
         exoPlayer.setMediaItem(mediaItem);
         exoPlayer.prepare();
 
-        // Load the corresponding artist for this track
+        // Rest of your existing method...
         loadArtistForTrack(track);
-
-        // Update UI elements with track metadata
         updateTrackMetadata(track);
         updateAlbumCover(track);
-
 
         // Reset like state
         isLiked = track.getLikes() > 0 || trackRepository.isTrackLiked(track.getId());
@@ -318,6 +322,13 @@ public class HomeFragment extends Fragment {
 
                                     isLiked = true;
                                     trackRepository.setTrackLiked(currentTrack.getId(), isLiked);
+                                    PlaylistFragment playlistFragment = (PlaylistFragment) getActivity()
+                                            .getSupportFragmentManager()
+                                            .findFragmentByTag("playlist_fragment");
+                                    if (playlistFragment != null) {
+                                        playlistFragment.addSongToDefault(currentTrack);
+                                    }
+                                    //playlistFragment.addSongToDefault();
                                 }
                             });
                             return false;
@@ -339,6 +350,12 @@ public class HomeFragment extends Fragment {
 
             isLiked = false;
             trackRepository.setTrackLiked(currentTrack.getId(), isLiked);
+            PlaylistFragment playlistFragment = (PlaylistFragment) getActivity()
+                    .getSupportFragmentManager()
+                    .findFragmentByTag("playlist_fragment");
+            if (playlistFragment != null) {
+                playlistFragment.removeSongToDefault();
+            }
             showCustomToast(getString(R.string.song_unliked));
         }
     }

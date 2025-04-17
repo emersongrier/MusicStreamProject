@@ -1,5 +1,6 @@
 package edu.commonwealthu.baywaves;
 
+import android.content.Context;
 import android.util.Log;
 
 import java.sql.Connection;
@@ -13,10 +14,13 @@ import java.util.Map;
 
 public class TrackRepository {
     private static TrackRepository instance;
-    private final Map<Integer, Boolean> likedTracksCache = new HashMap<>();
+    private final Map<Integer, Boolean> likedTracksCache;
+    private MusicClient musicClient;
+    private Context context;
 
     private TrackRepository() {
         // Private constructor to prevent direct instantiation
+        likedTracksCache = new HashMap<>();
     }
 
     public static synchronized TrackRepository getInstance() {
@@ -24,6 +28,41 @@ public class TrackRepository {
             instance = new TrackRepository();
         }
         return instance;
+    }
+
+    // Add a method to set the context and initialize MusicClient
+    public void setContext(Context context) {
+        this.context = context;
+        if (this.context != null) {
+            musicClient = new MusicClient(context);
+        }
+    }
+
+    // Add a method to get the streaming URI for a track
+    public String getStreamingUri(Track track) {
+        if (musicClient == null) {
+            Log.e("TrackRepository", "MusicClient not initialized. Context not set.");
+            return track.getFilePath(); // Return the local path as fallback
+        }
+
+        try {
+            // Check if this is a server track
+            if (track.getFilePath().endsWith(".mp3") && !track.getFilePath().startsWith("android.resource")) {
+                // Use the streaming URL or download the file
+                // Option 1: Direct streaming (lighter on resources but might buffer)
+                return musicClient.getStreamingUrl(track.getFilePath());
+
+                // Option 2: Download first (better playback but uses storage)
+                // return musicClient.downloadSong(track.getFilePath());
+            }
+
+            // If it's a local resource, return as is
+            return track.getFilePath();
+        } catch (Exception e) {
+            Log.e("TrackRepository", "Error getting streaming URI: " + e.getMessage(), e);
+            // Return the original path as fallback
+            return track.getFilePath();
+        }
     }
 
     public List<Track> getAllTracks() {

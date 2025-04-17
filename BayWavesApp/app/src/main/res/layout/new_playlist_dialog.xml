@@ -27,6 +27,7 @@
         android:textAlignment="center"/>
 
     <Button
+        android:id="@+id/createNewPlaylist"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
@@ -34,5 +35,7 @@
         android:text="@string/create_playlist"
         android:fontFamily="@font/smooth_line_7"
         android:textColor="@color/background"/>
+
+
 
 </LinearLayout>

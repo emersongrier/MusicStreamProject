@@ -1,15 +1,15 @@
 package edu.commonwealthu.baywaves;
 
+import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
-//import android.window.SplashScreen;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.splashscreen.SplashScreen;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
-import androidx.core.splashscreen.SplashScreen;
 
 import edu.commonwealthu.baywaves.databinding.ActivityMainBinding;
 
@@ -21,6 +21,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
         SplashScreen splashScreen = SplashScreen.installSplashScreen(this);
         splashScreen.setKeepOnScreenCondition(() -> true);

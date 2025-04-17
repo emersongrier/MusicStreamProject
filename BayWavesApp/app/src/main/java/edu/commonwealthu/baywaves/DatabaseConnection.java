@@ -5,7 +5,7 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 
 public class DatabaseConnection {
-    private static final String URL = "jdbc:h2:tcp://140.82.13.163:9092/./test";
+    private static final String URL = "jdbc:h2:tcp://140.82.13.163:9092/./test;AUTOCOMMIT=OFF;";
     private static final String USERNAME = "sa";
     private static final String PASSWORD = "wordculturesnailman";
 
