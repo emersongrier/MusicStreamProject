@@ -52,19 +52,11 @@ public class RequestServer {
             server.setHttpsConfigurator(new HttpsConfigurator(sslContext) {
                 @Override
                 public void configure(HttpsParameters params) {
-                    // get the SSLEngine so we can see which ciphers/protocols the server supports
-                    SSLContext ctx = getSSLContext();
-                    SSLEngine engine = ctx.createSSLEngine();
-                    // explicitly enable all the server’s cipher suites and protocols
-                    params.setCipherSuites(engine.getEnabledCipherSuites());
-                    params.setProtocols(engine.getEnabledProtocols());
-
-                    // you can still grab the default SSLParameters to pull in any other settings
-                    SSLParameters defaultParams = ctx.getDefaultSSLParameters();
-                    params.setNeedClientAuth(false);  // you probably don’t want client certs
-                    params.setSSLParameters(defaultParams);
+                    // use the SSLContext’s defaults for ciphers & protocols
+                    params.setSSLParameters(getSSLContext().getDefaultSSLParameters());
                 }
             });
+
 
         } catch (Exception e) {
             e.printStackTrace();
