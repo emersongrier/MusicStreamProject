@@ -80,6 +80,7 @@ public class RequestServer {
 
         server.setExecutor(null);
         server.start();
+        System.out.println("[DEBUG] HTTPS listening on " + server.getAddress());
         System.out.println("Server started on https://localhost:8080");
     }
 }
