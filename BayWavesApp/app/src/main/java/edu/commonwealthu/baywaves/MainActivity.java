@@ -1,8 +1,12 @@
 package edu.commonwealthu.baywaves;
 
+import android.content.pm.ActivityInfo;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.splashscreen.SplashScreen;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
@@ -17,6 +21,14 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+
+        SplashScreen splashScreen = SplashScreen.installSplashScreen(this);
+        splashScreen.setKeepOnScreenCondition(() -> true);
+        new Handler(Looper.getMainLooper()).postDelayed(() -> {
+            splashScreen.setKeepOnScreenCondition(() -> false);
+        }, 3000);
+
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
         replaceFragment(new HomeFragment());
@@ -43,11 +55,10 @@ public class MainActivity extends AppCompatActivity {
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
 
-        // Use add() and show()/hide() instead of replace() to keep fragment state
         Fragment existingFragment = fragmentManager.findFragmentByTag(fragment.getClass().getSimpleName());
 
         for (Fragment frag : fragmentManager.getFragments()) {
-            fragmentTransaction.hide(frag); // Hide all fragments first
+            fragmentTransaction.hide(frag);
         }
 
         if (existingFragment != null) {

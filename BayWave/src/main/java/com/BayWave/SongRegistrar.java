@@ -69,7 +69,7 @@ public class SongRegistrar {
                     String artist = "Kevin MacLeod";
                     String album = songName; // Album name is same as song name
                     String track = songName; // Track name is same as song name
-                    String type = "single";     // For example
+                    String type = "Single";     // For example
 
                     try {
                         // Register the album (each song gets its own album)

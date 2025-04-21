@@ -4,7 +4,9 @@ import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 
 import java.io.*;
+import java.net.URLDecoder;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import static com.BayWave.ParseQuery.parseQuery;
 
@@ -37,6 +39,7 @@ class SongHandler implements HttpHandler
         }
 
         //creates full path to song file; sends 404 if not exists
+        // TODO: USE TRACK ID FOR FILENAME
         File songFile = new File(MUSIC_DIR + fileName);
         if (!songFile.exists()) {
             exchange.sendResponseHeaders(404, -1);
@@ -64,3 +67,4 @@ class SongHandler implements HttpHandler
     }
 
 }
+

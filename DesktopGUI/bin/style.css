@@ -1,0 +1,52 @@
+/*Warnings are saying that there are already defaults in place for all 
+the setting that are being overridden; can be ignored*/
+
+/* Default button background color */
+.button {
+    -fx-background-color: #005f99; 
+    -fx-text-fill: ivory; 
+    -fx-font-size: 14px;   
+    -fx-font-family: "Raleway", "Arial" !important;  
+}
+
+/* Default font for labels, text fields, etc. */
+.label, .text-field, .text {
+    -fx-font-family: "Raleway", "Arial";
+    -fx-font-size: 14px;
+}
+
+/* Default background color for text fields*/
+.text-field {
+    -fx-background-color: lightsteelblue;
+}
+
+/*Default progress bar padding*/
+.progress-bar {
+    -fx-padding: 2px 5px;
+}
+
+/*Design and animation for the progressBar*/
+.progress-bar .bar {
+    -fx-background-color: linear-gradient(
+        to right,
+        rgba(0, 120, 215, 0.8) 25%,
+        rgba(0, 120, 215, 1) 50%,
+        rgba(0, 120, 215, 0.8) 75%
+    );
+    -fx-background-insets: 0;
+    -fx-background-radius: 5px;
+    -fx-padding: 1px;
+    
+    /* Creates a moving effect */
+    -fx-background-size: 50px 100%;
+}
+
+/*Default context menu background color*/
+.context-menu {
+    -fx-background-color: #005f99;
+}
+
+/*Default contextMenu menuItem text color*/
+.menu-item > .label {
+    -fx-text-fill: ivory;
+}

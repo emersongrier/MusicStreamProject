@@ -1,63 +1,191 @@
 package edu.commonwealthu.baywaves;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
+import android.widget.Button;
+import android.widget.EditText;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link PlaylistFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
-public class PlaylistFragment extends Fragment {
+import com.google.android.material.appbar.MaterialToolbar;
 
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
+import java.util.ArrayList;
+import java.util.List;
 
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
+public class PlaylistFragment extends Fragment implements PlaylistAdapter.OnPlaylistClickListener {
 
-    public PlaylistFragment() {
-        // Required empty public constructor
+    private RecyclerView recyclerView;
+    private PlaylistAdapter adapter;
+    private List<Playlist> playlists = new ArrayList<>();
+    private List<Playlist> loadedPlaylists;
+    private TrackRepository trackRepository;
+    private List<Track> likedPlaylist;
+
+    private ActivityResultLauncher<Intent> resultLauncher;
+
+    private Playlist defaultPlaylist;
+    private PlaylistAdapter.PlaylistViewHolder selectPlaylist;
+
+
+
+    @Nullable
+    @Override
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.fragment_playlist, container, false);
+
+        setHasOptionsMenu(true);
+
+        MaterialToolbar toolbar = view.findViewById(R.id.toolbar);
+        ((AppCompatActivity)getActivity()).setSupportActionBar(toolbar);
+
+        toolbar.setTitle(getString(R.string.playlist_toolbar_text));
+        toolbar.setTitleTextColor(getResources().getColor(R.color.white));
+
+        trackRepository = TrackRepository.getInstance();
+
+        likedPlaylist = new ArrayList<Track>();
+
+      /*  for(int i = 1; i<trackRepository.getAllTracks().size(); i++) {
+            if(trackRepository.getTrackById(i).isLocalLikedState()) {
+                likedPlaylist.add(trackRepository.getTrackById(i));
+            }
+        }*/
+
+        defaultPlaylist = new Playlist(1, getString(R.string.liked_songs), getString(R.string.liked_songs_desc), R.drawable.like_default, 0, 1, likedPlaylist);
+
+        recyclerView = view.findViewById(R.id.playlist_view);
+        // Use GridLayoutManager for a grid of playlists (2 columns)
+        recyclerView.setLayoutManager(new GridLayoutManager(getContext(), 2));
+
+        // Initialize adapter
+        adapter = new PlaylistAdapter(playlists, this);
+        recyclerView.setAdapter(adapter);
+
+        // Load data (replace with your actual data loading logic)
+        loadPlaylists();
+
+        return view;
     }
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment PlaylistFragment.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static PlaylistFragment newInstance(String param1, String param2) {
-        PlaylistFragment fragment = new PlaylistFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
+    private void loadPlaylists() {
+        // Sample data - replace with your actual data source
+        // Example: fetch from API or database
+        loadedPlaylists = new ArrayList<>();
+
+        loadedPlaylists.add(defaultPlaylist);
+
+        // Update the adapter
+        playlists.clear();
+        playlists.addAll(loadedPlaylists);
+        adapter.notifyDataSetChanged();
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
+    public void onPlaylistClick(Playlist playlist) {
+        // Handle playlist click - navigate to playlist details
+        //Toast.makeText(getContext(), "Clicked: " + playlist.getName(), Toast.LENGTH_SHORT).show();
+
+        // Example: Navigate to playlist detail
+        // Bundle bundle = new Bundle();
+        // bundle.putInt("playlistId", playlist.getId());
+        // Navigation.findNavController(requireView()).navigate(R.id.action_to_playlistDetail, bundle);\
+        LayoutInflater inflater = getLayoutInflater();
+        selectPlaylist.cardView.setOnClickListener(v -> {
+            showCustomDialog(R.layout.new_playlist_dialog);
+        });
+
+    }
+
+    public void addSongToDefault(Track track) {
+        if (!likedPlaylist.contains(track)) {
+            likedPlaylist.add(track);
+            adapter.notifyDataSetChanged();
+        }
+    }
+
+    public void removeSongToDefault(Track track) {
+        if (!likedPlaylist.contains(track)) {
+            likedPlaylist.remove(track);
+            adapter.notifyDataSetChanged();
         }
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_playlist, container, false);
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.menu_main, menu);
+        super.onCreateOptionsMenu(menu, inflater);
+    }
+
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+
+        if(id == R.id.menu_new_playlist) {
+            showCustomDialog(R.layout.new_playlist_dialog);
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
+    /**
+     * Displays a custom dialog using a specified layout.
+     * @param layoutId id of the layout
+     */
+    private void showCustomDialog(int layoutId) {
+        LayoutInflater inflater = getLayoutInflater();
+        View dialogView = inflater.inflate(layoutId, null);
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        builder.setView(dialogView)
+                .setPositiveButton(android.R.string.cancel, null);
+
+        EditText playlistName = dialogView.findViewById(R.id.myEditText);
+        Button createButton = dialogView.findViewById(R.id.createNewPlaylist);
+
+        AlertDialog dialog = builder.create();
+        createButton.setOnClickListener(v -> {
+            String name = playlistName.getText().toString().trim();
+            if (!name.isEmpty()) {
+                  Playlist newPlaylist = new Playlist(
+                        loadedPlaylists.size() + 1,
+                        name,
+                        getString(R.string.liked_songs_desc),
+                        R.drawable.dafault_album_cover,
+                        0,
+                        1,
+                        new ArrayList<Track>()
+                );
+
+                // Add the new playlist to the list
+                loadedPlaylists.add(newPlaylist);
+
+                // Update the adapter data and refresh the view
+                playlists.clear();
+                playlists.addAll(loadedPlaylists);
+                adapter.notifyDataSetChanged();
+
+                // Dismiss the dialog
+                dialog.dismiss();
+            }
+        });
+
+        dialog.show();
+        Window window = dialog.getWindow();
+        if (window != null) {
+            window.setBackgroundDrawableResource(R.color.background);
+        }
     }
 }

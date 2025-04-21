@@ -1,5 +1,6 @@
 package com.BayWave;
 
+import com.BayWave.SongHandler;
 import com.sun.net.httpserver.HttpServer;
 
 import java.io.*;
@@ -21,7 +22,8 @@ public class RequestServer {
         server.createContext("/song", new SongHandler());
         server.createContext("/song/metadata", new SongDataHandler());
         server.createContext("/search", new SearchHandler());
-        server.createContext("/ambience", new AmbienceHandler());
+            server.createContext("/ambience", new AmbienceHandler());
+        server.createContext("/playlist", new PlaylistHandler());
 
 
 

@@ -44,6 +44,17 @@ dependencies {
 
     implementation ("com.github.bumptech.glide:glide:4.16.0")
 
+    implementation ("com.h2database:h2:1.4.200")
+    implementation ("mysql:mysql-connector-java:8.0.33")
+
+    implementation ("androidx.appcompat:appcompat:1.4.1")
+    implementation ("com.android.support:support-annotations:28.0.0")
+
+    implementation ("androidx.core:core-splashscreen:1.0.0-alpha01")
+    implementation ("androidx.core:core-splashscreen:1.0.1")
+
+    implementation ("com.squareup.retrofit2:retrofit:2.9.0")
+    implementation ("com.squareup.retrofit2:converter-gson:2.9.0")
 
     implementation(libs.appcompat)
     implementation(libs.material)

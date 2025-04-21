@@ -69,6 +69,14 @@ public class SearchHandler implements HttpHandler
         String keyword = "%" + SearchString.toLowerCase() + "%";
 
         ArrayList<SearchResult> results = new ArrayList<SearchResult>();
+	try
+	{
+    		Class.forName("org.h2.Driver");
+	}
+	catch (ClassNotFoundException e)
+	{
+    		e.printStackTrace();
+	}
 
 
         try (Connection conn = DriverManager.getConnection("jdbc:h2:~/test"))
@@ -124,3 +132,4 @@ public class SearchHandler implements HttpHandler
         return json;
     }
 }
+

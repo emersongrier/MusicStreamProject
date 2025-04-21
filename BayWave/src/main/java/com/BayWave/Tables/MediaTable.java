@@ -58,6 +58,18 @@ public class MediaTable {
     }
 
     /**
+     * Returns an ArrayList of String tables. Each string table represents a row in the MEDIA table
+     * associated with the given post, except for the first one (at index 0 of the ArrayList) which is a
+     * header containing the attribute names.
+     */
+    public static ArrayList<String[]> getMediaForPost(Connection connection, int postId) throws SQLException {
+        PreparedStatement ps = connection.prepareStatement("SELECT * FROM MEDIA WHERE pst_id=?");
+        ps.setInt(1, postId);
+        ResultSet rs = ps.executeQuery();
+        return TableUtil.getTable(rs);
+    }
+
+    /**
      * Returns an ArrayList of String tables. Each string table represents a row in the MEDIA table,
      * except for the first one (at index 0 of the ArrayList), which is a header containing the attribute names.
      */
