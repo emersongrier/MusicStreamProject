@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="javafx.media">
+    <CLASSES>
+      <root url="jar:///opt/javafx/javafx-sdk-17.0.14/lib/javafx.media.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="javafx.graphics">
+    <CLASSES>
+      <root url="jar:///opt/javafx/javafx-sdk-17.0.14/lib/javafx.graphics.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>
