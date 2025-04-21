@@ -25,7 +25,7 @@ public class RequestServer {
      * @throws IOException
      */
     public static void main(String[] args) throws IOException {
-        HttpsServer server = HttpsServer.create(new InetSocketAddress(8080), 0);
+        HttpsServer server = HttpsServer.create(new InetSocketAddress(8443), 0);
 
         // Load SSL certificate
         String passwordEnv = System.getenv("KEYSTORE_PASSWORD");
