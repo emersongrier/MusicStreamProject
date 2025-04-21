@@ -19,6 +19,7 @@ public class PlaylistAdapter extends RecyclerView.Adapter<PlaylistAdapter.Playli
     private List<Playlist> playlists;
     private OnPlaylistClickListener listener;
 
+
     // Interface for click listener
     public interface OnPlaylistClickListener {
         void onPlaylistClick(Playlist playlist);
@@ -54,9 +55,12 @@ public class PlaylistAdapter extends RecyclerView.Adapter<PlaylistAdapter.Playli
         holder.cardView.setOnClickListener(v -> {
             if (listener != null) {
                 listener.onPlaylistClick(playlist);
+
             }
         });
     }
+
+
 
     @Override
     public int getItemCount() {

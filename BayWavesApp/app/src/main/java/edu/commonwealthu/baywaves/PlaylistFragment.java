@@ -38,6 +38,7 @@ public class PlaylistFragment extends Fragment implements PlaylistAdapter.OnPlay
     private ActivityResultLauncher<Intent> resultLauncher;
 
     private Playlist defaultPlaylist;
+    private PlaylistAdapter.PlaylistViewHolder selectPlaylist;
 
 
 
@@ -101,7 +102,12 @@ public class PlaylistFragment extends Fragment implements PlaylistAdapter.OnPlay
         // Example: Navigate to playlist detail
         // Bundle bundle = new Bundle();
         // bundle.putInt("playlistId", playlist.getId());
-        // Navigation.findNavController(requireView()).navigate(R.id.action_to_playlistDetail, bundle);
+        // Navigation.findNavController(requireView()).navigate(R.id.action_to_playlistDetail, bundle);\
+        LayoutInflater inflater = getLayoutInflater();
+        selectPlaylist.cardView.setOnClickListener(v -> {
+            showCustomDialog(R.layout.new_playlist_dialog);
+        });
+
     }
 
     public void addSongToDefault(Track track) {
@@ -111,11 +117,10 @@ public class PlaylistFragment extends Fragment implements PlaylistAdapter.OnPlay
         }
     }
 
-    public void removeSongToDefault() {
-        for(int i = 1; i<trackRepository.getAllTracks().size(); i++) {
-            if (trackRepository.getTrackById(i).isLocalLikedState()) {
-                likedPlaylist.remove(trackRepository.getTrackById(i));
-            }
+    public void removeSongToDefault(Track track) {
+        if (!likedPlaylist.contains(track)) {
+            likedPlaylist.remove(track);
+            adapter.notifyDataSetChanged();
         }
     }
 

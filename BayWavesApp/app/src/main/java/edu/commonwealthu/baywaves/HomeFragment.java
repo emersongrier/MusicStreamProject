@@ -354,7 +354,7 @@ public class HomeFragment extends Fragment {
                     .getSupportFragmentManager()
                     .findFragmentByTag("playlist_fragment");
             if (playlistFragment != null) {
-                playlistFragment.removeSongToDefault();
+                playlistFragment.removeSongToDefault(currentTrack);
             }
             showCustomToast(getString(R.string.song_unliked));
         }

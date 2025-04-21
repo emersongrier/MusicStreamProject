@@ -424,6 +424,15 @@ public class TrackTable {
         if (trackId == -1) {
             return null;
         }
+        return getTrack(connection, trackId);
+    }
+
+    /**
+     * Returns a string representing the specified row in the TRACK table,
+     * which contains the following attributes in order starting from index 0:
+     * trk_id, trk_name, trk_file, trk_pos, trk_lyrics, trk_len, trk_strms, trk_likes, alb_id.
+     */
+    public static String[] getTrack(Connection connection, int trackId) throws SQLException {
         PreparedStatement ps = connection.prepareStatement("SELECT * FROM TRACK WHERE trk_id=?");
         ps.setInt(1, trackId);
         ResultSet rs = ps.executeQuery();

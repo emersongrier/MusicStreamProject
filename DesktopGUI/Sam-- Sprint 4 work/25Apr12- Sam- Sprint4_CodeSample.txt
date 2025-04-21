@@ -1,0 +1,61 @@
+In Sprint 4, Bailey Inman helped me to upload and connect MusicStreamProject folder from our MusicApp Project GitHub site into my local IntelliJ IDE-- In order to call these functions, 
+passwordValid() and usernameExists() both from Bailey's UserTable.java code file, then he highly recommended me to use IntelliJ IDE. I currently have Apache NetBeans IDE installed on my local
+computer, but Bailey could not help me connect MusicStreamProject folder to Apache NetBeans IDE since he knows nothing about that IDE software -- he just never used it before.
+//------------------------------------------------------------------------------------------------------
+        /*
+        In the call to signIn.setOnAction(), this code section of mine checks whether the username and password both exist in the database system, see in the try block.
+        */
+	signIn.setOnAction(e -> {
+                    if (usernameInput.getText().isEmpty() || passwordInput.getText().isEmpty()) {   
+                        errorMsg.setText("ERROR: Please enter both, your username and password.");
+                        errorMsg.setFont(Font.font("Times New Roman", FontWeight.BOLD, 22));
+                        errorMsg.setFill(Color.RED);
+                        return;// causes this program to fail to display the main page.
+                    }  
+                    
+                    try {
+                        if (usernameExists(getConnection("jdbc:h2:~/test;AUTOCOMMIT=OFF;"), usernameInput.getText()) &&
+                         passwordValid(getConnection("jdbc:h2:~/test;AUTOCOMMIT=OFF;"), usernameInput.getText(), passwordInput.getText())) {
+                            // Now we know both credentials are correct, so the main page will now be displayed.
+                            primaryStage.setScene(mainScene);
+                            usernameInput.clear();
+                            passwordInput.clear();
+                        }
+
+                        else {
+                            errorMsg.setText("ERROR: Username or password does not exist.");
+                            errorMsg.setFont(Font.font("Times New Roman", FontWeight.BOLD, 22));
+                            errorMsg.setFill(Color.RED);
+                            return; // causes this program to fail to display the main page.
+                        }
+
+                    } catch (SQLException ex) {
+                        System.out.println(ex.getMessage());
+                    }
+                    
+        });
+
+
+//------------------------------------------------------------------------------------------------------
+However, each time I run Eli's code: DesktopFrontend.java file on IntelliJ IDE, I get a build-failed error, but no syntax errors in his code, as follows in the output console:
+
+java: module not found: javafx.base
+
+So due to this error, my local IntelliJ IDE fails to generate JavaFX output window pop-up.
+
+On the other hand, Apache NetBeans IDE generates JavaFX output window pop-up each time I run DesktopFrontend.java file with 100% success (i.e. no errors at all causing NetBeans to fail to display output box) and when I close that output box, then NetBeans output console displays a message "BUILD SUCCESSFUL". But since the MusicStreamProject folder is not connected to Apache NetBeans IDE, then I will be sure to do the following:
+
+1. Comment my section of code by placing front-slash star (/*) before the reserved keyword, try, and then place a star front-slash (*/) after the catch block.
+
+2. Copy and paste the following section of code after the try-catch block:
+		primaryStage.setScene(mainScene);
+                usernameInput.clear();
+                passwordInput.clear();
+
+3. and comment the following java import statements as well by placing two front slashes (//) in front of them:
+
+import static com.BayWave.Tables.UserTable.passwordValid;
+import static com.BayWave.Tables.UserTable.usernameExists;
+import static java.sql.DriverManager.getConnection;
+
+import java.sql.SQLException;

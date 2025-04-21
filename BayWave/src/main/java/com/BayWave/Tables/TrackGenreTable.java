@@ -122,6 +122,21 @@ public class TrackGenreTable {
 
     /**
      * Returns an ArrayList of String tables. Each string table represents a row in the TRACK_GENRE table,
+     * associated with the given track, except for the first one (at index 0 of the ArrayList),
+     * which is a header containing the attribute names.
+     */
+    public static ArrayList<String[]> getTableForTrack(Connection connection, int trackId) throws SQLException {
+        PreparedStatement ps = connection.prepareStatement("SELECT * FROM TRACK_GENRE WHERE trk_id=?");
+        ps.setInt(1, trackId);
+        ResultSet rs = ps.executeQuery();
+        if (!rs.isBeforeFirst()) {
+            return null;
+        }
+        return TableUtil.getTable(rs);
+    }
+
+    /**
+     * Returns an ArrayList of String tables. Each string table represents a row in the TRACK_GENRE table,
      * except for the first one (at index 0 of the ArrayList), which is a header containing the attribute names.
      */
     public static ArrayList<String[]> getTable(Connection connection) throws SQLException {
