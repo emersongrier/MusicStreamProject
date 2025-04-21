@@ -6,11 +6,14 @@ import com.sun.net.httpserver.HttpServer;
 import java.io.*;
 import java.net.InetSocketAddress;
 
+import com.sun.net.httpserver.HttpsParameters;
 import com.sun.net.httpserver.HttpsServer;
 import com.sun.net.httpserver.HttpsConfigurator;
 
 import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLEngine;
+import javax.net.ssl.SSLParameters;
 import java.io.*;
 import java.net.InetSocketAddress;
 import java.security.*;
@@ -45,7 +48,24 @@ public class RequestServer {
             SSLContext sslContext = SSLContext.getInstance("TLS");
             sslContext.init(kmf.getKeyManagers(), null, null);
 
-            server.setHttpsConfigurator(new HttpsConfigurator(sslContext));
+            // after sslContext.init(…)…
+            server.setHttpsConfigurator(new HttpsConfigurator(sslContext) {
+                @Override
+                public void configure(HttpsParameters params) {
+                    // get the SSLEngine so we can see which ciphers/protocols the server supports
+                    SSLContext ctx = getSSLContext();
+                    SSLEngine engine = ctx.createSSLEngine();
+                    // explicitly enable all the server’s cipher suites and protocols
+                    params.setCipherSuites(engine.getEnabledCipherSuites());
+                    params.setProtocols(engine.getEnabledProtocols());
+
+                    // you can still grab the default SSLParameters to pull in any other settings
+                    SSLParameters defaultParams = ctx.getDefaultSSLParameters();
+                    params.setNeedClientAuth(false);  // you probably don’t want client certs
+                    params.setSSLParameters(defaultParams);
+                }
+            });
+
         } catch (Exception e) {
             e.printStackTrace();
             throw new RuntimeException("Failed to set up HTTPS", e);
