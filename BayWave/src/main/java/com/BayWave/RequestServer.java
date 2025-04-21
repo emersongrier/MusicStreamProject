@@ -25,6 +25,8 @@ public class RequestServer {
             server.createContext("/ambience", new AmbienceHandler());
         server.createContext("/playlist", new PlaylistHandler());
 
+        //test to push to server
+
 
 
         server.setExecutor(null);
