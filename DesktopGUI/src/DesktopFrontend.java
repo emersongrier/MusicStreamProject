@@ -1,5 +1,5 @@
 //command to run:
-//java --module-path "C:\Users\emcke\Downloads\openjfx-21.0.6_windows-x64_bin-sdk\javafx-sdk-21.0.6\lib" --add-modules javafx.controls,javafx.fxml,javafx.graphics,javafx.media -cp bin DesktopFrontend
+//java --module-path "C:\Users\emcke\MusicStreamProject\DesktopGUI\src\resources\openjfx-21.0.6_windows-x64_bin-sdk\javafx-sdk-21.0.6\lib" --add-modules javafx.controls,javafx.fxml,javafx.graphics,javafx.media -cp bin DesktopFrontend
 
 import java.nio.file.Path;
 import java.util.List;
@@ -274,17 +274,17 @@ public class DesktopFrontend extends Application {
                 playback.setPadding(new Insets(10));
                 HBox controls = new HBox(10);
                 controls.setPadding(new Insets(10));
-                Button back = new Button("<");
-                Button plause = new Button("||");
-                Button forward = new Button(">");
+                Button back = new Button("\u23ee");
+                Button plause = new Button("\u23f8");
+                Button forward = new Button("\u23ed");
                 controls.getChildren().addAll(back, plause, forward);
                 controls.setAlignment(Pos.CENTER);
                 HBox trackProgress = new HBox(10);
                 trackProgress.setPadding(new Insets(10));
-                Label timeElapsed = new Label("5:56");
+                timeElapsed = new Label("5:56");
                 timeElapsed.setStyle("-fx-text-fill: silver");
                 ProgressBar progress = new ProgressBar();
-                new ProgressThread(progress).start();
+                new ProgressThread(progress, songElapsed, songLength).start();
                 //progress.setStyle("-fx-accent: green;");
                 progress.setVisible(true);
                 progress.setManaged(true);
@@ -296,7 +296,7 @@ public class DesktopFrontend extends Application {
                 );
                 PBTimeline.setCycleCount(Animation.INDEFINITE);
                 PBTimeline.play();
-                Label trackLength = new Label("6:49");
+                trackLength = new Label("6:49");
                 trackLength.setStyle("-fx-text-fill: silver");
                 trackProgress.getChildren().addAll(timeElapsed, progress, trackLength);
                 trackProgress.setAlignment(Pos.CENTER);
@@ -324,7 +324,7 @@ public class DesktopFrontend extends Application {
                         else{
                                 plause.setText("\u23f8");
                                 playing = true;
-                                new ProgressThread(progress).start();
+                                new ProgressThread(progress, songElapsed, songLength).start();
                                 mediaPlayer.play();
                         }
                 });
@@ -342,12 +342,12 @@ public class DesktopFrontend extends Application {
                 primaryStage.show();
 
                 signIn.setOnAction(e -> {
-                    if (usernameInput.getText().isEmpty() || passwordInput.getText().isEmpty()) {   
+                    /*if (usernameInput.getText().isEmpty() || passwordInput.getText().isEmpty()) {   
                         errorMsg.setText("ERROR: Please enter both, your username and password.");
                         errorMsg.setFont(Font.font("Times New Roman", FontWeight.BOLD, 22));
                         errorMsg.setFill(Color.RED);
                         return;// causes this program to fail to display the main page.
-                    }  
+                    } */ 
                     
                     /*try {
                         if (usernameExists(getConnection("jdbc:h2:~/test;AUTOCOMMIT=OFF;"), usernameInput.getText()) &&
@@ -428,9 +428,13 @@ public class DesktopFrontend extends Application {
          */
         static class ProgressThread extends Thread {
                 private final ProgressBar progressBar;
+                private final double songElapsed;
+                private final double songLength;
 
-                public ProgressThread(ProgressBar progressBar) {
+                public ProgressThread(ProgressBar progressBar, double songElapsed, double songLength) {
                         this.progressBar = progressBar;
+                        this.songElapsed = songElapsed;
+                        this.songLength = songLength;
                 }
 
                 @Override
