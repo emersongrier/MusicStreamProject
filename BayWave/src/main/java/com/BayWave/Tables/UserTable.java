@@ -20,17 +20,17 @@ public class UserTable {
     /**
      * Register's a user's account, encrypting their password.
      */
-    public static void register(Connection connection, String username, String password) throws SQLException {
+    public static boolean register(Connection connection, String username, String password) throws SQLException {
         try {
             Reset.lock.lock();
             // ensure username is valid
             if (username.contains(" ")) {
                 System.out.println("Username cannot contain whitespace, user not registered");
-                return;
+                return false;
             }
             if (username.isEmpty()) {
                 System.out.println("Username cannot be empty");
-                return;
+                return false;
             }
             // check if user exists
             PreparedStatement ps = connection.prepareStatement(
@@ -39,7 +39,7 @@ public class UserTable {
             ResultSet rs = ps.executeQuery();
             if (rs.isBeforeFirst()) { // ResultSet is not empty, username unavailable
                 System.out.println("Username already exists, user not registered");
-                return;
+                return false;
             }
             ps = connection.prepareStatement(
                     "INSERT INTO USER_ (usr_name, usr_pass) VALUES (?, ?)");
@@ -48,6 +48,7 @@ public class UserTable {
             ps.executeUpdate();
             connection.commit();
             System.out.println("User registered");
+            return true;
         }
         finally {
             Reset.lock.unlock();

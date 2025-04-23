@@ -40,6 +40,7 @@
     <string name="playlist_toolbar_text">Your Playlists</string>
     <string name="new_playlist_hint">Enter Name Here</string>
     <string name="create_playlist">Create</string>
+    <string name="liked_playlists">Liked Songs</string>
 
 
 </resources>

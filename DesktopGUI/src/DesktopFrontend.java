@@ -1,12 +1,12 @@
 //command to run:
-//java --module-path "C:\Users\emcke\Downloads\openjfx-21.0.6_windows-x64_bin-sdk\javafx-sdk-21.0.6\lib" --add-modules javafx.controls,javafx.fxml,javafx.graphics,javafx.media -cp bin DesktopFrontend
+//java --module-path "C:\Users\emcke\MusicStreamProject\DesktopGUI\src\resources\openjfx-21.0.6_windows-x64_bin-sdk\javafx-sdk-21.0.6\lib" --add-modules javafx.controls,javafx.fxml,javafx.graphics,javafx.media -cp bin DesktopFrontend
 
 import java.nio.file.Path;
 import java.util.List;
 import java.util.stream.Collectors;
 import javafx.scene.Node;
 import javax.swing.plaf.synth.Region;
-import javafx.scene.control.ListView;
+
 import javafx.util.Duration;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
@@ -126,6 +126,160 @@ public class DesktopFrontend extends Application {
                 signIn.setAlignment(Pos.CENTER);
                 Text errorMsg = new Text();
                 loginPage.getChildren().addAll(iview, loginTitle, loginDesc, userLabel, usernameInput, passLabel, passwordInput, signIn, errorMsg);
+
+                // CREATE ACCOUNT LANDING PAGE //
+                VBox createAccountPage = new VBox(10);
+                createAccountPage.setPadding(new Insets(10));
+
+                // Create Account page gradient background
+                createAccountPage.setBackground(new Background(new BackgroundFill(
+                                new LinearGradient(0, 0, 0, 1, true, CycleMethod.NO_CYCLE,
+                                                new Stop(0, Color.web("#1a0033")), // Dark purple at the top
+                                                new Stop(1, Color.web("#8756c8")) // Light purple at the bottom
+                                ),
+                                CornerRadii.EMPTY, Insets.EMPTY)));
+
+                createAccountPage.setStyle("-fx-border-color: black;");
+                Text createAccountTitle = new Text("Create Your Account");
+                createAccountTitle.setFont(Font.font("Times New Roman", FontWeight.BOLD, 35));
+                createAccountTitle.setFill(Color.LIGHTGREEN);
+                
+                Text importantNote = new Text("PLEASE NOTE: The asterisk (*) in front of the label"
+                + " denotes this field is required to be entered in.");
+                importantNote.setFont(Font.font("Times New Roman", FontWeight.BOLD, 22));
+                importantNote.setFill(Color.RED);
+                
+                Label newUsernameLabel = new Label("*Username: ");
+                newUsernameLabel.setStyle("-fx-text-fill: red; -fx-font-weight: BOLD");
+                TextField newUsernameInput = new TextField();
+                newUsernameInput.setPromptText("REQUIRED: Please enter your username here.");
+                newUsernameInput.setStyle("-fx-prompt-text-fill: purple;");
+                
+                Label newPasswordLabel = new Label("*Password: ");
+                newPasswordLabel.setStyle("-fx-text-fill: red; -fx-font-weight: BOLD");
+                PasswordField newPasswordInput = new PasswordField();
+                newPasswordInput.setPromptText("REQUIRED: Please enter your password here.");
+                newPasswordInput.setStyle("-fx-prompt-text-fill: purple;");
+                
+                Label confirmPasswordLabel = new Label("*Confirm Password: ");
+                confirmPasswordLabel.setStyle("-fx-text-fill: red; -fx-font-weight: BOLD");
+                PasswordField confirmPasswordInput = new PasswordField();
+                confirmPasswordInput.setPromptText("REQUIRED: Please confirm your password here.");
+                confirmPasswordInput.setStyle("-fx-prompt-text-fill: purple;");
+                
+                Label newEmailLabel = new Label("*Email: ");
+                newEmailLabel.setStyle("-fx-text-fill: red; -fx-font-weight: BOLD");
+                TextField newEmailInput = new TextField();
+                newEmailInput.setPromptText("REQUIRED: Please enter your email here (e.g. someone@example.com).");
+                newEmailInput.setStyle("-fx-prompt-text-fill: purple;");
+                
+                // Assume the user's phone number will be formatted in USA format, i.e. +1 (XXX)-XXX-XXXX.
+                Label newPhoneLabel = new Label("Phone: ");
+                newPhoneLabel.setStyle("-fx-text-fill: silver");
+                TextField newPhoneInput = new TextField();
+                newPhoneInput.setPromptText("Please enter your phone number, e.g. +1 (XXX)-XXX-XXXX.");
+                newPhoneInput.setStyle("-fx-prompt-text-fill: purple;");
+                
+                CheckBox checkEULA = new CheckBox("*I agree to"
+                + " accept the End User License Agreement and Privacy Policy.");
+                checkEULA.setStyle("-fx-text-fill: red; -fx-font-weight: BOLD");
+                        
+                Button createAccount = new Button("Create Account");
+                createAccount.setAlignment(Pos.CENTER);
+                
+                Text createAccountErrorMsg = new Text();
+                
+                createAccount.setOnAction(e -> {
+                    if (newUsernameInput.getText().isEmpty() || 
+                            (newPasswordInput.getText().isEmpty() || confirmPasswordInput.getText().isEmpty()) || 
+                            newEmailInput.getText().isEmpty()) {
+                        createAccountErrorMsg.setText("ERROR: Missing username, email, or password.");
+                        createAccountErrorMsg.setFont(Font.font("Times New Roman", FontWeight.BOLD, 22));
+                        createAccountErrorMsg.setFill(Color.RED);
+                        return;
+                    }
+                    
+                    if ( !newPasswordInput.getText().equals( confirmPasswordInput.getText() ) ){
+                        Alert errorDialog = new Alert(AlertType.ERROR, "Password fields do not match. Try again!", ButtonType.OK);
+                        errorDialog.showAndWait();
+                        return;
+                    }
+                    
+                    if ( !checkEULA.isSelected()){
+                        Alert errorDialog = new Alert(AlertType.ERROR, "You MUST accept the End User License Agreement", ButtonType.OK);
+                        errorDialog.showAndWait();
+                        return;
+                    }
+                    primaryStage.setScene(accountCreationSuccessScene);
+                    newUserIDInput.clear();
+                    newUsernameInput.clear();
+                    newPasswordInput.clear();
+                    confirmPasswordInput.clear();
+                    newEmailInput.clear();
+                    newUserFullNameInput.clear();
+                    newPhoneInput.clear();
+                    birthdateSelect.getEditor().clear();
+                    radioMale.setSelected(false);
+                    radioFemale.setSelected(false);
+                    checkOptIn.setSelected(false);
+                    checkEULA.setSelected(false);
+                });
+                
+
+                
+                Hyperlink toSignInPage = new Hyperlink("Please click here if you already have an account.");
+                toSignInPage.setStyle("-fx-font-size: 20px; -fx-text-fill: lightblue");
+                toSignInPage.setOnAction(e -> {
+                    primaryStage.setScene(loginScene);
+                    newUserIDInput.clear();
+                    newUsernameInput.clear();
+                    newPasswordInput.clear();
+                    confirmPasswordInput.clear();
+                    newEmailInput.clear();
+                    newUserFullNameInput.clear();
+                    newPhoneInput.clear();
+                    birthdateSelect.getEditor().clear();
+                    radioMale.setSelected(false);
+                    radioFemale.setSelected(false);
+                    checkOptIn.setSelected(false);
+                    checkEULA.setSelected(false);
+                });
+                createAccountPage.getChildren().addAll(createAccountTitle, importantNote, newUserIDLabel, newUserIDInput, newUsernameLabel, newUsernameInput);
+                createAccountPage.getChildren().addAll(newPasswordLabel, newPasswordInput, confirmPasswordLabel, confirmPasswordInput, newEmailLabel, newEmailInput);
+                createAccountPage.getChildren().addAll(newUserFullNameLabel, newUserFullNameInput, newPhoneLabel, newPhoneInput, birthdayLabel, birthdateSelect);
+                createAccountPage.getChildren().addAll(genderLabel, radioMale, radioFemale, checkOptIn, checkEULA, createAccount, createAccountErrorMsg, toSignInPage);
+                
+                //Account Creation successful
+                VBox accountCreationSuccessPage = new VBox(10);
+                accountCreationSuccessPage.setPadding(new Insets(10));
+
+                // Account Creation successful page gradient background
+                accountCreationSuccessPage.setBackground(new Background(new BackgroundFill(
+                                new LinearGradient(0, 0, 0, 1, true, CycleMethod.NO_CYCLE,
+                                                new Stop(0, Color.web("#1a0033")), // Dark purple at the top
+                                                new Stop(1, Color.web("#8756c8")) // Light purple at the bottom
+                                ),
+                                CornerRadii.EMPTY, Insets.EMPTY)));
+
+                accountCreationSuccessPage.setStyle("-fx-border-color: black;");
+                
+                File imageFile2 = new File("C:\\Pictures\\Success.jpg");
+                Image img2 = new Image(imageFile2.toURI().toString());
+                ImageView checkmarkImage = new ImageView(img2);
+                checkmarkImage.setFitWidth(50);
+                checkmarkImage.setFitHeight(50);
+                checkmarkImage.setPreserveRatio(true);
+                
+                Text successfulMessage = new Text("Congratulations! You now have successfully created your account.");
+                successfulMessage.setFont(Font.font("Times New Roman", FontWeight.BOLD, 22));
+                successfulMessage.setFill(Color.LIGHTGREEN);
+                
+                Hyperlink backToSignInPage = new Hyperlink("Please click here to go back to the Sign-in page.");
+                backToSignInPage.setStyle("-fx-font-size: 20px; -fx-text-fill: lightblue");
+                backToSignInPage.setOnAction(e -> {
+                    primaryStage.setScene(loginScene);
+                });
+                accountCreationSuccessPage.getChildren().addAll(checkmarkImage, successfulMessage, backToSignInPage);
         
                 // MAIN PAGE //
                 StackPane sp = new StackPane();
@@ -274,17 +428,17 @@ public class DesktopFrontend extends Application {
                 playback.setPadding(new Insets(10));
                 HBox controls = new HBox(10);
                 controls.setPadding(new Insets(10));
-                Button back = new Button("<");
-                Button plause = new Button("||");
-                Button forward = new Button(">");
+                Button back = new Button("\u23ee");
+                Button plause = new Button("\u23f8");
+                Button forward = new Button("\u23ed");
                 controls.getChildren().addAll(back, plause, forward);
                 controls.setAlignment(Pos.CENTER);
                 HBox trackProgress = new HBox(10);
                 trackProgress.setPadding(new Insets(10));
-                Label timeElapsed = new Label("5:56");
+                timeElapsed = new Label("5:56");
                 timeElapsed.setStyle("-fx-text-fill: silver");
                 ProgressBar progress = new ProgressBar();
-                new ProgressThread(progress).start();
+                new ProgressThread(progress, songElapsed, songLength).start();
                 //progress.setStyle("-fx-accent: green;");
                 progress.setVisible(true);
                 progress.setManaged(true);
@@ -296,7 +450,7 @@ public class DesktopFrontend extends Application {
                 );
                 PBTimeline.setCycleCount(Animation.INDEFINITE);
                 PBTimeline.play();
-                Label trackLength = new Label("6:49");
+                trackLength = new Label("6:49");
                 trackLength.setStyle("-fx-text-fill: silver");
                 trackProgress.getChildren().addAll(timeElapsed, progress, trackLength);
                 trackProgress.setAlignment(Pos.CENTER);
@@ -324,7 +478,7 @@ public class DesktopFrontend extends Application {
                         else{
                                 plause.setText("\u23f8");
                                 playing = true;
-                                new ProgressThread(progress).start();
+                                new ProgressThread(progress, songElapsed, songLength).start();
                                 mediaPlayer.play();
                         }
                 });
@@ -342,12 +496,12 @@ public class DesktopFrontend extends Application {
                 primaryStage.show();
 
                 signIn.setOnAction(e -> {
-                    if (usernameInput.getText().isEmpty() || passwordInput.getText().isEmpty()) {   
+                    /*if (usernameInput.getText().isEmpty() || passwordInput.getText().isEmpty()) {   
                         errorMsg.setText("ERROR: Please enter both, your username and password.");
                         errorMsg.setFont(Font.font("Times New Roman", FontWeight.BOLD, 22));
                         errorMsg.setFill(Color.RED);
                         return;// causes this program to fail to display the main page.
-                    }  
+                    } */ 
                     
                     /*try {
                         if (usernameExists(getConnection("jdbc:h2:~/test;AUTOCOMMIT=OFF;"), usernameInput.getText()) &&
@@ -428,9 +582,13 @@ public class DesktopFrontend extends Application {
          */
         static class ProgressThread extends Thread {
                 private final ProgressBar progressBar;
+                private final double songElapsed;
+                private final double songLength;
 
-                public ProgressThread(ProgressBar progressBar) {
+                public ProgressThread(ProgressBar progressBar, double songElapsed, double songLength) {
                         this.progressBar = progressBar;
+                        this.songElapsed = songElapsed;
+                        this.songLength = songLength;
                 }
 
                 @Override

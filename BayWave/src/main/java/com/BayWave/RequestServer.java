@@ -1,8 +1,5 @@
 package com.BayWave;
 
-import com.BayWave.SongHandler;
-import com.sun.net.httpserver.HttpServer;
-
 import java.io.*;
 import java.net.InetSocketAddress;
 
@@ -12,12 +9,7 @@ import com.sun.net.httpserver.HttpsConfigurator;
 
 import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLEngine;
-import javax.net.ssl.SSLParameters;
-import java.io.*;
-import java.net.InetSocketAddress;
 import java.security.*;
-import java.security.cert.CertificateException;
 
 public class RequestServer {
 
@@ -65,7 +57,8 @@ public class RequestServer {
         server.createContext("/song/metadata", new SongDataHandler());
         server.createContext("/search", new SearchHandler());
         server.createContext("/ambience", new AmbienceHandler());
-        server.createContext("/playlist", new PlaylistHandler());
+        server.createContext("/playlist", new PlaylistGetHandler());
+        server.createContext("/user/post", new UserPostHandler());
 
         server.setExecutor(null);
         server.start();
