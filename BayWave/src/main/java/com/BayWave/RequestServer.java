@@ -65,6 +65,7 @@ public class RequestServer {
         server.createContext("/search", new SearchHandler());
         server.createContext("/ambience", new AmbienceHandler());
         server.createContext("/playlist", new PlaylistGetHandler());
+        server.createContext("/user/post", new UserPostHandler());
 
         //test to push to server
 
