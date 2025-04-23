@@ -56,27 +56,16 @@ public class RequestServer {
                     params.setSSLParameters(getSSLContext().getDefaultSSLParameters());
                 }
             });
-
-
         } catch (Exception e) {
             e.printStackTrace();
             throw new RuntimeException("Failed to set up HTTPS", e);
         }
 
-
-
-        //creates contexts that will then be handled by class handler designed for that context
-
-        //creates simple song requests
         server.createContext("/song", new SongHandler());
         server.createContext("/song/metadata", new SongDataHandler());
         server.createContext("/search", new SearchHandler());
         server.createContext("/ambience", new AmbienceHandler());
         server.createContext("/playlist", new PlaylistHandler());
-
-        //test to push to server
-
-
 
         server.setExecutor(null);
         server.start();
