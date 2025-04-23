@@ -8,11 +8,11 @@ import com.BayWave.Tables.PlaylistTable;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.Map;
 
 import static com.BayWave.ParseQuery.parseQuery;
+import static com.BayWave.Util.ServerUtil.getConnection;
 
 
 class PlaylistHandler implements HttpHandler
@@ -63,15 +63,5 @@ class PlaylistHandler implements HttpHandler
                 }
             }
         }
-    }
-
-    /**
-     * Replace this method with your actual database connection logic.
-     */
-    private static Connection getConnection() throws SQLException {
-        // Example using DriverManager.
-        // Update the URL, username, and password according to your DB setup.
-        String url = "jdbc:h2:~/test;AUTOCOMMIT=OFF;";
-        return DriverManager.getConnection(url);
     }
 }
