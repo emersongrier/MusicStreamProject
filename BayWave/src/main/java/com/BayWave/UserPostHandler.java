@@ -27,7 +27,7 @@ class UserPostHandler implements HttpHandler
         }
 
         String query = exchange.getRequestURI().getQuery();
-        Map<String, String> params = parseQuery(query);
+        Map<String, String> params = parseQuery(query); // TODO: fix parsing
         String userName = params.get("username");
         String password = params.get("password");
 
