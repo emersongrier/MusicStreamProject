@@ -1,5 +1,6 @@
 package edu.commonwealthu.baywaves;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -11,6 +12,7 @@ import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toolbar;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.annotation.NonNull;
@@ -19,6 +21,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.appbar.MaterialToolbar;
@@ -28,12 +31,17 @@ import java.util.List;
 
 public class PlaylistFragment extends Fragment implements PlaylistAdapter.OnPlaylistClickListener {
 
-    private RecyclerView recyclerView;
+    private View view;
+
+    private RecyclerView recyclerView, playlistView;
     private PlaylistAdapter adapter;
+    private SongAdapter songAdapter;
     private List<Playlist> playlists = new ArrayList<>();
     private List<Playlist> loadedPlaylists;
     private TrackRepository trackRepository;
     private List<Track> likedPlaylist;
+    private Toolbar toolbar;
+
 
     private ActivityResultLauncher<Intent> resultLauncher;
 
@@ -45,7 +53,7 @@ public class PlaylistFragment extends Fragment implements PlaylistAdapter.OnPlay
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_playlist, container, false);
+        view = inflater.inflate(R.layout.fragment_playlist, container, false);
 
         setHasOptionsMenu(true);
 
@@ -67,6 +75,8 @@ public class PlaylistFragment extends Fragment implements PlaylistAdapter.OnPlay
 
         defaultPlaylist = new Playlist(1, getString(R.string.liked_songs), getString(R.string.liked_songs_desc), R.drawable.like_default, 0, 1, likedPlaylist);
 
+
+
         recyclerView = view.findViewById(R.id.playlist_view);
         // Use GridLayoutManager for a grid of playlists (2 columns)
         recyclerView.setLayoutManager(new GridLayoutManager(getContext(), 2));
@@ -75,10 +85,29 @@ public class PlaylistFragment extends Fragment implements PlaylistAdapter.OnPlay
         adapter = new PlaylistAdapter(playlists, this);
         recyclerView.setAdapter(adapter);
 
+        /*for inside of playlist
+        playlistView = view.findViewById(R.id.current_playlist);
+        songAdapter = new SongAdapter(likedPlaylist);
+        playlistView.setAdapter(songAdapter);*/
+        //playlistView = view.findViewById(R.id.current_playlist);
+        //playlistView.setLayoutManager(new LinearLayoutManager(getContext()));
+
         // Load data (replace with your actual data loading logic)
         loadPlaylists();
 
         return view;
+    }
+
+
+    /*
+        Replaces current layout with new layout
+     */
+    private void setViewLayout(int id){
+        LayoutInflater inflater = (LayoutInflater) getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        view = inflater.inflate(id, null);
+        ViewGroup rootView = (ViewGroup) getView();
+        rootView.removeAllViews();
+        rootView.addView(view);
     }
 
     private void loadPlaylists() {
@@ -98,15 +127,23 @@ public class PlaylistFragment extends Fragment implements PlaylistAdapter.OnPlay
     public void onPlaylistClick(Playlist playlist) {
         // Handle playlist click - navigate to playlist details
         //Toast.makeText(getContext(), "Clicked: " + playlist.getName(), Toast.LENGTH_SHORT).show();
+        setViewLayout(R.layout.inside_playlist);
+        playlistView = view.findViewById(R.id.current_playlist);
+        playlistView.setLayoutManager(new LinearLayoutManager(getContext()));
+        songAdapter = new SongAdapter(playlist.getSongs());
+        playlistView.setAdapter(songAdapter);
+        int width = playlistView.getWidth();
+
+        MaterialToolbar playlistToolbar = view.findViewById(R.id.playlistToolbar);
+        if (playlistToolbar != null) {
+            playlistToolbar.setTitle(playlist.getName());
+            //playlistToolbar.setMinimumWidth(width);
+        }
 
         // Example: Navigate to playlist detail
         // Bundle bundle = new Bundle();
         // bundle.putInt("playlistId", playlist.getId());
         // Navigation.findNavController(requireView()).navigate(R.id.action_to_playlistDetail, bundle);\
-        LayoutInflater inflater = getLayoutInflater();
-        selectPlaylist.cardView.setOnClickListener(v -> {
-            showCustomDialog(R.layout.new_playlist_dialog);
-        });
 
     }
 
@@ -114,7 +151,10 @@ public class PlaylistFragment extends Fragment implements PlaylistAdapter.OnPlay
         if (!likedPlaylist.contains(track)) {
             likedPlaylist.add(track);
             adapter.notifyDataSetChanged();
+            //songAdapter.notifyDataSetChanged();
         }
+        recyclerView.setAdapter(adapter);
+        //playlistView.setAdapter(songAdapter);
     }
 
     public void removeSongToDefault(Track track) {
@@ -156,6 +196,7 @@ public class PlaylistFragment extends Fragment implements PlaylistAdapter.OnPlay
         Button createButton = dialogView.findViewById(R.id.createNewPlaylist);
 
         AlertDialog dialog = builder.create();
+        dialog.show();
         createButton.setOnClickListener(v -> {
             String name = playlistName.getText().toString().trim();
             if (!name.isEmpty()) {
@@ -182,7 +223,7 @@ public class PlaylistFragment extends Fragment implements PlaylistAdapter.OnPlay
             }
         });
 
-        dialog.show();
+        //dialog.show();
         Window window = dialog.getWindow();
         if (window != null) {
             window.setBackgroundDrawableResource(R.color.background);
