@@ -3,19 +3,20 @@ package com.BayWave;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 
+import com.BayWave.Tables.PlaylistTable;
+
 import java.io.*;
-import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import static com.BayWave.ParseQuery.parseQuery;
 
 
 class PlaylistHandler implements HttpHandler
 {
-
-    //path to music storage
-    private static final String MUSIC_DIR = "/home/developer/Downloads/MusicStorage/";
 
     @Override
     public void handle(HttpExchange exchange) throws IOException {
@@ -26,44 +27,51 @@ class PlaylistHandler implements HttpHandler
 
         String query = exchange.getRequestURI().getQuery();
         Map<String, String> params = parseQuery(query);
-        String fileName = params.get("file");
-        String artistName = params.get("artist");
-        String albumName = params.get("album");
+        String userName = params.get("user");
+        String playlistName = params.get("playlist");
 
-        //sanitizes request
-        fileName = fileName.replaceAll("[^a-zA-Z0-9._ -]", "");
-
-        if (fileName == null) {
-            exchange.sendResponseHeaders(400, -1);
-            return;
+        // Establish database connection. Replace with your connection details.
+        Connection connection = null;
+        try {
+            connection = getConnection();
+        } catch (SQLException e) {
+            System.err.println("Unable to establish DB connection: " + e.getMessage());
+            System.exit(1);
         }
 
-        //creates full path to song file; sends 404 if not exists
-        // TODO: USE TRACK ID FOR FILENAME
-        File songFile = new File(MUSIC_DIR + fileName);
-        if (!songFile.exists()) {
-            exchange.sendResponseHeaders(404, -1);
-            return;
-        }
-
-        exchange.getResponseHeaders().set("Content-Type", "audio/mpeg");
-        exchange.sendResponseHeaders(200, songFile.length());
-
-        try (OutputStream os = exchange.getResponseBody();
-             InputStream is = new BufferedInputStream(new FileInputStream(songFile)))
-        {
-
-            byte[] buffer = new byte[8192];
-            int bytesRead;
-            while ((bytesRead = is.read(buffer)) != -1) {
-                os.write(buffer, 0, bytesRead);
+        if (playlistName != null && userName != null) {
+            String[] playlistResult = null;
+            try {
+                playlistResult = PlaylistTable.getPlaylist(connection, userName, playlistName);
             }
-            os.flush();
-            System.out.println("Finished streaming: " + songFile.getName());
+            catch (SQLException e) {
+                System.err.println("Error processing playlist \"" + playlistName + "\": " + e.getMessage());
+            }
+            if (playlistResult == null) {
+                exchange.sendResponseHeaders(400, -1);
+                return;
+            }
+            for (String cell : playlistResult) {
+                byte[] responseBytes = cell.getBytes(StandardCharsets.UTF_8);
+                exchange.sendResponseHeaders(200, responseBytes.length);
 
-        } catch (IOException e) {
-            e.printStackTrace();
+                try (OutputStream os = exchange.getResponseBody()) {
+                    os.write(responseBytes);
+                }
+                catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
         }
     }
 
+    /**
+     * Replace this method with your actual database connection logic.
+     */
+    private static Connection getConnection() throws SQLException {
+        // Example using DriverManager.
+        // Update the URL, username, and password according to your DB setup.
+        String url = "jdbc:h2:~/test;AUTOCOMMIT=OFF;";
+        return DriverManager.getConnection(url);
+    }
 }
