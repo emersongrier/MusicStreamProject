@@ -15,7 +15,7 @@ import static com.BayWave.ParseQuery.parseQuery;
 import static com.BayWave.Util.ServerUtil.getConnection;
 
 
-class PlaylistHandler implements HttpHandler
+class PlaylistGetHandler implements HttpHandler
 {
 
     @Override
