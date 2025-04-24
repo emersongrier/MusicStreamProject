@@ -7,6 +7,7 @@ import com.sun.net.httpserver.HttpHandler;
 
 import java.io.*;
 import java.sql.Connection;
+import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.Map;
 
@@ -44,6 +45,7 @@ class SongHandler implements HttpHandler
         String[] trackinfo;
 
         try {
+            DriverManager.registerDriver(new org.h2.Driver());
             connection = ServerUtil.getConnection();
             trackinfo = TrackTable.getTrack(connection,Integer.parseInt(trckid));
         } catch (SQLException e) {
