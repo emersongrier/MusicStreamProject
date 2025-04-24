@@ -8,6 +8,7 @@ import java.net.URI;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import javax.net.ssl.HttpsURLConnection;
 
 
 public class MusicClient {
@@ -15,7 +16,7 @@ public class MusicClient {
     private final String baseUrl;
 
     public MusicClient() {
-        this.baseUrl = "http://140.82.13.163:8080/song";
+        this.baseUrl = "https://baywave.org:8080/song";
     }
 
     /**Downloads a song by filename and stores it in a temporary file.
@@ -28,7 +29,7 @@ public class MusicClient {
         String songUrl = baseUrl + "?file=" + filename;
         URI uri = new URI(songUrl);
         URL url = uri.toURL();
-        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+        HttpsURLConnection conn = (HttpsURLConnection) url.openConnection();
         conn.setRequestMethod("GET");
 
             try (InputStream in = conn.getInputStream()) {
