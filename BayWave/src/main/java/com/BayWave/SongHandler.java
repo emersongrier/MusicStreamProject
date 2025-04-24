@@ -53,6 +53,7 @@ class SongHandler implements HttpHandler
             exchange.sendResponseHeaders(404, -1);
             return;
         }
+        System.out.println(trackinfo[2]);
 
         songFile = new File(trackinfo[2]);
 
