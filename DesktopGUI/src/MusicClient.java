@@ -25,7 +25,8 @@ public class MusicClient {
     * @return Path to the temporary downloaded music file
     * @throws Exception on download error
     */
-    public Path downloadSong(String trckid) throws Exception {
+    public Path downloadSong(String trckid) throws Exception
+    {
         String songUrl = baseUrl + "?trckid=" + trckid;
         URI uri = new URI(songUrl);
         URL url = uri.toURL();
@@ -38,5 +39,7 @@ public class MusicClient {
                 return tempFile;
             }
         }
+
+
 
 }
