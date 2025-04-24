@@ -180,6 +180,29 @@ public class DesktopFrontend extends Application {
                 newPhoneInput.setPromptText("Please enter your phone number, e.g. +1 (XXX)-XXX-XXXX.");
                 newPhoneInput.setStyle("-fx-prompt-text-fill: purple;");
                 
+                Label birthdayLabel = new Label("Birthday: ");
+                birthdayLabel.setStyle("-fx-text-fill: silver");
+                DatePicker birthdateSelect = new DatePicker();
+                birthdateSelect.setPrefWidth(225);
+                birthdateSelect.setPromptText("Please select your birthdate.");
+                birthdateSelect.getEditor().setStyle("-fx-prompt-text-fill: purple;");
+                
+                Label genderLabel = new Label("Gender: ");
+                genderLabel.setStyle("-fx-text-fill: silver");
+                RadioButton radioMale = new RadioButton("Male");
+                RadioButton radioFemale = new RadioButton("Female");
+                ToggleGroup genderGroup = new ToggleGroup();
+                radioMale.setToggleGroup(genderGroup);
+                radioMale.setStyle("-fx-text-fill: silver");
+                radioFemale.setToggleGroup(genderGroup);
+                radioFemale.setStyle("-fx-text-fill: silver");
+                HBox gender = new HBox(30);
+                gender.getChildren().addAll(genderLabel, radioMale, radioFemale);
+                
+                CheckBox checkOptIn = new CheckBox("Opt-in to receive newsletters,"
+                + " promotional emails, or other personalized notifications.");
+                checkOptIn.setStyle("-fx-text-fill: silver");
+                
                 CheckBox checkEULA = new CheckBox("*I agree to"
                 + " accept the End User License Agreement and Privacy Policy.");
                 checkEULA.setStyle("-fx-text-fill: red; -fx-font-weight: BOLD");
@@ -247,7 +270,7 @@ public class DesktopFrontend extends Application {
                 createAccountPage.getChildren().addAll(createAccountTitle, importantNote, newUserIDLabel, newUserIDInput, newUsernameLabel, newUsernameInput);
                 createAccountPage.getChildren().addAll(newPasswordLabel, newPasswordInput, confirmPasswordLabel, confirmPasswordInput, newEmailLabel, newEmailInput);
                 createAccountPage.getChildren().addAll(newUserFullNameLabel, newUserFullNameInput, newPhoneLabel, newPhoneInput, birthdayLabel, birthdateSelect);
-                createAccountPage.getChildren().addAll(genderLabel, radioMale, radioFemale, checkOptIn, checkEULA, createAccount, createAccountErrorMsg, toSignInPage);
+                createAccountPage.getChildren().addAll(gender, checkOptIn, checkEULA, createAccount, createAccountErrorMsg, toSignInPage);
                 
                 //Account Creation successful
                 VBox accountCreationSuccessPage = new VBox(10);

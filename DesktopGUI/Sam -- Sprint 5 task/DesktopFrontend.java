@@ -69,16 +69,17 @@ public class DesktopFrontend extends Application {
                 existingUserLabel.setStyle("-fx-text-fill: silver");
                 TextField existingUsernameInput = new TextField();
                 existingUsernameInput.setPromptText("Please enter your username here.");
-                existingUsernameInput.setStyle("-fx-prompt-text-fill: purple;");
+                existingUsernameInput.setStyle("-fx-prompt-text-fill: purple; -fx-cursor: text;");
                 
                 Label existingPasswordLabel = new Label("Password: ");
                 existingPasswordLabel.setStyle("-fx-text-fill: silver");
                 PasswordField existingPasswordInput = new PasswordField();
                 existingPasswordInput.setPromptText("Please enter your password here.");
-                existingPasswordInput.setStyle("-fx-prompt-text-fill: purple;");
+                existingPasswordInput.setStyle("-fx-prompt-text-fill: purple; -fx-cursor: text;");
                 
                 Button signIn = new Button("Sign In");
                 signIn.setAlignment(Pos.CENTER);
+                signIn.setStyle("-fx-cursor: hand;");
                 
                 Text loginErrorMsg = new Text();
                 
@@ -116,7 +117,7 @@ public class DesktopFrontend extends Application {
                 
                 
                 Hyperlink toCreateAccountPage = new Hyperlink("Please click here if you have not created an account.");
-                toCreateAccountPage.setStyle("-fx-font-size: 20px; -fx-text-fill: lightblue");
+                toCreateAccountPage.setStyle("-fx-font-size: 20px; -fx-text-fill: lightblue; -fx-cursor: hand;");
                 toCreateAccountPage.setOnAction(e -> {
                     primaryStage.setScene(createAccountScene);
                     existingUsernameInput.clear();
@@ -151,49 +152,52 @@ public class DesktopFrontend extends Application {
                 newUserIDLabel.setStyle("-fx-text-fill: red; -fx-font-weight: BOLD");
                 TextField newUserIDInput = new TextField();
                 newUserIDInput.setPromptText("REQUIRED: Please enter your userID here.");
-                newUserIDInput.setStyle("-fx-prompt-text-fill: purple;");
+                newUserIDInput.setStyle("-fx-prompt-text-fill: purple; -fx-cursor: text;");
                 
                 Label newUsernameLabel = new Label("*Username: ");
                 newUsernameLabel.setStyle("-fx-text-fill: red; -fx-font-weight: BOLD");
                 TextField newUsernameInput = new TextField();
                 newUsernameInput.setPromptText("REQUIRED: Please enter your username here.");
-                newUsernameInput.setStyle("-fx-prompt-text-fill: purple;");
+                newUsernameInput.setStyle("-fx-prompt-text-fill: purple; -fx-cursor: text;");
                 
                 Label newPasswordLabel = new Label("*Password: ");
                 newPasswordLabel.setStyle("-fx-text-fill: red; -fx-font-weight: BOLD");
                 PasswordField newPasswordInput = new PasswordField();
                 newPasswordInput.setPromptText("REQUIRED: Please enter your password here.");
-                newPasswordInput.setStyle("-fx-prompt-text-fill: purple;");
+                newPasswordInput.setStyle("-fx-prompt-text-fill: purple; -fx-cursor: text;");
                 
                 Label confirmPasswordLabel = new Label("*Confirm Password: ");
                 confirmPasswordLabel.setStyle("-fx-text-fill: red; -fx-font-weight: BOLD");
                 PasswordField confirmPasswordInput = new PasswordField();
                 confirmPasswordInput.setPromptText("REQUIRED: Please confirm your password here.");
-                confirmPasswordInput.setStyle("-fx-prompt-text-fill: purple;");
+                confirmPasswordInput.setStyle("-fx-prompt-text-fill: purple; -fx-cursor: text;");
                 
                 Label newEmailLabel = new Label("*Email: ");
                 newEmailLabel.setStyle("-fx-text-fill: red; -fx-font-weight: BOLD");
                 TextField newEmailInput = new TextField();
                 newEmailInput.setPromptText("REQUIRED: Please enter your email here (e.g. someone@example.com).");
-                newEmailInput.setStyle("-fx-prompt-text-fill: purple;");
+                newEmailInput.setStyle("-fx-prompt-text-fill: purple; -fx-cursor: text;");
                 
                 // Assume the user's first name will be followed by last name; also middle initial is indeed OPTIONAL.
                 Label newUserFullNameLabel = new Label("Full name: ");
                 newUserFullNameLabel.setStyle("-fx-text-fill: silver");
                 TextField newUserFullNameInput = new TextField();
                 newUserFullNameInput.setPromptText("Please enter your full name (e.g. first-name, OPTIONAL: middle inital, last-name).");
-                newUserFullNameInput.setStyle("-fx-prompt-text-fill: purple;");
+                newUserFullNameInput.setStyle("-fx-prompt-text-fill: purple; -fx-cursor: text;");
                 
                 // Assume the user's phone number will be formatted in USA format, i.e. +1 (XXX)-XXX-XXXX.
                 Label newPhoneLabel = new Label("Phone: ");
                 newPhoneLabel.setStyle("-fx-text-fill: silver");
                 TextField newPhoneInput = new TextField();
                 newPhoneInput.setPromptText("Please enter your phone number, e.g. +1 (XXX)-XXX-XXXX.");
-                newPhoneInput.setStyle("-fx-prompt-text-fill: purple;");
+                newPhoneInput.setStyle("-fx-prompt-text-fill: purple; -fx-cursor: text;");
                 
                 Label birthdayLabel = new Label("Birthday: ");
                 birthdayLabel.setStyle("-fx-text-fill: silver");
                 DatePicker birthdateSelect = new DatePicker();
+                birthdateSelect.setPrefWidth(225);
+                birthdateSelect.setPromptText("Please select your birthdate.");
+                birthdateSelect.getEditor().setStyle("-fx-prompt-text-fill: purple; -fx-cursor: text;");
                 
                 Label genderLabel = new Label("Gender: ");
                 genderLabel.setStyle("-fx-text-fill: silver");
@@ -201,20 +205,23 @@ public class DesktopFrontend extends Application {
                 RadioButton radioFemale = new RadioButton("Female");
                 ToggleGroup genderGroup = new ToggleGroup();
                 radioMale.setToggleGroup(genderGroup);
-                radioMale.setStyle("-fx-text-fill: silver");
+                radioMale.setStyle("-fx-text-fill: silver; -fx-cursor: hand;");
                 radioFemale.setToggleGroup(genderGroup);
-                radioFemale.setStyle("-fx-text-fill: silver");
+                radioFemale.setStyle("-fx-text-fill: silver; -fx-cursor: hand;");
+                HBox gender = new HBox(30);
+                gender.getChildren().addAll(genderLabel, radioMale, radioFemale);
                 
                 CheckBox checkOptIn = new CheckBox("Opt-in to receive newsletters,"
                 + " promotional emails, or other personalized notifications.");
-                checkOptIn.setStyle("-fx-text-fill: silver");
+                checkOptIn.setStyle("-fx-text-fill: silver; -fx-cursor: hand;");
                 
                 CheckBox checkEULA = new CheckBox("*I agree to"
                 + " accept the End User License Agreement and Privacy Policy.");
-                checkEULA.setStyle("-fx-text-fill: red; -fx-font-weight: BOLD");
+                checkEULA.setStyle("-fx-text-fill: red; -fx-font-weight: BOLD; -fx-cursor: hand;");
                         
                 Button createAccount = new Button("Create Account");
                 createAccount.setAlignment(Pos.CENTER);
+                createAccount.setStyle("-fx-cursor: hand;");
                 
                 Text createAccountErrorMsg = new Text();
                 
@@ -257,7 +264,7 @@ public class DesktopFrontend extends Application {
 
                 
                 Hyperlink toSignInPage = new Hyperlink("Please click here if you already have an account.");
-                toSignInPage.setStyle("-fx-font-size: 20px; -fx-text-fill: lightblue");
+                toSignInPage.setStyle("-fx-font-size: 20px; -fx-text-fill: lightblue; -fx-cursor: hand;");
                 toSignInPage.setOnAction(e -> {
                     primaryStage.setScene(loginScene);
                     newUserIDInput.clear();
@@ -276,7 +283,7 @@ public class DesktopFrontend extends Application {
                 createAccountPage.getChildren().addAll(createAccountTitle, importantNote, newUserIDLabel, newUserIDInput, newUsernameLabel, newUsernameInput);
                 createAccountPage.getChildren().addAll(newPasswordLabel, newPasswordInput, confirmPasswordLabel, confirmPasswordInput, newEmailLabel, newEmailInput);
                 createAccountPage.getChildren().addAll(newUserFullNameLabel, newUserFullNameInput, newPhoneLabel, newPhoneInput, birthdayLabel, birthdateSelect);
-                createAccountPage.getChildren().addAll(genderLabel, radioMale, radioFemale, checkOptIn, checkEULA, createAccount, createAccountErrorMsg, toSignInPage);
+                createAccountPage.getChildren().addAll(gender, checkOptIn, checkEULA, createAccount, createAccountErrorMsg, toSignInPage);
                 
                 //Account Creation successful
                 VBox accountCreationSuccessPage = new VBox(10);
@@ -304,7 +311,7 @@ public class DesktopFrontend extends Application {
                 successfulMessage.setFill(Color.LIGHTGREEN);
                 
                 Hyperlink backToSignInPage = new Hyperlink("Please click here to go back to the Sign-in page.");
-                backToSignInPage.setStyle("-fx-font-size: 20px; -fx-text-fill: lightblue");
+                backToSignInPage.setStyle("-fx-font-size: 20px; -fx-text-fill: lightblue; -fx-cursor: hand;");
                 backToSignInPage.setOnAction(e -> {
                     primaryStage.setScene(loginScene);
                 });
