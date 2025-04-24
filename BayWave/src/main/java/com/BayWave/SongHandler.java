@@ -55,7 +55,9 @@ class SongHandler implements HttpHandler
             return;
         }
 
-        songFile = new File(MUSIC_DIR + trackinfo[2]);
+        System.out.println("path" + trackinfo[2]);
+
+        songFile = new File(trackinfo[2]);
 
         if (!songFile.exists()) {
             exchange.sendResponseHeaders(404, -1);
@@ -78,7 +80,7 @@ class SongHandler implements HttpHandler
             System.out.println("Finished streaming: " + songFile.getName());
 
         } catch (IOException e) {
-            e.printStackTrace();
+            //e.printStackTrace();
         }
     }
 
