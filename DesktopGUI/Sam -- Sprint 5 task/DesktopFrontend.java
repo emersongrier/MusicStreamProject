@@ -311,7 +311,7 @@ public class DesktopFrontend extends Application {
                 successfulMessage.setFill(Color.LIGHTGREEN);
                 
                 Hyperlink backToSignInPage = new Hyperlink("Please click here to go back to the Sign-in page.");
-                backToSignInPage.setStyle("-fx-font-size: 20px; -fx-text-fill: lightblue");
+                backToSignInPage.setStyle("-fx-font-size: 20px; -fx-text-fill: lightblue; -fx-cursor: hand;");
                 backToSignInPage.setOnAction(e -> {
                     primaryStage.setScene(loginScene);
                 });
