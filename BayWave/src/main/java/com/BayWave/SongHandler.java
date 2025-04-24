@@ -1,12 +1,14 @@
 package com.BayWave;
 
+import com.BayWave.Tables.TrackTable;
+import com.BayWave.Util.ServerUtil;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 
 import java.io.*;
-import java.net.URLDecoder;
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import static com.BayWave.ParseQuery.parseQuery;
 
@@ -26,21 +28,34 @@ class SongHandler implements HttpHandler
 
         String query = exchange.getRequestURI().getQuery();
         Map<String, String> params = parseQuery(query);
-        String fileName = params.get("file");
-        String artistName = params.get("artist");
-        String albumName = params.get("album");
+        String trckid = params.get("trkid");
 
         //sanitizes request
-        fileName = fileName.replaceAll("[^a-zA-Z0-9._ -]", "");
+        trckid = trckid.replaceAll("[^a-zA-Z0-9._ -]", "");
 
-        if (fileName == null) {
+        if (trckid == null) {
             exchange.sendResponseHeaders(400, -1);
             return;
         }
 
-        //creates full path to song file; sends 404 if not exists
-        // TODO: USE TRACK ID FOR FILENAME
-        File songFile = new File(MUSIC_DIR + fileName);
+        Connection connection;
+        String[] trackinfo;
+
+        try {
+            connection = ServerUtil.getConnection();
+            trackinfo = TrackTable.getTrack(connection,Integer.parseInt(trckid));
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        File songFile;
+
+        if (trackinfo == null) {
+            exchange.sendResponseHeaders(404, -1);
+            return;
+        }
+
+        songFile = new File(trackinfo[2]);
+
         if (!songFile.exists()) {
             exchange.sendResponseHeaders(404, -1);
             return;
