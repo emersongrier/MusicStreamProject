@@ -47,6 +47,7 @@ class SongHandler implements HttpHandler
             connection = ServerUtil.getConnection();
             trackinfo = TrackTable.getTrack(connection,Integer.parseInt(trckid));
         } catch (SQLException e) {
+            e.printStackTrace();
             throw new RuntimeException(e);
         }
         File songFile;
