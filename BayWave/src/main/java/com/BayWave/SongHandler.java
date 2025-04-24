@@ -45,7 +45,6 @@ class SongHandler implements HttpHandler
         String[] trackinfo;
 
         try {
-            DriverManager.registerDriver(new org.h2.Driver());
             connection = ServerUtil.getConnection();
             trackinfo = TrackTable.getTrack(connection,Integer.parseInt(trckid));
         } catch (SQLException e) {

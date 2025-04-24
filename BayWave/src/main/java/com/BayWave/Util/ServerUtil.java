@@ -11,6 +11,7 @@ public class ServerUtil {
     public static Connection getConnection() throws SQLException {
         // Example using DriverManager.
         // Update the URL, username, and password according to your DB setup.
+        DriverManager.registerDriver(new org.h2.Driver());
         String url = "jdbc:h2:~/test;AUTOCOMMIT=OFF;";
         return DriverManager.getConnection(url);
     }
