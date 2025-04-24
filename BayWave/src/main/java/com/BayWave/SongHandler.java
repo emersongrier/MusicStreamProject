@@ -32,8 +32,6 @@ class SongHandler implements HttpHandler
 
         //sanitizes request
         trckid = trckid.replaceAll("[^a-zA-Z0-9._ -]", "");
-
-        System.out.println("sanitized");
         System.out.println("sanitized" + trckid);
 
         if (trckid == null) {
@@ -51,14 +49,13 @@ class SongHandler implements HttpHandler
             throw new RuntimeException(e);
         }
         File songFile;
+        System.out.println("trackpath" + trackinfo);
+        System.out.println("trackpath" + trackinfo[2]);
 
         if (trackinfo == null) {
             exchange.sendResponseHeaders(404, -1);
             return;
         }
-
-        System.out.println("path" + trackinfo[2]);
-        System.out.println("path");
 
 
         songFile = new File(trackinfo[2]);
