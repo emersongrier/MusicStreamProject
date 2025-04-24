@@ -21,19 +21,19 @@ public class MusicClient {
 
     /**Downloads a song by filename and stores it in a temporary file.
     * Use the path to create media object for javafx*
-    * @param filename Name of the file (e.g., "test.mp3")
-    * @return Path to the temporary downloaded file
+    * @param trckid trackid
+    * @return Path to the temporary downloaded music file
     * @throws Exception on download error
     */
-    public Path downloadSong(String filename) throws Exception {
-        String songUrl = baseUrl + "?file=" + filename;
+    public Path downloadSong(String trckid) throws Exception {
+        String songUrl = baseUrl + "?trckid=" + trckid;
         URI uri = new URI(songUrl);
         URL url = uri.toURL();
         HttpsURLConnection conn = (HttpsURLConnection) url.openConnection();
         conn.setRequestMethod("GET");
 
             try (InputStream in = conn.getInputStream()) {
-                Path tempFile = Files.createTempFile("music", "" + filename);
+                Path tempFile = Files.createTempFile("music", "" + trckid);
                 Files.copy(in, tempFile, java.nio.file.StandardCopyOption.REPLACE_EXISTING);
                 return tempFile;
             }
