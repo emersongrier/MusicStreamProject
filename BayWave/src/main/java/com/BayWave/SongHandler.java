@@ -28,10 +28,11 @@ class SongHandler implements HttpHandler
 
         String query = exchange.getRequestURI().getQuery();
         Map<String, String> params = parseQuery(query);
-        String trckid = params.get("trkid");
+        String trckid = params.get("trckid");
 
         //sanitizes request
         trckid = trckid.replaceAll("[^a-zA-Z0-9._ -]", "");
+        System.out.println("sanitized" + trckid);
 
         if (trckid == null) {
             exchange.sendResponseHeaders(400, -1);
@@ -53,9 +54,8 @@ class SongHandler implements HttpHandler
             exchange.sendResponseHeaders(404, -1);
             return;
         }
-        System.out.println(trackinfo[2]);
 
-        songFile = new File(trackinfo[2]);
+        songFile = new File(MUSIC_DIR + trackinfo[2]);
 
         if (!songFile.exists()) {
             exchange.sendResponseHeaders(404, -1);

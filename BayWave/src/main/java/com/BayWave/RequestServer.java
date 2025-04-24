@@ -49,7 +49,7 @@ public class RequestServer {
                 }
             });
         } catch (Exception e) {
-            e.printStackTrace();
+            //e.printStackTrace();
             throw new RuntimeException("Failed to set up HTTPS", e);
         }
 
