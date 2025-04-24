@@ -194,6 +194,9 @@ public class DesktopFrontend extends Application {
                 Label birthdayLabel = new Label("Birthday: ");
                 birthdayLabel.setStyle("-fx-text-fill: silver");
                 DatePicker birthdateSelect = new DatePicker();
+                birthdateSelect.setPrefWidth(225);
+                birthdateSelect.setPromptText("Please select your birthdate.");
+                birthdateSelect.getEditor().setStyle("-fx-prompt-text-fill: purple;");
                 
                 Label genderLabel = new Label("Gender: ");
                 genderLabel.setStyle("-fx-text-fill: silver");
