@@ -207,6 +207,8 @@ public class DesktopFrontend extends Application {
                 radioMale.setStyle("-fx-text-fill: silver");
                 radioFemale.setToggleGroup(genderGroup);
                 radioFemale.setStyle("-fx-text-fill: silver");
+                HBox gender = new HBox(10);
+                gender.getChildren().addAll(genderLabel, radioMale, radioFemale);
                 
                 CheckBox checkOptIn = new CheckBox("Opt-in to receive newsletters,"
                 + " promotional emails, or other personalized notifications.");
@@ -279,7 +281,7 @@ public class DesktopFrontend extends Application {
                 createAccountPage.getChildren().addAll(createAccountTitle, importantNote, newUserIDLabel, newUserIDInput, newUsernameLabel, newUsernameInput);
                 createAccountPage.getChildren().addAll(newPasswordLabel, newPasswordInput, confirmPasswordLabel, confirmPasswordInput, newEmailLabel, newEmailInput);
                 createAccountPage.getChildren().addAll(newUserFullNameLabel, newUserFullNameInput, newPhoneLabel, newPhoneInput, birthdayLabel, birthdateSelect);
-                createAccountPage.getChildren().addAll(genderLabel, radioMale, radioFemale, checkOptIn, checkEULA, createAccount, createAccountErrorMsg, toSignInPage);
+                createAccountPage.getChildren().addAll(gender, checkOptIn, checkEULA, createAccount, createAccountErrorMsg, toSignInPage);
                 
                 //Account Creation successful
                 VBox accountCreationSuccessPage = new VBox(10);
