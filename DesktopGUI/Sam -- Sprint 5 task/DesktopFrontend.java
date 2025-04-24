@@ -207,7 +207,7 @@ public class DesktopFrontend extends Application {
                 radioMale.setStyle("-fx-text-fill: silver");
                 radioFemale.setToggleGroup(genderGroup);
                 radioFemale.setStyle("-fx-text-fill: silver");
-                HBox gender = new HBox(10);
+                HBox gender = new HBox(30);
                 gender.getChildren().addAll(genderLabel, radioMale, radioFemale);
                 
                 CheckBox checkOptIn = new CheckBox("Opt-in to receive newsletters,"
