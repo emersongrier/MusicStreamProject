@@ -47,12 +47,10 @@ class SongHandler implements HttpHandler
             connection = ServerUtil.getConnection();
             trackinfo = TrackTable.getTrack(connection,Integer.parseInt(trckid));
         } catch (SQLException e) {
-            e.printStackTrace();
+            System.out.println(e);
             throw new RuntimeException(e);
         }
         File songFile;
-        System.out.println("trackpath" + trackinfo);
-        System.out.println("trackpath" + trackinfo[2]);
 
         if (trackinfo == null) {
             exchange.sendResponseHeaders(404, -1);
