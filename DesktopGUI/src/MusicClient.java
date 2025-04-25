@@ -1,9 +1,6 @@
-//
-
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
 //import java.net.MalformedURLException;
 import java.net.URI;
 //import java.net.URISyntaxException;
@@ -14,7 +11,6 @@ import java.nio.file.Path;
 import java.util.stream.Collectors;
 import javax.net.ssl.HttpsURLConnection;
 
-
 public class MusicClient {
 
     private final String baseUrl;
@@ -24,11 +20,11 @@ public class MusicClient {
     }
 
     /**Downloads a song by filename and stores it in a temporary file.
-    * Use the path to create media object for javafx*
-    * @param trckid trackid
-    * @return Path to the temporary downloaded music file
-    * @throws Exception on download error
-    */
+     * Use the path to create media object for javafx*
+     * @param trckid trackid
+     * @return Path to the temporary downloaded music file
+     * @throws Exception on download error
+     */
     public Path downloadSong(String trckid) throws Exception
     {
         String songUrl = baseUrl + "/song?trckid=" + trckid;
@@ -37,11 +33,11 @@ public class MusicClient {
         HttpsURLConnection conn = (HttpsURLConnection) url.openConnection();
         conn.setRequestMethod("GET");
 
-            try (InputStream in = conn.getInputStream()) {
-                Path tempFile = Files.createTempFile("music", "" + trckid);
-                Files.copy(in, tempFile, java.nio.file.StandardCopyOption.REPLACE_EXISTING);
-                return tempFile;
-            }
+        try (InputStream in = conn.getInputStream()) {
+            Path tempFile = Files.createTempFile("music", "" + trckid);
+            Files.copy(in, tempFile, java.nio.file.StandardCopyOption.REPLACE_EXISTING);
+            return tempFile;
+        }
     }
 
     public String downloadSongData(String trckid) throws Exception
@@ -59,15 +55,15 @@ public class MusicClient {
 
     /**
      * //for testing
-    public static void main(String[] args)
-    {
-        MusicClient mc = new MusicClient();
-        try {
-            System.out.println(mc.downloadSongData("1"));
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
+     public static void main(String[] args)
+     {
+     MusicClient mc = new MusicClient();
+     try {
+     System.out.println(mc.downloadSongData("1"));
+     } catch (Exception e) {
+     throw new RuntimeException(e);
+     }
+     }
      **/
 
 }
