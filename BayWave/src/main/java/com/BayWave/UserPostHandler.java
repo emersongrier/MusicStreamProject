@@ -19,7 +19,7 @@ class UserPostHandler implements HttpHandler
 
     @Override
     public void handle(HttpExchange exchange) throws IOException {
-
+        System.out.println("Handling post request...");
         if (!"POST".equals(exchange.getRequestMethod())) {
             exchange.sendResponseHeaders(405, -1);
             return;
