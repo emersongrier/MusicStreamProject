@@ -24,7 +24,7 @@ class UserPostHandler implements HttpHandler
             exchange.sendResponseHeaders(405, -1);
             return;
         }
-
+        System.out.println("parsing post request...");
         Map<String, String> params = parsePostRequest(exchange);
         System.out.println("parsePostRequest DONE");
         if (params == null) {
