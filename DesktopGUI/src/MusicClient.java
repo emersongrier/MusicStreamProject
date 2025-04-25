@@ -53,17 +53,29 @@ public class MusicClient {
         }
     }
 
-    /**
-     * //for testing
+    public String searchDb(String searchstring, int limit, int offset) throws Exception
+    {
+
+        String songUrl = baseUrl + "/search?searchstring=" + URLEncoder.encode(searchstring, "UTF-8") + "&limit=" + URLEncoder.encode("" + limit, "UTF-8") + "&offset=" + URLEncoder.encode("" + offset, "UTF-8");
+        URL url = new URI(songUrl).toURL();
+        HttpsURLConnection conn = (HttpsURLConnection) url.openConnection();
+        conn.setRequestMethod("GET");
+
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(conn.getInputStream()))) {
+            return reader.lines().collect(Collectors.joining());
+        }
+    }
+
+
+     //for testing
      public static void main(String[] args)
      {
      MusicClient mc = new MusicClient();
      try {
-     System.out.println(mc.downloadSongData("1"));
+     System.out.println(mc.searchDb("Jazz",10,0));
      } catch (Exception e) {
      throw new RuntimeException(e);
      }
      }
-     **/
 
 }
