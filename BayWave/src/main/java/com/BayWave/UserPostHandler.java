@@ -10,8 +10,8 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Map;
 
-import static com.BayWave.ParseQuery.parseQuery;
 import static com.BayWave.Util.ServerUtil.getConnection;
+import static com.BayWave.Util.ServerUtil.parsePostRequest;
 
 
 class UserPostHandler implements HttpHandler
@@ -19,15 +19,17 @@ class UserPostHandler implements HttpHandler
 
     @Override
     public void handle(HttpExchange exchange) throws IOException {
-        // TODO: FIX
 
         if (!"POST".equals(exchange.getRequestMethod())) {
             exchange.sendResponseHeaders(405, -1);
             return;
         }
 
-        String query = exchange.getRequestURI().getQuery();
-        Map<String, String> params = parseQuery(query); // TODO: fix parsing
+        Map<String, String> params = parsePostRequest(exchange);
+        if (params == null) {
+            exchange.sendResponseHeaders(400, -1);
+            return;
+        }
         String userName = params.get("username");
         String password = params.get("password");
 
