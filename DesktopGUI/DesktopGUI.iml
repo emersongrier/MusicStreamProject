@@ -15,5 +15,7 @@
     <orderEntry type="library" name="javafx.media" level="project" />
     <orderEntry type="library" name="javafx.swing" level="project" />
     <orderEntry type="library" name="javafx.web" level="project" />
+    <orderEntry type="library" name="gson-2.13.1" level="project" />
+    <orderEntry type="library" name="javafx-swt" level="project" />
   </component>
 </module>

@@ -1,3 +1,7 @@
+
+
+import com.google.gson.Gson;
+
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -44,28 +48,48 @@ public class MusicClient {
         }
     }
 
-    public String downloadSongData(String trckid, String username, String password) throws Exception {
-        String songUrl = baseUrl + "/song/metadata";
+    public String downloadSongData(String trckid, String username, String password) {
+        try {
+            String songUrl = baseUrl + "/song/metadata";
+            URL url = new URI(songUrl).toURL();
+            HttpsURLConnection conn = (HttpsURLConnection) url.openConnection();
+            conn.setRequestMethod("POST");
+            conn.setDoOutput(true);
 
-        URL url = new URI(songUrl).toURL();
-        HttpsURLConnection conn = (HttpsURLConnection) url.openConnection();
-        conn.setRequestMethod("POST");
-        conn.setDoOutput(true);  // Important: needed for POST
+            // Tell server it's JSON
+            conn.setRequestProperty("Content-Type", "application/json");
 
-        // Prepare data to send
-        String urlParameters = "trckid=" + URLEncoder.encode(trckid, "UTF-8") +
-                "&username=" + URLEncoder.encode(username, "UTF-8") +
-                "&password=" + URLEncoder.encode(password, "UTF-8");
+            // Build JSON
+            Map<String, String> jsonMap = new HashMap<>();
+            jsonMap.put("trckid", trckid);
+            jsonMap.put("username", username);
+            jsonMap.put("password", password);
+            Gson gson = new Gson();
+            String json = gson.toJson(jsonMap);
 
-        try (OutputStream os = conn.getOutputStream()) {
-            byte[] input = urlParameters.getBytes(StandardCharsets.UTF_8);
-            os.write(input, 0, input.length);
-        }
+            // Send request body
+            try (OutputStream os = conn.getOutputStream()) {
+                byte[] input = json.getBytes(StandardCharsets.UTF_8);
+                os.write(input, 0, input.length);
+            }
 
-        try (BufferedReader reader = new BufferedReader(new InputStreamReader(conn.getInputStream()))) {
-            return reader.lines().collect(Collectors.joining());
+            int responseCode = conn.getResponseCode();
+            if (responseCode == 200) {
+                // Success
+                try (BufferedReader reader = new BufferedReader(new InputStreamReader(conn.getInputStream()))) {
+                    return reader.lines().collect(Collectors.joining());
+                }
+            } else {
+                // Failure (403, 404, etc) → just return null
+                return null;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
         }
     }
+
+
 
 
     public String searchDb(String searchstring, int limit, int offset) throws Exception
@@ -128,7 +152,7 @@ public class MusicClient {
          try
          {
              System.out.println(mc.downloadSongData("1","emersonTest2","passwordTest2"));
-             System.out.println(mc.downloadSongData("1","emersonTest2","passwordFalse"));
+             System.out.println(mc.downloadSongData("1","emersonTest2","passwordTest3"));
          }
          catch (Exception e)
          {
