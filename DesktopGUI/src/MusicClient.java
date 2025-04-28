@@ -2,12 +2,16 @@ import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 //import java.net.MalformedURLException;
+import java.io.OutputStream;
 import java.net.URI;
 //import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.stream.Collectors;
 import javax.net.ssl.HttpsURLConnection;
 
@@ -66,8 +70,47 @@ public class MusicClient {
         }
     }
 
+    public boolean createAccount(String username, String password) {
+        boolean completed = false;
+        try {
+            URL url = new URL("https://baywave.org:8080/user/post"); // adjust URL
+            HttpsURLConnection conn = (HttpsURLConnection) url.openConnection();
+            conn.setRequestMethod("POST");
+            conn.setDoOutput(true);
+            conn.setRequestProperty("Content-Type", "application/json; charset=UTF-8");
 
-     //for testing
+            String json = buildJson(username, password);
+
+            try (OutputStream os = conn.getOutputStream()) {
+                byte[] input = json.getBytes(StandardCharsets.UTF_8);
+                os.write(input, 0, input.length);
+            }
+
+            int responseCode = conn.getResponseCode();
+            if (responseCode == 201) {
+                completed = true;
+            } else {
+                System.err.println("Server responded with code: " + responseCode);
+            }
+
+            conn.disconnect();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return completed;
+    }
+
+    private static String buildJson(String username, String password) {
+        return "{\"username\":\"" + escapeJson(username) + "\",\"password\":\"" + escapeJson(password) + "\"}";
+    }
+
+    private static String escapeJson(String text) {
+        if (text == null) return "";
+        return text.replace("\\", "\\\\").replace("\"", "\\\"");
+    }
+
+
+    //for testing
      /*public static void main(String[] args)
      {
      MusicClient mc = new MusicClient();
