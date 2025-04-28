@@ -127,9 +127,8 @@ public class MusicClient {
          MusicClient mc = new MusicClient();
          try
          {
-             System.out.println(mc.createAccount("emersonTest2","passwordTest2"));
-             System.out.println(mc.downloadSongData("1","emersonTest2","passwordFalse"));
              System.out.println(mc.downloadSongData("1","emersonTest2","passwordTest2"));
+             System.out.println(mc.downloadSongData("1","emersonTest2","passwordFalse"));
          }
          catch (Exception e)
          {
