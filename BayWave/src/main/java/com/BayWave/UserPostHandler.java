@@ -19,17 +19,14 @@ class UserPostHandler implements HttpHandler
 
     @Override
     public void handle(HttpExchange exchange) throws IOException {
-        System.out.println("Handling post request...");
         if (!"POST".equals(exchange.getRequestMethod())) {
             exchange.sendResponseHeaders(405, -1);
-            return;
+            System.exit(1);
         }
-        System.out.println("parsing post request...");
         Map<String, String> params = parsePostRequest(exchange);
-        System.out.println("parsePostRequest DONE");
         if (params == null) {
             exchange.sendResponseHeaders(400, -1);
-            return;
+            System.exit(1);
         }
         String userName = params.get("username");
         String password = params.get("password");

@@ -36,6 +36,7 @@ class PlaylistGetHandler implements HttpHandler
             connection = getConnection();
         } catch (SQLException e) {
             System.err.println("Unable to establish DB connection: " + e.getMessage());
+            exchange.sendResponseHeaders(400, -1);
             System.exit(1);
         }
 
@@ -46,10 +47,12 @@ class PlaylistGetHandler implements HttpHandler
             }
             catch (SQLException e) {
                 System.err.println("Error processing playlist \"" + playlistName + "\": " + e.getMessage());
+                exchange.sendResponseHeaders(400, -1);
+                System.exit(1);
             }
             if (playlistResult == null) {
                 exchange.sendResponseHeaders(400, -1);
-                return;
+                System.exit(1);
             }
             for (String cell : playlistResult) {
                 byte[] responseBytes = cell.getBytes(StandardCharsets.UTF_8);

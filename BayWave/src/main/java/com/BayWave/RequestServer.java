@@ -59,6 +59,7 @@ public class RequestServer {
         server.createContext("/ambience", new AmbienceHandler());
         server.createContext("/playlist", new PlaylistGetHandler());
         server.createContext("/user/post", new UserPostHandler());
+        server.createContext("/user/metadata", new UserGetHandler());
 
         server.setExecutor(null);
         server.start();
