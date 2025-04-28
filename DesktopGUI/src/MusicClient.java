@@ -111,14 +111,17 @@ public class MusicClient {
 
 
     //for testing
-     /*public static void main(String[] args)
+     public static void main(String[] args)
      {
-     MusicClient mc = new MusicClient();
-     try {
-     System.out.println(mc.searchDb("Jazz",10,0));
-     } catch (Exception e) {
-     throw new RuntimeException(e);
+         MusicClient mc = new MusicClient();
+         try
+         {
+             System.out.println(mc.createAccount("emersonTest1","passwordTest1"));
+         }
+         catch (Exception e)
+         {
+             throw new RuntimeException(e);
+         }
      }
-     }*/
 
 }
