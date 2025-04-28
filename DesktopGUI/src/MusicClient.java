@@ -44,18 +44,29 @@ public class MusicClient {
         }
     }
 
-    public String downloadSongData(String trckid) throws Exception
-    {
+    public String downloadSongData(String trckid, String username, String password) throws Exception {
+        String songUrl = baseUrl + "/song/metadata";
 
-        String songUrl = baseUrl + "/song/metadata?trckid=" + URLEncoder.encode(trckid, "UTF-8");
         URL url = new URI(songUrl).toURL();
         HttpsURLConnection conn = (HttpsURLConnection) url.openConnection();
-        conn.setRequestMethod("GET");
+        conn.setRequestMethod("POST");
+        conn.setDoOutput(true);  // Important: needed for POST
+
+        // Prepare data to send
+        String urlParameters = "trckid=" + URLEncoder.encode(trckid, "UTF-8") +
+                "&username=" + URLEncoder.encode(username, "UTF-8") +
+                "&password=" + URLEncoder.encode(password, "UTF-8");
+
+        try (OutputStream os = conn.getOutputStream()) {
+            byte[] input = urlParameters.getBytes(StandardCharsets.UTF_8);
+            os.write(input, 0, input.length);
+        }
 
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(conn.getInputStream()))) {
             return reader.lines().collect(Collectors.joining());
         }
     }
+
 
     public String searchDb(String searchstring, int limit, int offset) throws Exception
     {
@@ -116,7 +127,9 @@ public class MusicClient {
          MusicClient mc = new MusicClient();
          try
          {
-             System.out.println(mc.createAccount("emersonTest1","passwordTest1"));
+             System.out.println(mc.createAccount("emersonTest2","passwordTest2"));
+             System.out.println(mc.downloadSongData("1","emersonTest2","passwordFalse"));
+             System.out.println(mc.downloadSongData("1","emersonTest2","passwordTest2"));
          }
          catch (Exception e)
          {
