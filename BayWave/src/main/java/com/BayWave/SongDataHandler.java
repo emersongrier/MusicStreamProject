@@ -53,6 +53,7 @@ public class SongDataHandler implements HttpHandler {
             boolean valid = UserTable.passwordValid(connection, username, password);
             if (!valid) {
                 exchange.sendResponseHeaders(403, -1); // Forbidden
+                exchange.getResponseBody().close();
                 return;
             }
 
