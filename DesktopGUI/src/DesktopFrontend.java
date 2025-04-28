@@ -3,10 +3,13 @@
 
 import java.nio.file.Path;
 import java.util.List;
+import java.util.ArrayList;
 import java.util.stream.Collectors;
 import javafx.scene.Node;
 import javax.swing.plaf.synth.Region;
+import javax.swing.text.html.ListView;
 
+import javafx.scene.control.Alert.AlertType;
 import javafx.util.Duration;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
@@ -42,6 +45,7 @@ import javafx.geometry.Side;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
+import com.google.gson.*;
 
 //import static com.BayWave.Tables.UserTable.passwordValid;
 //import static com.BayWave.Tables.UserTable.usernameExists;
@@ -52,13 +56,13 @@ import javafx.scene.text.Text;
 public class DesktopFrontend extends Application {
 
         // private Stage window;
-        private Scene mainScene, loginScene;
+        private Scene mainScene, loginScene, createAccountScene, accountCreationSuccessScene;
         private static double songElapsed, songLength;
-        private static String currentSong, currentArtist, currentAlbumCover, currentSongPath; 
+        private static String currentSong, currentArtist, currentAlbumCover, currentSongPath, songID; 
         private static Label timeElapsed, trackLength;
         private static boolean playing = false;
 
-        private final List<String> songList = List.of(
+        /*private final List<String> songList = List.of(
                 "022.mp3", "Invariance.mp3", "8bit Dungeon Boss.mp3", "Investigations.mp3",
                 "8bit Dungeon Level.mp3", "Iron Bacon.mp3", "A Little Faith.mp3", "Iron Horse - Distressed.mp3",
                 "A Mission.mp3", "Iron Horse.mp3", "A Singular Perversion.mp3", "Irregular.mp3",
@@ -72,7 +76,7 @@ public class DesktopFrontend extends Application {
                 "Air Prelude.mp3", "Jingle Bells Calm.mp3", "Airport Lounge.mp3", "Jingle Bells.mp3",
                 "Airship Serenity.mp3", "Juniper.mp3", "Alchemists Tower.mp3", "Junkyard Tribe.mp3",
                 "Alien Restaurant.mp3", "Just As Soon.mp3", "All This.mp3", "Just Nasty.mp3"
-        );
+        );*/
 
         @Override
         public void start(Stage primaryStage) {
@@ -84,6 +88,7 @@ public class DesktopFrontend extends Application {
                 currentSongPath = "Jalandhar.mp3";
                 currentAlbumCover = "/resources/images/aGiantGoliathAteMyCar.jpg";
                 String defaultMusicImage = "/resources/images/defaultMusicPlaying.png";
+                songID = "879";
                 songLength = 88615;
                 songElapsed = 70000;
                 String user = "Eli McKercher";
@@ -167,7 +172,7 @@ public class DesktopFrontend extends Application {
                 confirmPasswordInput.setPromptText("REQUIRED: Please confirm your password here.");
                 confirmPasswordInput.setStyle("-fx-prompt-text-fill: purple;");
                 
-                Label newEmailLabel = new Label("*Email: ");
+                Label newEmailLabel = new Label("Email: ");
                 newEmailLabel.setStyle("-fx-text-fill: red; -fx-font-weight: BOLD");
                 TextField newEmailInput = new TextField();
                 newEmailInput.setPromptText("REQUIRED: Please enter your email here (e.g. someone@example.com).");
@@ -180,29 +185,6 @@ public class DesktopFrontend extends Application {
                 newPhoneInput.setPromptText("Please enter your phone number, e.g. +1 (XXX)-XXX-XXXX.");
                 newPhoneInput.setStyle("-fx-prompt-text-fill: purple;");
                 
-                Label birthdayLabel = new Label("Birthday: ");
-                birthdayLabel.setStyle("-fx-text-fill: silver");
-                DatePicker birthdateSelect = new DatePicker();
-                birthdateSelect.setPrefWidth(225);
-                birthdateSelect.setPromptText("Please select your birthdate.");
-                birthdateSelect.getEditor().setStyle("-fx-prompt-text-fill: purple;");
-                
-                Label genderLabel = new Label("Gender: ");
-                genderLabel.setStyle("-fx-text-fill: silver");
-                RadioButton radioMale = new RadioButton("Male");
-                RadioButton radioFemale = new RadioButton("Female");
-                ToggleGroup genderGroup = new ToggleGroup();
-                radioMale.setToggleGroup(genderGroup);
-                radioMale.setStyle("-fx-text-fill: silver");
-                radioFemale.setToggleGroup(genderGroup);
-                radioFemale.setStyle("-fx-text-fill: silver");
-                HBox gender = new HBox(30);
-                gender.getChildren().addAll(genderLabel, radioMale, radioFemale);
-                
-                CheckBox checkOptIn = new CheckBox("Opt-in to receive newsletters,"
-                + " promotional emails, or other personalized notifications.");
-                checkOptIn.setStyle("-fx-text-fill: silver");
-                
                 CheckBox checkEULA = new CheckBox("*I agree to"
                 + " accept the End User License Agreement and Privacy Policy.");
                 checkEULA.setStyle("-fx-text-fill: red; -fx-font-weight: BOLD");
@@ -214,8 +196,7 @@ public class DesktopFrontend extends Application {
                 
                 createAccount.setOnAction(e -> {
                     if (newUsernameInput.getText().isEmpty() || 
-                            (newPasswordInput.getText().isEmpty() || confirmPasswordInput.getText().isEmpty()) || 
-                            newEmailInput.getText().isEmpty()) {
+                            (newPasswordInput.getText().isEmpty() || confirmPasswordInput.getText().isEmpty())) {
                         createAccountErrorMsg.setText("ERROR: Missing username, email, or password.");
                         createAccountErrorMsg.setFont(Font.font("Times New Roman", FontWeight.BOLD, 22));
                         createAccountErrorMsg.setFill(Color.RED);
@@ -234,17 +215,11 @@ public class DesktopFrontend extends Application {
                         return;
                     }
                     primaryStage.setScene(accountCreationSuccessScene);
-                    newUserIDInput.clear();
                     newUsernameInput.clear();
                     newPasswordInput.clear();
                     confirmPasswordInput.clear();
                     newEmailInput.clear();
-                    newUserFullNameInput.clear();
                     newPhoneInput.clear();
-                    birthdateSelect.getEditor().clear();
-                    radioMale.setSelected(false);
-                    radioFemale.setSelected(false);
-                    checkOptIn.setSelected(false);
                     checkEULA.setSelected(false);
                 });
                 
@@ -254,23 +229,17 @@ public class DesktopFrontend extends Application {
                 toSignInPage.setStyle("-fx-font-size: 20px; -fx-text-fill: lightblue");
                 toSignInPage.setOnAction(e -> {
                     primaryStage.setScene(loginScene);
-                    newUserIDInput.clear();
                     newUsernameInput.clear();
                     newPasswordInput.clear();
                     confirmPasswordInput.clear();
                     newEmailInput.clear();
-                    newUserFullNameInput.clear();
                     newPhoneInput.clear();
-                    birthdateSelect.getEditor().clear();
-                    radioMale.setSelected(false);
-                    radioFemale.setSelected(false);
-                    checkOptIn.setSelected(false);
                     checkEULA.setSelected(false);
                 });
-                createAccountPage.getChildren().addAll(createAccountTitle, importantNote, newUserIDLabel, newUserIDInput, newUsernameLabel, newUsernameInput);
+                createAccountPage.getChildren().addAll(createAccountTitle, importantNote, newUsernameLabel, newUsernameInput);
                 createAccountPage.getChildren().addAll(newPasswordLabel, newPasswordInput, confirmPasswordLabel, confirmPasswordInput, newEmailLabel, newEmailInput);
-                createAccountPage.getChildren().addAll(newUserFullNameLabel, newUserFullNameInput, newPhoneLabel, newPhoneInput, birthdayLabel, birthdateSelect);
-                createAccountPage.getChildren().addAll(gender, checkOptIn, checkEULA, createAccount, createAccountErrorMsg, toSignInPage);
+                createAccountPage.getChildren().addAll(newPhoneLabel, newPhoneInput);
+                createAccountPage.getChildren().addAll(checkEULA, createAccount, createAccountErrorMsg, toSignInPage);
                 
                 //Account Creation successful
                 VBox accountCreationSuccessPage = new VBox(10);
@@ -306,8 +275,8 @@ public class DesktopFrontend extends Application {
         
                 // MAIN PAGE //
                 StackPane sp = new StackPane();
-
                 BorderPane root = new BorderPane();
+                MusicClient client = new MusicClient();
 
                 // Main Page Gradient Background
                 root.setBackground(new Background(new BackgroundFill(
@@ -327,22 +296,27 @@ public class DesktopFrontend extends Application {
                 //VBox searchBarResults = new VBox(10);
                 TextField searchBar = new TextField();
                 searchBar.setAlignment(Pos.CENTER);
-                ListView<String> listView = new ListView<>();
-                ObservableList<String> filteredList = FXCollections.observableArrayList(songList);
+                ListView<String> listView = new ListView<String>();
+                ObservableList<String> filteredList;
                 listView.setItems(filteredList);
                 listView.setVisible(false);
                 listView.setPrefHeight(96); // ~4 rows * 24px row height
                 listView.setMaxHeight(96);
                 listView.setFixedCellSize(24);
                 searchBar.textProperty().addListener((obs, oldVal, newVal) -> {
-                        List<String> matches = songList.stream()
-                                .filter(song -> song.toLowerCase().contains(newVal.toLowerCase()))
-                                .collect(Collectors.toList());
+                        JsonArray json = JsonParser.parseString(client.searchDb(newVal, 10, 0)).getAsJsonArray();
+                        List<String> matches = new ArrayList<>();
+                        for(JsonElement element : json){
+                                JsonObject obj = element.getAsJsonObject();
+                                matches.add(obj.get("trk_name").getAsString());
+                        }
                         filteredList.setAll(matches);
                         listView.setVisible(!matches.isEmpty() && !newVal.isEmpty());
                 });
                 //searchBarResults.getChildren().addAll(searchBar, listView);
                 //searchBar.setStyle("-fx-background-color: lightsteelblue;;");
+                
+
                 Button createButton = new Button("+");
                 createButton.setShape(new Circle(15));
                 Button profileButton = new Button("E");
@@ -452,7 +426,7 @@ public class DesktopFrontend extends Application {
                 HBox controls = new HBox(10);
                 controls.setPadding(new Insets(10));
                 Button back = new Button("\u23ee");
-                Button plause = new Button("\u23f8");
+                Button plause = new Button("\u23f5");
                 Button forward = new Button("\u23ed");
                 controls.getChildren().addAll(back, plause, forward);
                 controls.setAlignment(Pos.CENTER);
@@ -481,10 +455,9 @@ public class DesktopFrontend extends Application {
                 bottom.getChildren().addAll(smallAlbumCover, trackDesc, playback);
                 root.setBottom(bottom);
 
-                MusicClient client = new MusicClient();
                 Path songPath = null;
                 try {
-                        songPath = client.downloadSong(currentSongPath);
+                        songPath = client.downloadSong(songID);
                 } catch (Exception e) {
                         // TODO Auto-generated catch block
                         e.printStackTrace();

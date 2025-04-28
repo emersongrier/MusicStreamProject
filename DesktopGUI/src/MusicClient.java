@@ -68,7 +68,7 @@ public class MusicClient {
 
 
      //for testing
-     public static void main(String[] args)
+     /*public static void main(String[] args)
      {
      MusicClient mc = new MusicClient();
      try {
@@ -76,6 +76,6 @@ public class MusicClient {
      } catch (Exception e) {
      throw new RuntimeException(e);
      }
-     }
+     }*/
 
 }
