@@ -21,7 +21,7 @@ class UserGetHandler implements HttpHandler
 
     @Override
     public void handle(HttpExchange exchange) throws IOException {
-        exchange.sendResponseHeaders(400, -1);
+        System.out.println("Getting user");
         if (!"GET".equals(exchange.getRequestMethod())) {
             exchange.sendResponseHeaders(405, -1);
             System.exit(1);
