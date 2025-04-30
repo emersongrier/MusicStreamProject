@@ -56,15 +56,14 @@ public class ToggleSongLikeHandler implements HttpHandler
                 return;
             }
 
-            //if liked, unlike
 
             String intermediateData[] = TrackTable.getAlbumArtist(connection, Integer.parseInt(trckid));
 
+            //if liked, unlike
             if(LikeTrackTable.contains(connection,username,intermediateData[18],intermediateData[11],intermediateData[1]))
-            {
-
-            }
-            //if not liked, like
+                LikeTrackTable.delete(connection,username,intermediateData[18],intermediateData[11],intermediateData[1]);
+            else
+                LikeTrackTable.register(connection,username,intermediateData[18],intermediateData[11],intermediateData[1]);
 
 
         } catch (SQLException e) {
