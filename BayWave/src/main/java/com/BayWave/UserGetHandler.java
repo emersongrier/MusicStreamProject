@@ -38,6 +38,8 @@ class UserGetHandler implements HttpHandler
         String password = params.get("password");
 
         if (userName == null || password == null) {
+            System.out.println("Username: " + userName);
+            System.out.println("Password: " + password);
             exchange.sendResponseHeaders(400, -1);
             return;
         }
