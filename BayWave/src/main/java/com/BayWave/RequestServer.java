@@ -61,7 +61,7 @@ public class RequestServer {
         server.createContext("/user/post", new UserPostHandler());
         server.createContext("/user/metadata", new UserGetHandler());
         server.createContext("/song/like", new ToggleSongLikeHandler());
-        server.createContext("/playlist/create", new CreatePlaylistHandler())
+        server.createContext("/playlist/create", new CreatePlaylistHandler());
 
         server.setExecutor(null);
         server.start();
