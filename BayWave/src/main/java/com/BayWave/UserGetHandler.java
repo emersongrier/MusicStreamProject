@@ -51,7 +51,7 @@ class UserGetHandler implements HttpHandler
         try {
             passwordValid = UserTable.passwordValid(connection, userName, password);
         } catch (SQLException e) {
-            System.err.println("Password invalid for user " + userName + ": " + e.getMessage());
+            System.out.println("Password invalid for user " + userName + ": " + e.getMessage());
             System.exit(1);
         }
 
