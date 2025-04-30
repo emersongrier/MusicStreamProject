@@ -4,6 +4,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -16,17 +17,26 @@ import java.util.List;
 public class SongAdapter extends RecyclerView.Adapter<SongAdapter.SongViewHolder> {
 
     private List<Track> tracks;
+    private AlbumRepository albumRepository;
+    private ArtistRepository artistRepository;
     private OnSongClickListener listener;
-    private AlbumRepository albumRepository; // You'll need to create or use an existing repository
 
     // Interface for click listener
     public interface OnSongClickListener {
-        void onSongClick(Track track);
-        void onSongLongClick(Track track, int position);
+        void onSonglistClick(Track track);
     }
 
     public SongAdapter(List<Track> tracks) {
         this.tracks = tracks;
+        this.listener = null; // No listener provided
+    }
+
+
+    public SongAdapter(List<Track> tracks, OnSongClickListener listener) {
+        this.tracks = tracks;
+        this.albumRepository = AlbumRepository.getInstance();
+        this.artistRepository = ArtistRepository.getInstance();
+        this.listener = listener;
     }
 
     @NonNull
@@ -38,15 +48,24 @@ public class SongAdapter extends RecyclerView.Adapter<SongAdapter.SongViewHolder
 
     @Override
     public void onBindViewHolder(@NonNull SongViewHolder holder, int position) {
-        Track track = tracks.get(position);
+        if (tracks == null || position >= tracks.size()) {
+            return; // Safety check
+        }
 
+        Track track = tracks.get(position);
+        if (track == null) {
+            return; // Another safety check
+        }
+
+        // Set song name
         holder.songName.setText(track.getName());
-        String artistName = getArtistName(track.getArtistId());
-        holder.artistName.setText(artistName);
+
+        // Set artist name
+        Artist artist = artistRepository.getArtistById(track.getArtistId());
+        holder.artistName.setText(artist != null ? artist.getName() : "Unknown Artist");
 
         // Load album cover image
-        // Assuming you have a method to get album cover from album ID
-        int albumCoverId = getAlbumCoverResourceId(track.getAlbumId());
+        int albumCoverId = albumRepository.getAlbumCoverResourceId(track.getAlbumId());
 
         Glide.with(holder.itemView.getContext())
                 .load(albumCoverId)
@@ -55,22 +74,13 @@ public class SongAdapter extends RecyclerView.Adapter<SongAdapter.SongViewHolder
                 .centerCrop()
                 .into(holder.songCover);
 
-        holder.songCover.setImageResource(R.drawable.default_playlist);
-
-        /* Set click listeners
         holder.songItem.setOnClickListener(v -> {
             if (listener != null) {
-                listener.onSongClick(track);
+                listener.onSonglistClick(track);
+
             }
         });
 
-        holder.songItem.setOnLongClickListener(v -> {
-            if (listener != null) {
-                listener.onSongLongClick(track, holder.getAdapterPosition());
-                return true;
-            }
-            return false;
-        }); */
     }
 
     @Override
@@ -84,30 +94,32 @@ public class SongAdapter extends RecyclerView.Adapter<SongAdapter.SongViewHolder
         notifyDataSetChanged();
     }
 
-    // Helper method to get artist name - implement according to your app structure
-    private String getArtistName(int artistId) {
-        // Placeholder - replace with actual implementation
-        // This might come from an ArtistRepository or similar
-        return "Artist " + artistId;
+    public TextView getSongName() {
+        return SongViewHolder.songName;
     }
 
-    // Helper method to get album cover - implement according to your app structure
-    private int getAlbumCoverResourceId(int albumId) {
-        // Placeholder - replace with actual implementation
-        // This might come from an AlbumRepository or similar
-        return R.drawable.default_playlist;
+    public TextView getArtistName() {
+        return SongViewHolder.artistName;
+    }
+
+    public ImageView getGif() {
+        return SongViewHolder.musicPlayingIcon;
     }
 
     static class SongViewHolder extends RecyclerView.ViewHolder {
+        LinearLayout songItem;
         ImageView songCover;
-        TextView songName;
-        TextView artistName;
+        static TextView songName;
+        static TextView artistName;
+        static ImageView musicPlayingIcon;
 
         SongViewHolder(View itemView) {
             super(itemView);
+            songItem = itemView.findViewById(R.id.song_item);
             songCover = itemView.findViewById(R.id.song_cover);
             songName = itemView.findViewById(R.id.song_name);
             artistName = itemView.findViewById(R.id.artist_name);
+            musicPlayingIcon = itemView.findViewById(R.id.music_playing);
         }
     }
 }

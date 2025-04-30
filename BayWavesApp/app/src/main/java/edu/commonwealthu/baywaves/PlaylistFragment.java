@@ -12,7 +12,8 @@ import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.Toolbar;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.annotation.NonNull;
@@ -24,12 +25,13 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.google.android.material.appbar.MaterialToolbar;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class PlaylistFragment extends Fragment implements PlaylistAdapter.OnPlaylistClickListener {
+public class PlaylistFragment extends Fragment implements PlaylistAdapter.OnPlaylistClickListener, SongAdapter.OnSongClickListener {
 
     private View view;
 
@@ -38,66 +40,74 @@ public class PlaylistFragment extends Fragment implements PlaylistAdapter.OnPlay
     private SongAdapter songAdapter;
     private List<Playlist> playlists = new ArrayList<>();
     private List<Playlist> loadedPlaylists;
+    private List<Track> tracks = new ArrayList<>();
     private TrackRepository trackRepository;
-    private List<Track> likedPlaylist;
-    private Toolbar toolbar;
+    private List<Track> likedPlaylist = new ArrayList<>();
+    private MaterialToolbar toolbar, playlistToolbar;
+    private TextView songName, artistName;
+    private ImageView musicPlaying;
 
+    private boolean isInside;
 
     private ActivityResultLauncher<Intent> resultLauncher;
 
     private Playlist defaultPlaylist;
     private PlaylistAdapter.PlaylistViewHolder selectPlaylist;
-
-
+    private Playlist currentPlaylist;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.fragment_playlist, container, false);
+        isInside = false;
 
         setHasOptionsMenu(true);
-
-        MaterialToolbar toolbar = view.findViewById(R.id.toolbar);
-        ((AppCompatActivity)getActivity()).setSupportActionBar(toolbar);
-
-        toolbar.setTitle(getString(R.string.playlist_toolbar_text));
-        toolbar.setTitleTextColor(getResources().getColor(R.color.white));
-
         trackRepository = TrackRepository.getInstance();
 
-        likedPlaylist = new ArrayList<Track>();
+        // Initialize likedPlaylist with all liked songs from the repository
+        initializeLikedPlaylist();
 
-      /*  for(int i = 1; i<trackRepository.getAllTracks().size(); i++) {
-            if(trackRepository.getTrackById(i).isLocalLikedState()) {
-                likedPlaylist.add(trackRepository.getTrackById(i));
-            }
-        }*/
+        initializeUI();
 
         defaultPlaylist = new Playlist(1, getString(R.string.liked_songs), getString(R.string.liked_songs_desc), R.drawable.like_default, 0, 1, likedPlaylist);
 
-
-
-        recyclerView = view.findViewById(R.id.playlist_view);
-        // Use GridLayoutManager for a grid of playlists (2 columns)
-        recyclerView.setLayoutManager(new GridLayoutManager(getContext(), 2));
-
-        // Initialize adapter
-        adapter = new PlaylistAdapter(playlists, this);
-        recyclerView.setAdapter(adapter);
-
-        /*for inside of playlist
-        playlistView = view.findViewById(R.id.current_playlist);
-        songAdapter = new SongAdapter(likedPlaylist);
-        playlistView.setAdapter(songAdapter);*/
-        //playlistView = view.findViewById(R.id.current_playlist);
-        //playlistView.setLayoutManager(new LinearLayoutManager(getContext()));
-
-        // Load data (replace with your actual data loading logic)
+        // Load data
         loadPlaylists();
 
         return view;
     }
 
+    /**
+     * Initialize the likedPlaylist with all currently liked songs
+     */
+    private void initializeLikedPlaylist() {
+        likedPlaylist.clear();
+        List<Track> allTracks = trackRepository.getAllTracks();
+
+        // Add all liked tracks to the likedPlaylist
+        for (Track track : allTracks) {
+            if (track.isLocalLikedState() || trackRepository.isTrackLiked(track.getId())) {
+                likedPlaylist.add(track);
+            }
+        }
+    }
+
+    /*
+        Re-initializes the playlist_view layout
+     */
+    private void initializeUI() {
+        toolbar = view.findViewById(R.id.toolbar);
+        ((AppCompatActivity)getActivity()).setSupportActionBar(toolbar);
+        toolbar.setTitle(getString(R.string.playlist_toolbar_text));
+        toolbar.setTitleTextColor(getResources().getColor(R.color.white));
+
+        recyclerView = view.findViewById(R.id.playlist_view);
+        recyclerView.setLayoutManager(new GridLayoutManager(getContext(), 2));
+
+        // Initialize adapter
+        adapter = new PlaylistAdapter(playlists, this);
+        recyclerView.setAdapter(adapter);
+    }
 
     /*
         Replaces current layout with new layout
@@ -107,14 +117,17 @@ public class PlaylistFragment extends Fragment implements PlaylistAdapter.OnPlay
         view = inflater.inflate(id, null);
         ViewGroup rootView = (ViewGroup) getView();
         rootView.removeAllViews();
+
+        ViewGroup.LayoutParams params = new ViewGroup.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.MATCH_PARENT);
+        view.setLayoutParams(params);
+
         rootView.addView(view);
     }
 
     private void loadPlaylists() {
-        // Sample data - replace with your actual data source
-        // Example: fetch from API or database
         loadedPlaylists = new ArrayList<>();
-
         loadedPlaylists.add(defaultPlaylist);
 
         // Update the adapter
@@ -126,55 +139,148 @@ public class PlaylistFragment extends Fragment implements PlaylistAdapter.OnPlay
     @Override
     public void onPlaylistClick(Playlist playlist) {
         // Handle playlist click - navigate to playlist details
-        //Toast.makeText(getContext(), "Clicked: " + playlist.getName(), Toast.LENGTH_SHORT).show();
         setViewLayout(R.layout.inside_playlist);
-        playlistView = view.findViewById(R.id.current_playlist);
-        playlistView.setLayoutManager(new LinearLayoutManager(getContext()));
-        songAdapter = new SongAdapter(playlist.getSongs());
-        playlistView.setAdapter(songAdapter);
-        int width = playlistView.getWidth();
+        isInside = true;
+        currentPlaylist = playlist;
+        //musicPlaying = view.findViewById(R.id.music_playing);
+        //musicPlaying.setVisibility(View.INVISIBLE);
 
-        MaterialToolbar playlistToolbar = view.findViewById(R.id.playlistToolbar);
+        playlistToolbar = view.findViewById(R.id.playlistToolbar);
         if (playlistToolbar != null) {
             playlistToolbar.setTitle(playlist.getName());
-            //playlistToolbar.setMinimumWidth(width);
+            playlistToolbar.setTitleTextColor(getResources().getColor(R.color.white));
+            ((AppCompatActivity)getActivity()).setSupportActionBar(playlistToolbar);
         }
+        getActivity().invalidateOptionsMenu();
 
-        // Example: Navigate to playlist detail
-        // Bundle bundle = new Bundle();
-        // bundle.putInt("playlistId", playlist.getId());
-        // Navigation.findNavController(requireView()).navigate(R.id.action_to_playlistDetail, bundle);\
+        playlistView = view.findViewById(R.id.current_playlist);
+        playlistView.setLayoutManager(new LinearLayoutManager(getContext()));
 
+        // Copy the playlist's songs to our tracks list for display
+        tracks.clear();
+        tracks.addAll(playlist.getSongs());
+
+        // Create a song adapter and set it on the RecyclerView
+        songAdapter = new SongAdapter(tracks, this);
+        playlistView.setAdapter(songAdapter);
+    }
+
+    // Add these new methods to implement SongAdapter.OnSongClickListener interface
+    @Override
+    public void onSonglistClick(Track track) {
+        // Handle song click in the playlist
+        //updatePlaying(true);
+        songName = songAdapter.getSongName();
+        songName.setTextColor(getResources().getColor(R.color.bayWave));
+        artistName = songAdapter.getArtistName();
+        artistName.setTextColor(getResources().getColor(R.color.bayWave));
+        musicPlaying = songAdapter.getGif();
+        musicPlaying.setVisibility(View.VISIBLE);
+        Glide.with(requireContext())
+                .asGif()
+                .load(R.drawable.music_playing)
+                .into(musicPlaying);
+        songAdapter.notifyDataSetChanged();
+    }
+
+    private void updatePlaying(boolean isClicked) {
+        HomeFragment homeFragment = (HomeFragment) getActivity()
+                .getSupportFragmentManager()
+                .findFragmentByTag(PlaylistFragment.class.getSimpleName());
+        if(homeFragment != null) {
+            if(isClicked) {
+                homeFragment.playAndPause();
+            }
+        }
     }
 
     public void addSongToDefault(Track track) {
-        if (!likedPlaylist.contains(track)) {
-            likedPlaylist.add(track);
-            adapter.notifyDataSetChanged();
-            //songAdapter.notifyDataSetChanged();
+        // First check if the track is already in the liked playlist
+        boolean containsTrack = false;
+        for (Track t : likedPlaylist) {
+            if (t.getId() == track.getId()) {
+                containsTrack = true;
+                break;
+            }
         }
-        recyclerView.setAdapter(adapter);
-        //playlistView.setAdapter(songAdapter);
+
+        if (!containsTrack) {
+            // Add to both collections
+            likedPlaylist.add(track);
+            defaultPlaylist.getSongs().add(track);
+
+            // If we're currently viewing the default playlist, update the UI
+            if (isInside && currentPlaylist != null &&
+                    currentPlaylist.getId() == defaultPlaylist.getId() && songAdapter != null) {
+                // Update tracks and refresh adapter
+                tracks.clear();
+                tracks.addAll(likedPlaylist);
+                songAdapter.notifyDataSetChanged();
+            }
+
+            // Update the playlist grid view
+            adapter.notifyDataSetChanged();
+        }
     }
 
     public void removeSongToDefault(Track track) {
-        if (!likedPlaylist.contains(track)) {
-            likedPlaylist.remove(track);
+        // Find the track in the liked playlist
+        Track trackToRemove = null;
+        for (Track t : likedPlaylist) {
+            if (t.getId() == track.getId()) {
+                trackToRemove = t;
+                break;
+            }
+        }
+
+        if (trackToRemove != null) {
+            // Remove from both collections
+            likedPlaylist.remove(trackToRemove);
+            defaultPlaylist.getSongs().remove(trackToRemove);
+
+            // If we're currently viewing the default playlist, update the UI
+            if (isInside && currentPlaylist != null &&
+                    currentPlaylist.getId() == defaultPlaylist.getId() && songAdapter != null) {
+                // Update tracks and refresh adapter
+                tracks.clear();
+                tracks.addAll(likedPlaylist);
+                songAdapter.notifyDataSetChanged();
+            }
+
+            // Update the playlist grid view
             adapter.notifyDataSetChanged();
         }
     }
 
+    /**
+     Creates menu for toolbars
+     */
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.menu_main, menu);
+        menu.clear();
+        if(isInside) {
+            inflater.inflate(R.menu.playlist_menu, menu);
+        }
+        else {
+            inflater.inflate(R.menu.menu_main, menu);
+        }
         super.onCreateOptionsMenu(menu, inflater);
     }
 
+    /**
+     *  Gives menu items functionality
+     */
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
 
         if(id == R.id.menu_new_playlist) {
             showCustomDialog(R.layout.new_playlist_dialog);
+        }
+        if(id == R.id.playlist_back_arrow) {
+            isInside = false;
+            setViewLayout(R.layout.fragment_playlist);
+            initializeUI();
+            getActivity().invalidateOptionsMenu();
         }
 
         return super.onOptionsItemSelected(item);
@@ -200,7 +306,7 @@ public class PlaylistFragment extends Fragment implements PlaylistAdapter.OnPlay
         createButton.setOnClickListener(v -> {
             String name = playlistName.getText().toString().trim();
             if (!name.isEmpty()) {
-                  Playlist newPlaylist = new Playlist(
+                Playlist newPlaylist = new Playlist(
                         loadedPlaylists.size() + 1,
                         name,
                         getString(R.string.liked_songs_desc),
@@ -222,8 +328,6 @@ public class PlaylistFragment extends Fragment implements PlaylistAdapter.OnPlay
                 dialog.dismiss();
             }
         });
-
-        //dialog.show();
         Window window = dialog.getWindow();
         if (window != null) {
             window.setBackgroundDrawableResource(R.color.background);
