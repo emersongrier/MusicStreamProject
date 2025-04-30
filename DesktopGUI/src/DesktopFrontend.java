@@ -1,5 +1,6 @@
 //command to run:
-//java --module-path "C:\Users\emcke\MusicStreamProject\DesktopGUI\src\resources\openjfx-21.0.6_windows-x64_bin-sdk\javafx-sdk-21.0.6\lib" --add-modules javafx.controls,javafx.fxml,javafx.graphics,javafx.media -cp bin DesktopFrontend
+//java --module-path "C:\Users\emcke\MusicStreamProject\DesktopGUI\src\resources\openjfx-21.0.6_windows-x64_bin-sdk\javafx-sdk-21.0.6\lib" --add-modules javafx.controls,javafx.fxml,javafx.graphics,javafx.media,com.google.gson -cp bin DesktopFrontend
+//javac --module-path "C:\Users\emcke\MusicStreamProject\DesktopGUI\src\resources\openjfx-21.0.6_windows-x64_bin-sdk\javafx-sdk-21.0.6\lib" --add-modules javafx.controls,javafx.fxml,javafx.graphics,javafx.media,com.google.gson -d bin src/*.java
 
 import java.nio.file.Path;
 import java.util.List;
@@ -8,7 +9,6 @@ import java.util.stream.Collectors;
 import javafx.scene.Node;
 import javax.swing.plaf.synth.Region;
 import javax.swing.text.html.ListView;
-
 import javafx.scene.control.Alert.AlertType;
 import javafx.util.Duration;
 import javafx.animation.KeyFrame;
@@ -21,6 +21,7 @@ import javafx.animation.Interpolator;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
+import javafx.animation.PauseTransition;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
@@ -42,6 +43,7 @@ import javafx.scene.shape.Circle;
 import javafx.stage.Stage;
 import javafx.geometry.Pos;
 import javafx.geometry.Side;
+import javafx.geometry.Bounds;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
@@ -62,22 +64,6 @@ public class DesktopFrontend extends Application {
         private static Label timeElapsed, trackLength;
         private static boolean playing = false;
 
-        /*private final List<String> songList = List.of(
-                "022.mp3", "Invariance.mp3", "8bit Dungeon Boss.mp3", "Investigations.mp3",
-                "8bit Dungeon Level.mp3", "Iron Bacon.mp3", "A Little Faith.mp3", "Iron Horse - Distressed.mp3",
-                "A Mission.mp3", "Iron Horse.mp3", "A Singular Perversion.mp3", "Irregular.mp3",
-                "A Turn for the Worse.mp3", "Ishikari Lore.mp3", "A Very Brady Special.mp3", "Island Meet and Greet.mp3",
-                "Accralate.mp3", "Isolated.mp3", "Aces High.mp3", "It Came Upon a Midnight Clear.mp3",
-                "Achaidh Cheide.mp3", "It is Lost.mp3", "Achilles.mp3", "Itty Bitty 8 Bit.mp3",
-                "AcidJazz.mp3", "Jalandhar.mp3", "Action.mp3", "Jarvic 8.mp3",
-                "Adding the Sun.mp3", "Jaunty Gumption.mp3", "Adventure Meme.mp3", "Jazz Brunch.mp3",
-                "Aftermath.mp3", "Jellyfish in Space.mp3", "Aggressor.mp3", "Jerry Five.mp3",
-                "Agnus Dei X.mp3", "Jet Fueled Vixen.mp3", "AhDah.mp3", "Jingle Bells 3.mp3",
-                "Air Prelude.mp3", "Jingle Bells Calm.mp3", "Airport Lounge.mp3", "Jingle Bells.mp3",
-                "Airship Serenity.mp3", "Juniper.mp3", "Alchemists Tower.mp3", "Junkyard Tribe.mp3",
-                "Alien Restaurant.mp3", "Just As Soon.mp3", "All This.mp3", "Just Nasty.mp3"
-        );*/
-
         @Override
         public void start(Stage primaryStage) {
                 Font.loadFont(getClass().getResourceAsStream("/resources/fonts/smooth_line_7.ttf"), 12);
@@ -92,6 +78,11 @@ public class DesktopFrontend extends Application {
                 songLength = 88615;
                 songElapsed = 70000;
                 String user = "Eli McKercher";
+                Media media = null;
+                MediaPlayer mediaPlayer = null;
+                Button plause = null;
+                Path songPath = null;
+                ProgressBar progress = null;
                 
                 // SIGN IN LANDING PAGE //
                 VBox loginPage = new VBox(10);
@@ -130,7 +121,9 @@ public class DesktopFrontend extends Application {
                 Button signIn = new Button("Sign In");
                 signIn.setAlignment(Pos.CENTER);
                 Text errorMsg = new Text();
-                loginPage.getChildren().addAll(iview, loginTitle, loginDesc, userLabel, usernameInput, passLabel, passwordInput, signIn, errorMsg);
+                Hyperlink toCreateAccountPage = new Hyperlink("Please click here if you have not created an account.");
+                toCreateAccountPage.setStyle("-fx-font-size: 20px; -fx-text-fill: lightblue; -fx-cursor: hand;");
+                loginPage.getChildren().addAll(iview, loginTitle, loginDesc, userLabel, usernameInput, passLabel, passwordInput, signIn, errorMsg, toCreateAccountPage);
 
                 // CREATE ACCOUNT LANDING PAGE //
                 VBox createAccountPage = new VBox(10);
@@ -223,7 +216,9 @@ public class DesktopFrontend extends Application {
                     checkEULA.setSelected(false);
                 });
                 
-
+                toCreateAccountPage.setOnAction(e -> {
+                        primaryStage.setScene(createAccountScene);
+                });
                 
                 Hyperlink toSignInPage = new Hyperlink("Please click here if you already have an account.");
                 toSignInPage.setStyle("-fx-font-size: 20px; -fx-text-fill: lightblue");
@@ -296,27 +291,6 @@ public class DesktopFrontend extends Application {
                 //VBox searchBarResults = new VBox(10);
                 TextField searchBar = new TextField();
                 searchBar.setAlignment(Pos.CENTER);
-                ListView<String> listView = new ListView<String>();
-                ObservableList<String> filteredList;
-                listView.setItems(filteredList);
-                listView.setVisible(false);
-                listView.setPrefHeight(96); // ~4 rows * 24px row height
-                listView.setMaxHeight(96);
-                listView.setFixedCellSize(24);
-                searchBar.textProperty().addListener((obs, oldVal, newVal) -> {
-                        JsonArray json = JsonParser.parseString(client.searchDb(newVal, 10, 0)).getAsJsonArray();
-                        List<String> matches = new ArrayList<>();
-                        for(JsonElement element : json){
-                                JsonObject obj = element.getAsJsonObject();
-                                matches.add(obj.get("trk_name").getAsString());
-                        }
-                        filteredList.setAll(matches);
-                        listView.setVisible(!matches.isEmpty() && !newVal.isEmpty());
-                });
-                //searchBarResults.getChildren().addAll(searchBar, listView);
-                //searchBar.setStyle("-fx-background-color: lightsteelblue;;");
-                
-
                 Button createButton = new Button("+");
                 createButton.setShape(new Circle(15));
                 Button profileButton = new Button("E");
@@ -358,13 +332,12 @@ public class DesktopFrontend extends Application {
                 VBox searchResults = new VBox(10);
                 searchResults.setPadding(new Insets(10));
                 searchResults.setStyle("-fx-border-color: black;");
-                Button result1 = createImageButton("Result 1",
-                                "C:/Users/emcke/Pictures/Screenshots/Screenshot 2024-09-09 100439.png");
-                Button result2 = createImageButton("Result 2",
-                                "C:/Users/emcke/Pictures/Screenshots/Screenshot 2024-09-09 100439.png");
+                new SearchThread(searchBar, searchResults, songID, playing, plause, client, mediaPlayer, media, songPath, progress);
+                /*Button result1 = createImageButton("Result 1", defaultMusicImage);
+                Button result2 = createImageButton("Result 2", defaultMusicImage);
                 result1.setMaxWidth(Double.MAX_VALUE);
                 result2.setMaxWidth(Double.MAX_VALUE);
-                searchResults.getChildren().addAll(result1, result2);
+                searchResults.getChildren().addAll();*/
                 root.setCenter(searchResults);
                 homeButton.setOnAction(e -> root.setCenter(searchResults));
 
@@ -391,9 +364,7 @@ public class DesktopFrontend extends Application {
                 VBox playingDetails = new VBox(10);
                 playingDetails.setPadding(new Insets(10));
                 playingDetails.setStyle("-fx-border-color: black;");
-                ImageView albumcover = new ImageView(new Image(
-                                "file:///" + "C:/Users/emcke/Pictures/Screenshots/Screenshot 2024-09-09 100439.png"
-                                                .replace("\\", "/")));
+                ImageView albumcover = new ImageView(new Image("file:///" + defaultMusicImage.replace("\\", "/")));
                 albumcover.setFitHeight(100);
                 albumcover.setFitWidth(100);
                 Label track = new Label("Track Name");
@@ -408,9 +379,7 @@ public class DesktopFrontend extends Application {
                 bottom.setPadding(new Insets(10));
                 bottom.setMaxHeight(50);
                 bottom.setStyle("-fx-border-color: black;");
-                ImageView smallAlbumCover = new ImageView(new Image(
-                                "file:///" + "C:/Users/emcke/Pictures/Screenshots/Screenshot 2024-09-09 100439.png"
-                                                .replace("\\", "/")));
+                ImageView smallAlbumCover = new ImageView(new Image("file:///" + defaultMusicImage.replace("\\", "/")));
                 smallAlbumCover.setFitHeight(30);
                 smallAlbumCover.setFitWidth(30);
                 VBox trackDesc = new VBox(10);
@@ -426,7 +395,7 @@ public class DesktopFrontend extends Application {
                 HBox controls = new HBox(10);
                 controls.setPadding(new Insets(10));
                 Button back = new Button("\u23ee");
-                Button plause = new Button("\u23f5");
+                plause = new Button("\u23f5");
                 Button forward = new Button("\u23ed");
                 controls.getChildren().addAll(back, plause, forward);
                 controls.setAlignment(Pos.CENTER);
@@ -434,7 +403,7 @@ public class DesktopFrontend extends Application {
                 trackProgress.setPadding(new Insets(10));
                 timeElapsed = new Label("5:56");
                 timeElapsed.setStyle("-fx-text-fill: silver");
-                ProgressBar progress = new ProgressBar();
+                progress = new ProgressBar();
                 new ProgressThread(progress, songElapsed, songLength).start();
                 //progress.setStyle("-fx-accent: green;");
                 progress.setVisible(true);
@@ -455,15 +424,14 @@ public class DesktopFrontend extends Application {
                 bottom.getChildren().addAll(smallAlbumCover, trackDesc, playback);
                 root.setBottom(bottom);
 
-                Path songPath = null;
                 try {
                         songPath = client.downloadSong(songID);
                 } catch (Exception e) {
                         // TODO Auto-generated catch block
                         e.printStackTrace();
                 }
-                Media media = new Media(songPath.toUri().toString());
-                MediaPlayer mediaPlayer = new MediaPlayer(media);
+                media = new Media(songPath.toUri().toString());
+                mediaPlayer = new MediaPlayer(media);
 
                 plause.setOnAction(e ->{
                         if(playing){
@@ -482,11 +450,15 @@ public class DesktopFrontend extends Application {
                 //SCENE SETTING
                 applyWaveAnimation((Node)root);
 
-                sp.getChildren().addAll(root, listView);
+                sp.getChildren().addAll(root);
                 loginScene = new Scene(loginPage, 1000, 600);
                 loginScene.getStylesheets().add(getClass().getResource("style.css").toExternalForm());
                 mainScene = new Scene(sp, 1000, 600);
                 mainScene.getStylesheets().add(getClass().getResource("style.css").toExternalForm());
+                createAccountScene = new Scene(createAccountPage, 1000, 600);
+                createAccountScene.getStylesheets().add(getClass().getResource("style.css").toExternalForm());
+                accountCreationSuccessScene = new Scene(accountCreationSuccessPage, 1000, 600);
+                accountCreationSuccessScene.getStylesheets().add(getClass().getResource("style.css").toExternalForm());
                 primaryStage.setScene(loginScene);
                 primaryStage.setTitle("UI");
                 primaryStage.show();
@@ -603,6 +575,75 @@ public class DesktopFrontend extends Application {
                                 }
                         }
                         System.out.println("terminating thread");
+                }
+        }
+
+        static class SearchThread extends Thread{
+                private TextField searchBar;
+                private VBox searchResults;
+                private String songID;
+                private boolean playing;
+                private Button plause;
+                private MusicClient client;
+                private MediaPlayer mediaPlayer;
+                private Media media;
+                private Path songPath;
+                private ProgressBar progress;
+
+                public SearchThread(TextField searchBar, VBox searchResults, String songID, boolean playing, Button plause, 
+                                MusicClient client, MediaPlayer mediaPlayer, Media media, Path songPath, ProgressBar progress) {
+                        this.searchBar = searchBar;
+                        this.searchResults = searchResults;
+                        this.songID = songID;
+                        this.playing = playing;
+                        this.plause = plause;
+                        this.client = client;
+                        this.mediaPlayer = mediaPlayer;
+                        this.media = media;
+                        this.songPath = songPath;
+                        this.progress = progress;
+                }
+
+                public void run(){
+                        searchBar.textProperty().addListener((obs, oldVal, newVal) -> {
+                                JsonArray json = new JsonArray();
+                                try {
+                                        json = JsonParser.parseString(client.searchDb(newVal, 10, 0)).getAsJsonArray();
+                                } catch (Exception e) {
+                                        e.printStackTrace();
+                                }   
+                                searchResults.getChildren().clear();
+                                for(JsonElement element : json){
+                                        JsonObject obj = element.getAsJsonObject();
+                                        String resultTrack = obj.get("trk_name").getAsString();
+                                        String resultID = obj.get("trk_id").getAsString();
+                                        Button resultButton = new Button(resultTrack);
+                                        resultButton.setMaxWidth(Double.MAX_VALUE);
+                                        final String IDcopy = resultID;
+                                        System.out.println(resultID);
+                                        resultButton.setOnAction(e -> {
+                                                songID = IDcopy;
+                                                if(playing){
+                                                        plause.setText("\u23f5");
+                                                        playing = false;
+                                                        mediaPlayer.pause();
+                                                }
+                                                try {
+                                                        songPath = client.downloadSong(songID);
+                                                        media = new Media(songPath.toUri().toString());
+                                                        plause.setText("\u23f8");
+                                                        playing = true;
+                                                        new ProgressThread(progress, songElapsed, songLength).start();
+                                                        mediaPlayer.play();
+                                                } catch (Exception f) {
+                                                        // TODO Auto-generated catch block
+                                                        f.printStackTrace();
+                                                }
+                                                
+                                        });
+                                        searchResults.getChildren().add(resultButton);
+                                }
+                        });
                 }
         }
 }
