@@ -24,7 +24,8 @@ public class TrackOptions {
         System.out.println("10. Manage LIKE_TRACK (associative entity)");
         System.out.println("11. Manage TRACK_LISTEN (associative entity)");
         System.out.println("12. Get track");
-        System.out.println("13. Return");
+        System.out.println("13. Get info for track");
+        System.out.println("14. Return");
         System.out.println();
     }
 
@@ -147,6 +148,19 @@ public class TrackOptions {
                     }
                     else {
                         System.err.println("Track not found");
+                    }
+                case "13":
+                    System.out.println("Enter track id: ");
+                    int id = scanner.nextInt();
+                    scanner.nextLine();
+                    String[] result = TrackTable.getAlbumArtist(connection, id);
+                    if (result != null) {
+                        for (String s : result) {
+                            System.out.println(s);
+                        }
+                    }
+                    else {
+                        System.out.println("Result is null");
                     }
                 default:
                     input = "-1";

@@ -36,6 +36,12 @@ class UserGetHandler implements HttpHandler
         System.out.println("Getting user 3");
         String userName = params.get("username");
         String password = params.get("password");
+
+        if (userName == null || password == null) {
+            exchange.sendResponseHeaders(400, -1);
+            System.exit(1);
+        }
+
         System.out.println("Getting user 4");
         // Establish database connection. Replace with your connection details.
         Connection connection = null;
