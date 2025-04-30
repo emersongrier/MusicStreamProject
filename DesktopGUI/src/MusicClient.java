@@ -108,7 +108,7 @@ public class MusicClient {
     public boolean createAccount(String username, String password) {
         boolean completed = false;
         try {
-            URL url = new URL("https://baywave.org:8080/user/post"); // adjust URL
+            URL url = new URI("https://baywave.org:8080/user/post").toURL(); // adjust URL
             HttpsURLConnection conn = (HttpsURLConnection) url.openConnection();
             conn.setRequestMethod("POST");
             conn.setDoOutput(true);

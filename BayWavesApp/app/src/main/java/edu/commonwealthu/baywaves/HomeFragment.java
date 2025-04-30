@@ -88,11 +88,11 @@ public class HomeFragment extends Fragment {
         boolean isConnected = trackRepository.isDatabaseConnected();
         String connectionMessage = trackRepository.getConnectionErrorMessage();
 
-        if (isConnected) {
+        /*if (isConnected) {
             showCustomToast(connectionMessage);
         } else {
             showCustomToast(connectionMessage);
-        }
+        }*/
 
 
         // Load the first track from the repository
@@ -265,7 +265,7 @@ public class HomeFragment extends Fragment {
         }
     }
 
-    private void playAndPause() {
+    public void playAndPause() {
         if (isPlaying) {
             exoPlayer.pause();
             playPauseButton.setImageResource(R.drawable.play_button);
@@ -285,8 +285,9 @@ public class HomeFragment extends Fragment {
     }
 
 
+    // Replace the existing addSong() method in HomeFragment.java with this improved version:
+
     private void addSong() {
-        currentTrack.setLocalLikedState(isLiked);
         if (!isLiked) {
             // Play the animation once
             Glide.with(requireContext())
@@ -312,6 +313,7 @@ public class HomeFragment extends Fragment {
                                 public void onAnimationEnd(Drawable drawable) {
                                     // Update track likes
                                     currentTrack.setLikes(currentTrack.getLikes() + 1);
+                                    currentTrack.setLocalLikedState(true); // Set the liked state
                                     trackRepository.updateTrack(currentTrack);
 
                                     // Change to liked state image
@@ -322,13 +324,9 @@ public class HomeFragment extends Fragment {
 
                                     isLiked = true;
                                     trackRepository.setTrackLiked(currentTrack.getId(), isLiked);
-                                    PlaylistFragment playlistFragment = (PlaylistFragment) getActivity()
-                                            .getSupportFragmentManager()
-                                            .findFragmentByTag("playlist_fragment");
-                                    if (playlistFragment != null) {
-                                        playlistFragment.addSongToDefault(currentTrack);
-                                    }
-                                    //playlistFragment.addSongToDefault();
+
+                                    // Get reference to the PlaylistFragment and update the liked songs playlist
+                                    updatePlaylistFragment(true);
                                 }
                             });
                             return false;
@@ -346,17 +344,33 @@ public class HomeFragment extends Fragment {
 
             // Update track likes
             currentTrack.setLikes(currentTrack.getLikes() - 1);
+            currentTrack.setLocalLikedState(false); // Set the liked state
             trackRepository.updateTrack(currentTrack);
 
             isLiked = false;
             trackRepository.setTrackLiked(currentTrack.getId(), isLiked);
-            PlaylistFragment playlistFragment = (PlaylistFragment) getActivity()
-                    .getSupportFragmentManager()
-                    .findFragmentByTag("playlist_fragment");
-            if (playlistFragment != null) {
+
+            // Get reference to the PlaylistFragment and update the liked songs playlist
+            updatePlaylistFragment(false);
+
+            showCustomToast(getString(R.string.song_unliked));
+        }
+    }
+
+    // Add this helper method to safely find and update the PlaylistFragment
+    private void updatePlaylistFragment(boolean isLiking) {
+        // Find the PlaylistFragment using the tag specified in MainActivity
+        PlaylistFragment playlistFragment = (PlaylistFragment) getActivity()
+                .getSupportFragmentManager()
+                .findFragmentByTag(PlaylistFragment.class.getSimpleName());
+
+        // If fragment found, update the playlist
+        if (playlistFragment != null) {
+            if (isLiking) {
+                playlistFragment.addSongToDefault(currentTrack);
+            } else {
                 playlistFragment.removeSongToDefault(currentTrack);
             }
-            showCustomToast(getString(R.string.song_unliked));
         }
     }
 
