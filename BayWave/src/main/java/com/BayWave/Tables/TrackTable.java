@@ -444,6 +444,22 @@ public class TrackTable {
     }
 
     /**
+     * Joins TRACK on ALBUM, and then joins the result on ARTIST, in order to return a row containing attributes
+     * from all tables.
+     */
+    public static String[] getAlbumArtist(Connection connection, int trackId) throws SQLException {
+        PreparedStatement ps = connection.prepareStatement(
+                "SELECT * FROM TRACK trk JOIN ALBUM alb ON (trk.alb_id=alb.alb_id) JOIN ARTIST art ON (alb.art_id=art.art_id) WHERE trk.trk_id=?");
+        ps.setInt(1, trackId);
+        ResultSet rs = ps.executeQuery();
+        if (!rs.isBeforeFirst()) {
+            System.err.println("Track information not found");
+            return null;
+        }
+        return TableUtil.getFirstStringTable(rs);
+    }
+
+    /**
      * Returns an ArrayList of String tables. Each string table represents a row in the TRACK table,
      * except for the first one (at index 0 of the ArrayList), which is a header containing the attribute names.
      */

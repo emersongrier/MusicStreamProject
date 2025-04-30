@@ -21,52 +21,64 @@ class UserGetHandler implements HttpHandler
 
     @Override
     public void handle(HttpExchange exchange) throws IOException {
+        System.out.println("Getting user 1");
         if (!"GET".equals(exchange.getRequestMethod())) {
             exchange.sendResponseHeaders(405, -1);
-            System.exit(1);
+            return;
         }
+        System.out.println("Getting user 2");
         String query = exchange.getRequestURI().getQuery();
         Map<String, String> params = parseQuery(query);
         if (params == null) {
             exchange.sendResponseHeaders(400, -1);
-            System.exit(1);
+            return;
         }
+        System.out.println("Getting user 3");
         String userName = params.get("username");
         String password = params.get("password");
 
+        if (userName == null || password == null) {
+            System.out.println("Username: " + userName);
+            System.out.println("Password: " + password);
+            exchange.sendResponseHeaders(400, -1);
+            return;
+        }
+
+        System.out.println("Getting user 4");
         // Establish database connection. Replace with your connection details.
         Connection connection = null;
         try {
             connection = getConnection();
         } catch (SQLException e) {
             System.err.println("Unable to establish DB connection: " + e.getMessage());
-            System.exit(1);
+            return;
         }
-
+        System.out.println("Getting user 5");
         // verify password
         boolean passwordValid = false;
         try {
             passwordValid = UserTable.passwordValid(connection, userName, password);
         } catch (SQLException e) {
-            System.err.println("Password invalid for user " + userName + ": " + e.getMessage());
-            System.exit(1);
+            System.out.println("Password invalid for user " + userName + ": " + e.getMessage());
+            return;
         }
+
+        System.out.println("Getting user 6");
 
         if (passwordValid) {
 
             String[] userinfo = null;
 
             try {
-                connection = getConnection();
                 userinfo = UserTable.getUser(connection, userName);
             } catch (SQLException e) {
                 System.err.println("Could not get user info: " + e.getMessage());
-                System.exit(1);
+                return;
             }
 
             if (userinfo == null) {
                 exchange.sendResponseHeaders(404, -1);
-                System.exit(1);
+                return;
             }
 
             UserData userData = new UserData(

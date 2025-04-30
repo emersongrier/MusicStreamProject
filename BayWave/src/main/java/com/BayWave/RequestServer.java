@@ -60,6 +60,7 @@ public class RequestServer {
         server.createContext("/playlist", new PlaylistGetHandler());
         server.createContext("/user/post", new UserPostHandler());
         server.createContext("/user/metadata", new UserGetHandler());
+        server.createContext("/song/like", new ToggleSongLikeHandler());
 
         server.setExecutor(null);
         server.start();
