@@ -219,6 +219,15 @@ CREATE TABLE MEMBER (
 -- deletes the FRIEND and MEMBER associative entities via CASCADE, which activates
 -- the necessary trigger automatically
 
+CREATE TRIGGER INSERT_LIKE_TRACK_UPDATE_TRACK
+    AFTER INSERT
+    ON LIKE_TRACK
+    FOR EACH ROW CALL "com.BayWave.Triggers.InsertLikeTrackUpdateTrackTrigger";
+CREATE TRIGGER DELETE_LIKE_TRACK_UPDATE_TRACK
+    AFTER DELETE
+    ON LIKE_TRACK
+    FOR EACH ROW CALL "com.BayWave.Triggers.DeleteLikeTrackUpdateTrackTrigger";
+
 CREATE TRIGGER INSERT_FRIEND_UPDATE_USER
     AFTER INSERT
     ON FRIEND
