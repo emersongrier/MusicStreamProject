@@ -24,14 +24,14 @@ class UserGetHandler implements HttpHandler
         System.out.println("Getting user 1");
         if (!"GET".equals(exchange.getRequestMethod())) {
             exchange.sendResponseHeaders(405, -1);
-            System.exit(1);
+            return;
         }
         System.out.println("Getting user 2");
         String query = exchange.getRequestURI().getQuery();
         Map<String, String> params = parseQuery(query);
         if (params == null) {
             exchange.sendResponseHeaders(400, -1);
-            System.exit(1);
+            return;
         }
         System.out.println("Getting user 3");
         String userName = params.get("username");
@@ -39,7 +39,7 @@ class UserGetHandler implements HttpHandler
 
         if (userName == null || password == null) {
             exchange.sendResponseHeaders(400, -1);
-            System.exit(1);
+            return;
         }
 
         System.out.println("Getting user 4");
@@ -49,7 +49,7 @@ class UserGetHandler implements HttpHandler
             connection = getConnection();
         } catch (SQLException e) {
             System.err.println("Unable to establish DB connection: " + e.getMessage());
-            System.exit(1);
+            return;
         }
         System.out.println("Getting user 5");
         // verify password
@@ -58,7 +58,7 @@ class UserGetHandler implements HttpHandler
             passwordValid = UserTable.passwordValid(connection, userName, password);
         } catch (SQLException e) {
             System.out.println("Password invalid for user " + userName + ": " + e.getMessage());
-            System.exit(1);
+            return;
         }
 
         System.out.println("Getting user 6");
@@ -71,12 +71,12 @@ class UserGetHandler implements HttpHandler
                 userinfo = UserTable.getUser(connection, userName);
             } catch (SQLException e) {
                 System.err.println("Could not get user info: " + e.getMessage());
-                System.exit(1);
+                return;
             }
 
             if (userinfo == null) {
                 exchange.sendResponseHeaders(404, -1);
-                System.exit(1);
+                return;
             }
 
             UserData userData = new UserData(
