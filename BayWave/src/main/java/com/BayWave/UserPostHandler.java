@@ -21,12 +21,12 @@ class UserPostHandler implements HttpHandler
     public void handle(HttpExchange exchange) throws IOException {
         if (!"POST".equals(exchange.getRequestMethod())) {
             exchange.sendResponseHeaders(405, -1);
-            System.exit(1);
+            return;
         }
         Map<String, String> params = parsePostRequest(exchange);
         if (params == null) {
             exchange.sendResponseHeaders(400, -1);
-            System.exit(1);
+            return;
         }
         String userName = params.get("username");
         String password = params.get("password");
@@ -37,7 +37,7 @@ class UserPostHandler implements HttpHandler
             connection = getConnection();
         } catch (SQLException e) {
             System.err.println("Unable to establish DB connection: " + e.getMessage());
-            System.exit(1);
+            return;
         }
 
         if (userName != null && password != null) {
