@@ -20,6 +20,7 @@ public class CreatePlaylistHandler implements HttpHandler
             exchange.sendResponseHeaders(405, -1); // Method Not Allowed
             return;
         }
+        System.out.println("1");
 
         // Parse POST body parameters
         Map<String, String> params = ServerUtil.parsePostRequest(exchange);
@@ -28,6 +29,8 @@ public class CreatePlaylistHandler implements HttpHandler
             exchange.sendResponseHeaders(400, -1); // Bad Request
             return;
         }
+        System.out.println("2");
+
 
         String username = params.get("username");
         String password = params.get("password");
@@ -40,6 +43,9 @@ public class CreatePlaylistHandler implements HttpHandler
             return;
         }
 
+        System.out.println("3");
+
+
         Connection connection = null;
         try
         {
@@ -51,6 +57,8 @@ public class CreatePlaylistHandler implements HttpHandler
                 exchange.getResponseBody().close();
                 return;
             }
+            System.out.println("4");
+
 
             PlaylistTable.register(connection,username,playlistname);
             exchange.sendResponseHeaders(200, -1);
