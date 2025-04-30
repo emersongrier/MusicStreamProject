@@ -1,0 +1,47 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "C:\\Users\\20jak\\OneDrive\\Documents\\GitHub\\MusicStreamProject\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\20jak\\OneDrive\\Documents\\GitHub\\MusicStreamProject\\DesktopGUI\\src\\DesktopFrontend.java||{3B902123-F8A7-4915-9F01-361F908088D0}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:DesktopGUI\\src\\DesktopFrontend.java||{3B902123-F8A7-4915-9F01-361F908088D0}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 1,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedHeight": 249,
+          "SelectedChildIndex": 0,
+          "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "DesktopFrontend.java",
+              "DocumentMoniker": "C:\\Users\\20jak\\OneDrive\\Documents\\GitHub\\MusicStreamProject\\DesktopGUI\\src\\DesktopFrontend.java",
+              "RelativeDocumentMoniker": "DesktopGUI\\src\\DesktopFrontend.java",
+              "ToolTip": "C:\\Users\\20jak\\OneDrive\\Documents\\GitHub\\MusicStreamProject\\DesktopGUI\\src\\DesktopFrontend.java",
+              "RelativeToolTip": "DesktopGUI\\src\\DesktopFrontend.java",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAEAAADpAAAAAAAAAA==",
+              "Icon": "00000000-0000-0000-0000-000000000000.000000|iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAJUSURBVDhPpZQxaBNRGMe/e7lLmiZorBEzVLxJWuigQ9HhAgYEzeKk0MWloqKbk5u4OAW3oEPBQSgRHDMEpxQi6FgnXSRiMkQQvMaYtvdy7/l9716SXhKbhv7gz/e9e3f/e\u002B/77p4B/\u002BH2\u002BidnYf/PRop3l1L8L6S8LpzUUY05Rk/Fzpzv/cJHOuzL2xUWPB7mxv1th0lRwXQpuHIoSZSNWhHLa60xw8uPvjkCjIrEG6VhAOaBMJc6CoOBrxQBjjpAJrTlucylV4mUfTcmhRUVPbCED1HBURR7SpaKwdiSPXDiZ\u002BDBifOA21YeA8NTT9rO7ub1rb3mx9Arp3Hr9DK8XHQg5nN8gQ/Blp9JRzCzAgZTZo1GAzjnUKvV1LRt21Cv11U\u002BCsdH2lYcNQ8uipEZFqmCE0mqD5HNZqHZbKo4jR7WsG3GwY2iYTSBhgJKeD1JxaWizwqtcAdXRgpWCLDYn6CuTiKdToPrunoUxmPmwMy1aIUHoM\u002BDKJVKkMlkVCwUClAul6FYLKq5UWhnO7hdZYrRgKcSPznNmxzA9y09OBqr57Jw5\u002BI6RKQAhlYT/5RZ8CKm3m6wwmMbctavYYK6/PX4K8Qa0ueCdez8ZvP3TH09RLVa1dmQXA7rOwHd5Q62M//u9ZUPoJrSl32VGjSTzl646V3D0wlzRbjL7x8D/NzWgyGG6h5q0En8BTAaUvjS39votj4/1LeOGE4hhidMjE4fn04av2P5Mv/jxQJucwg1pRek09nHetF/SzVzreSYGUGGa6gjmyItbkbyu8\u002BtMTMAgH/ExAn6j8Cj1wAAAABJRU5ErkJggg==",
+              "WhenOpened": "2025-04-23T05:07:39.071Z",
+              "EditorCaption": ""
+            }
+          ]
+        },
+        {
+          "DockedHeight": 108,
+          "SelectedChildIndex": -1,
+          "Children": [
+            {
+              "$type": "Bookmark",
+              "Name": "ST:1:0:{d212f56b-c48a-434c-a121-1c5d80b59b9f}"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

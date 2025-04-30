@@ -1,4 +1,3 @@
-<?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/song_item"
     android:layout_width="match_parent"
@@ -7,41 +6,67 @@
     android:padding="12dp"
     android:gravity="center_vertical">
 
+    <!-- Album Art -->
     <ImageView
         android:id="@+id/song_cover"
-        android:layout_width="60dp"
-        android:layout_height="60dp"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
         android:scaleType="centerCrop"
         android:src="@drawable/default_playlist" />
 
+    <!-- Text + Music Icon Container -->
     <LinearLayout
-        android:orientation="vertical"
+        android:orientation="horizontal"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"
-        android:layout_marginStart="16dp">
+        android:layout_marginStart="16dp"
+        android:gravity="center_vertical">
 
-        <TextView
-            android:id="@+id/song_name"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/song_title"
-            android:textSize="16sp"
-            android:textColor="@color/black"
-            android:fontFamily="@font/smooth_line_7"
-            android:maxLines="1"
-            android:ellipsize="end"/>
+        <!-- Text Stack -->
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
 
-        <TextView
-            android:id="@+id/artist_name"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/artist"
-            android:textSize="13sp"
-            android:textColor="@color/black"
-            android:fontFamily="@font/smooth_line_7"
-            android:maxLines="1"
-            android:ellipsize="end"/>
+            <TextView
+                android:id="@+id/song_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/song_title"
+                android:textSize="48dp"
+                android:textColor="@color/black"
+                android:fontFamily="@font/smooth_line_7"
+                android:maxLines="1"
+                android:ellipsize="end"/>
+
+            <TextView
+                android:id="@+id/artist_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/artist"
+                android:textSize="30dp"
+                android:textColor="@color/black"
+                android:fontFamily="@font/smooth_line_7"
+                android:maxLines="1"
+                android:ellipsize="end"/>
+        </LinearLayout>
+
+        <!-- Music Playing Icon -->
+        <ImageView
+            android:id="@+id/music_playing"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_marginStart="16dp"
+            android:src="@drawable/music_playing"
+            android:visibility="invisible"/>
     </LinearLayout>
 
+    <!-- 3-dot Menu Button pinned right -->
+    <ImageButton
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:scaleType="fitCenter"
+        android:src="@drawable/three_dot"
+        android:background="@color/white"/>
 </LinearLayout>

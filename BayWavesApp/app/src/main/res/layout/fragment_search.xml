@@ -5,12 +5,12 @@
     android:layout_height="match_parent"
     tools:context=".SearchFragment">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
+    <ImageView
+        android:id="@+id/center_logo"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/hello_search_fragment"
-        android:layout_gravity="center"/>
+        android:src="@drawable/logo"
+        android:layout_gravity="center" />
 
     <include layout="@layout/search_screen" />
 
