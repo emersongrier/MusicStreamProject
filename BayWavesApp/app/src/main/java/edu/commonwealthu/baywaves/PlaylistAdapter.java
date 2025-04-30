@@ -67,6 +67,7 @@ public class PlaylistAdapter extends RecyclerView.Adapter<PlaylistAdapter.Playli
         return playlists != null ? playlists.size() : 0;
     }
 
+
     // Method to update data
     public void setPlaylists(List<Playlist> playlists) {
         this.playlists = playlists;
