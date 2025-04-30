@@ -63,7 +63,7 @@ public class RequestServer {
         server.createContext("/song/like", new ToggleSongLikeHandler());
         server.createContext("/playlist/create", new CreatePlaylistHandler());
 
-        server.setExecutor(null);
+        server.setExecutor(Executors.newCachedThreadPool());
         server.start();
         System.out.println("[DEBUG] HTTPS listening on " + server.getAddress());
         System.out.println("Server started on https://localhost:8080");
