@@ -1,5 +1,7 @@
 package com.BayWave;
 
+import com.BayWave.Tables.LikeTrackTable;
+import com.BayWave.Tables.TrackTable;
 import com.BayWave.Tables.UserTable;
 import com.BayWave.Util.ServerUtil;
 import com.sun.net.httpserver.HttpExchange;
@@ -7,6 +9,7 @@ import com.sun.net.httpserver.HttpHandler;
 
 import java.io.IOException;
 import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.Map;
 
 public class ToggleSongLikeHandler implements HttpHandler
@@ -54,9 +57,18 @@ public class ToggleSongLikeHandler implements HttpHandler
             }
 
             //if liked, unlike
+
+            String intermediateData[] = TrackTable.getAlbumArtist(connection, Integer.parseInt(trckid));
+
+            if(LikeTrackTable.contains(connection,username,intermediateData[18],intermediateData[11],intermediateData[1]))
+            {
+
+            }
             //if not liked, like
 
 
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
         }
     }
 }
