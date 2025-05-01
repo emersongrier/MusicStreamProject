@@ -64,7 +64,7 @@ public class RequestServer {
         server.createContext("/song/like", new ToggleSongLikeHandler());
         server.createContext("/playlist/create", new CreatePlaylistHandler());
         server.createContext("/playlist/addsong",new AddSongPlaylistHandler());
-        server.createContext("playlist/deletesong", new DeleteSongPlaylistHandler());
+        server.createContext("/playlist/deletesong", new DeleteSongPlaylistHandler());
 
         server.setExecutor(Executors.newCachedThreadPool());
         server.start();
