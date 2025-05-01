@@ -132,6 +132,8 @@ public class MusicClient {
         return completed;
     }
 
+
+
     private static String buildJson(String username, String password) {
         return "{\"username\":\"" + escapeJson(username) + "\",\"password\":\"" + escapeJson(password) + "\"}";
     }
@@ -140,6 +142,115 @@ public class MusicClient {
         if (text == null) return "";
         return text.replace("\\", "\\\\").replace("\"", "\\\"");
     }
+
+    public boolean toggleSongLike(String trckid, String username, String password) {
+        try {
+            // adjust the path to match your handler mapping
+            String toggleUrl = baseUrl + "/song/like";
+            URL url = new URI(toggleUrl).toURL();
+            HttpsURLConnection conn = (HttpsURLConnection) url.openConnection();
+            conn.setRequestMethod("POST");
+            conn.setDoOutput(true);
+            conn.setRequestProperty("Content-Type", "application/json; charset=UTF-8");
+
+            // build JSON payload
+            Map<String, String> jsonMap = new HashMap<>();
+            jsonMap.put("username", username);
+            jsonMap.put("password", password);
+            jsonMap.put("trckid", trckid);
+            String json = new Gson().toJson(jsonMap);
+
+            // send request body
+            try (OutputStream os = conn.getOutputStream()) {
+                byte[] input = json.getBytes(StandardCharsets.UTF_8);
+                os.write(input, 0, input.length);
+            }
+
+            int code = conn.getResponseCode();
+            conn.disconnect();
+            // 200 OK means toggle succeeded
+            return code == 200;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    /**
+     * Sends a POST to your AddSongPlaylistHandler to add a track to a playlist.
+     * @return true if the server returned 200 OK, false otherwise
+     */
+    public boolean addSongToPlaylist(String trckid, String playlistName, String username, String password) {
+        try {
+            // adjust the path to match your handler mapping
+            String addUrl = baseUrl + "/playlist/add";
+            URL url = new URI(addUrl).toURL();
+            HttpsURLConnection conn = (HttpsURLConnection) url.openConnection();
+            conn.setRequestMethod("POST");
+            conn.setDoOutput(true);
+            conn.setRequestProperty("Content-Type", "application/json; charset=UTF-8");
+
+            // build JSON payload
+            Map<String, String> payload = new HashMap<>();
+            payload.put("username", username);
+            payload.put("password", password);
+            payload.put("playlistname", playlistName);
+            payload.put("trckid", trckid);
+            String json = new Gson().toJson(payload);
+
+            // send request body
+            try (OutputStream os = conn.getOutputStream()) {
+                byte[] input = json.getBytes(StandardCharsets.UTF_8);
+                os.write(input, 0, input.length);
+            }
+
+            int code = conn.getResponseCode();
+            conn.disconnect();
+            return code == 200;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    /**
+     * Sends a POST to your DeleteSongPlaylistHandler to remove a track from a playlist.
+     * @return true if the server returned 200 OK, false otherwise
+     */
+    public boolean deleteSongFromPlaylist(String trckid, String playlistName, String username, String password) {
+        try {
+            // adjust the path to match your handler mapping
+            String delUrl = baseUrl + "/playlist/delete";
+            URL url = new URI(delUrl).toURL();
+            HttpsURLConnection conn = (HttpsURLConnection) url.openConnection();
+            conn.setRequestMethod("POST");
+            conn.setDoOutput(true);
+            conn.setRequestProperty("Content-Type", "application/json; charset=UTF-8");
+
+            // build JSON payload
+            Map<String, String> payload = new HashMap<>();
+            payload.put("username", username);
+            payload.put("password", password);
+            payload.put("playlistname", playlistName);
+            payload.put("trckid", trckid);
+            String json = new Gson().toJson(payload);
+
+            // send request body
+            try (OutputStream os = conn.getOutputStream()) {
+                byte[] input = json.getBytes(StandardCharsets.UTF_8);
+                os.write(input, 0, input.length);
+            }
+
+            int code = conn.getResponseCode();
+            conn.disconnect();
+            return code == 200;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+
 
 
     //for testing
