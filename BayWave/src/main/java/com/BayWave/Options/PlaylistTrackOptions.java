@@ -16,7 +16,8 @@ public class PlaylistTrackOptions {
         System.out.println("3. Delete track from playlist");
         System.out.println("4. Change track position (swap)");
         System.out.println("5. Change track position (insert)");
-        System.out.println("6. Return");
+        System.out.println("6. Get track table for playlist ID");
+        System.out.println("7. Return");
         System.out.println();
     }
 
@@ -93,6 +94,19 @@ public class PlaylistTrackOptions {
                     newPos = scanner.nextInt();
                     scanner.nextLine();
                     PlaylistTrackTable.insertAtPosition(connection, name, plyName, artist, album, track, newPos);
+                case "6":
+                    System.out.println("Enter playlist ID: ");
+                    int plyId = scanner.nextInt();
+                    scanner.nextLine();
+                    String[] result = PlaylistTrackTable.getTracks(connection, plyId);
+                    if (result != null) {
+                        for (String s : result) {
+                            System.out.print(s + ", ");
+                        }
+                    }
+                    else {
+                        System.out.println("Result is null");
+                    }
                     break;
                 default:
                     input = "-1";

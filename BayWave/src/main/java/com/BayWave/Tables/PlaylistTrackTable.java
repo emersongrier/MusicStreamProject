@@ -468,6 +468,17 @@ public class PlaylistTrackTable {
         return rs.isBeforeFirst();
     }
 
+    public static String[] getTracks(Connection connection, int playlistId) throws SQLException {
+        PreparedStatement ps = connection.prepareStatement("SELECT trk_id, count(*) over () total_rows FROM PLAYLIST_TRACK WHERE ply_id=?");
+        ps.setInt(1, playlistId);
+        ResultSet rs = ps.executeQuery();
+        if (!rs.isBeforeFirst()) {
+            System.out.println("Playlist ID not valid");
+            return null;
+        }
+        return TableUtil.getFirstColumnStringTable(rs);
+    }
+
     /**
      * Returns an ArrayList of String tables. Each string table represents a row in the PLAYLIST_TRACK table,
      * except for the first one (at index 0 of the ArrayList), which is a header containing the attribute names.
