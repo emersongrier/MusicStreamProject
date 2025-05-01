@@ -89,9 +89,6 @@ public class MusicClient {
         }
     }
 
-
-
-
     public String searchDb(String searchstring, int limit, int offset) throws Exception
     {
 

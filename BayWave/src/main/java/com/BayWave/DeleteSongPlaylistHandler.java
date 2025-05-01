@@ -1,6 +1,7 @@
 package com.BayWave;
 
-import com.BayWave.Tables.PlaylistTable;
+import com.BayWave.Tables.PlaylistTrackTable;
+import com.BayWave.Tables.TrackTable;
 import com.BayWave.Tables.UserTable;
 import com.BayWave.Util.ServerUtil;
 import com.sun.net.httpserver.HttpExchange;
@@ -11,7 +12,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Map;
 
-public class CreatePlaylistHandler implements HttpHandler
+public class DeleteSongPlaylistHandler implements HttpHandler
 {
     @Override
     public void handle(HttpExchange exchange) throws IOException
@@ -33,6 +34,7 @@ public class CreatePlaylistHandler implements HttpHandler
         String username = params.get("username");
         String password = params.get("password");
         String playlistname = params.get("playlistname");
+        String trackid = params.get("trckid");
 
         playlistname = playlistname.replaceAll("[^a-zA-Z0-9._ -]", "");
 
@@ -40,8 +42,6 @@ public class CreatePlaylistHandler implements HttpHandler
             exchange.sendResponseHeaders(400, -1); // Bad Request
             return;
         }
-
-
 
         Connection connection = null;
         try
@@ -55,8 +55,14 @@ public class CreatePlaylistHandler implements HttpHandler
                 return;
             }
 
+            String[] data = TrackTable.getAlbumArtist(connection, Integer.parseInt(trackid));
+            if (data.length < 19) {
+                exchange.sendResponseHeaders(500, -1);
+                return;
+            }
 
-            PlaylistTable.register(connection,username,playlistname);
+
+            PlaylistTrackTable.delete(connection,username,playlistname,data[18],data[11],data[1]);
             exchange.sendResponseHeaders(200, -1);
 
         } catch (SQLException e) {
