@@ -87,6 +87,12 @@ class UserGetHandler implements HttpHandler
 
         System.out.println("Getting user 8");
 
+        System.out.println("userinfo: ");
+
+        for (int i = 0; i < 6; i++) {
+            System.out.println(userinfo[i]);
+        }
+
         UserData userData = new UserData(
                 Integer.parseInt(userinfo[0]),
                 userinfo[1],
