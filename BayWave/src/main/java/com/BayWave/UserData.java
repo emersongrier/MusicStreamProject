@@ -8,7 +8,7 @@ public class UserData
     public String usr_name;
     public String usr_pass;
     public String usr_email;
-    public int usr_phone;
+    public String usr_phone;
     public int usr_friends;
 
     public UserData(
@@ -16,7 +16,7 @@ public class UserData
             String usr_name,
             String usr_pass,
             String usr_email,
-            int usr_phone,
+            String usr_phone,
             int usr_friends)
     {
         this.usr_id = usr_id;

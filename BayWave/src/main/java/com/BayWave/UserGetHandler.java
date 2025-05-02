@@ -98,7 +98,7 @@ class UserGetHandler implements HttpHandler
                 userinfo[1],
                 userinfo[2],
                 userinfo[3],
-                Integer.parseInt(userinfo[4]),
+                userinfo[4],
                 Integer.parseInt(userinfo[5]));
 
         Gson gson = new Gson();
