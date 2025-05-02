@@ -78,10 +78,14 @@ class UserGetHandler implements HttpHandler
             return;
         }
 
+        System.out.println("Getting user 7");
+
         if (userinfo == null) {
             exchange.sendResponseHeaders(404, -1);
             return;
         }
+
+        System.out.println("Getting user 8");
 
         UserData userData = new UserData(
                 Integer.parseInt(userinfo[0]),
@@ -94,10 +98,16 @@ class UserGetHandler implements HttpHandler
         Gson gson = new Gson();
         String json = gson.toJson(userData);
 
+        System.out.println("Getting user 9");
+
         byte[] responseBytes = json.getBytes(StandardCharsets.UTF_8);
+
+        System.out.println("Getting user 10");
 
         exchange.getResponseHeaders().set("Content-Type", "application/json");
         exchange.sendResponseHeaders(200, responseBytes.length);
+
+        System.out.println("Getting user 11");
 
         try (OutputStream os = exchange.getResponseBody()) {
             os.write(responseBytes);
