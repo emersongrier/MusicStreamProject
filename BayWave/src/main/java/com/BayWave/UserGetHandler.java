@@ -46,7 +46,7 @@ class UserGetHandler implements HttpHandler
 
         System.out.println("Getting user 4");
         // Establish database connection. Replace with your connection details.
-        Connection connection = null;
+        Connection connection;
         try {
             connection = getConnection();
         } catch (SQLException e) {
@@ -55,9 +55,13 @@ class UserGetHandler implements HttpHandler
         }
         System.out.println("Getting user 5");
         // verify password
-        boolean passwordValid = false;
         try {
-            passwordValid = UserTable.passwordValid(connection, userName, password);
+            boolean valid = UserTable.passwordValid(connection, userName, password);
+            if (!valid) {
+                exchange.sendResponseHeaders(403, -1); // Forbidden
+                exchange.getResponseBody().close();
+                return;
+            }
         } catch (SQLException e) {
             System.out.println("Password invalid for user " + userName + ": " + e.getMessage());
             return;
@@ -65,49 +69,42 @@ class UserGetHandler implements HttpHandler
 
         System.out.println("Getting user 6");
 
-        if (passwordValid) {
+        String[] userinfo;
 
-            String[] userinfo = null;
-
-            try {
-                userinfo = UserTable.getUser(connection, userName);
-            } catch (SQLException e) {
-                System.err.println("Could not get user info: " + e.getMessage());
-                return;
-            }
-
-            if (userinfo == null) {
-                exchange.sendResponseHeaders(404, -1);
-                return;
-            }
-
-            UserData userData = new UserData(
-                    Integer.parseInt(userinfo[0]),
-                    userinfo[1],
-                    userinfo[2],
-                    userinfo[3],
-                    Integer.parseInt(userinfo[4]),
-                    Integer.parseInt(userinfo[5]));
-
-            Gson gson = new Gson();
-            String json = gson.toJson(userData);
-
-            byte[] responseBytes = json.getBytes(StandardCharsets.UTF_8);
-
-            exchange.getResponseHeaders().set("Content-Type", "application/json");
-            exchange.sendResponseHeaders(200, responseBytes.length);
-
-            try (OutputStream os = exchange.getResponseBody()) {
-                os.write(responseBytes);
-            }
-            catch (IOException e) {
-                e.printStackTrace();
-            }
-
+        try {
+            userinfo = UserTable.getUser(connection, userName);
+        } catch (SQLException e) {
+            System.err.println("Could not get user info: " + e.getMessage());
+            return;
         }
-        else {
-            System.err.println("Password invalid for user " + userName);
-            exchange.sendResponseHeaders(400, -1);
+
+        if (userinfo == null) {
+            exchange.sendResponseHeaders(404, -1);
+            return;
         }
+
+        UserData userData = new UserData(
+                Integer.parseInt(userinfo[0]),
+                userinfo[1],
+                userinfo[2],
+                userinfo[3],
+                Integer.parseInt(userinfo[4]),
+                Integer.parseInt(userinfo[5]));
+
+        Gson gson = new Gson();
+        String json = gson.toJson(userData);
+
+        byte[] responseBytes = json.getBytes(StandardCharsets.UTF_8);
+
+        exchange.getResponseHeaders().set("Content-Type", "application/json");
+        exchange.sendResponseHeaders(200, responseBytes.length);
+
+        try (OutputStream os = exchange.getResponseBody()) {
+            os.write(responseBytes);
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+        }
+
     }
 }
