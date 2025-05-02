@@ -21,19 +21,16 @@ class UserGetHandler implements HttpHandler
 
     @Override
     public void handle(HttpExchange exchange) throws IOException {
-        System.out.println("Getting user 1");
         if (!"GET".equals(exchange.getRequestMethod())) {
             exchange.sendResponseHeaders(405, -1);
             return;
         }
-        System.out.println("Getting user 2");
         String query = exchange.getRequestURI().getQuery();
         Map<String, String> params = parseQuery(query);
         if (params == null) {
             exchange.sendResponseHeaders(400, -1);
             return;
         }
-        System.out.println("Getting user 3");
         String userName = params.get("username");
         String password = params.get("password");
 
@@ -44,7 +41,6 @@ class UserGetHandler implements HttpHandler
             return;
         }
 
-        System.out.println("Getting user 4");
         // Establish database connection. Replace with your connection details.
         Connection connection;
         try {
@@ -53,7 +49,6 @@ class UserGetHandler implements HttpHandler
             System.err.println("Unable to establish DB connection: " + e.getMessage());
             return;
         }
-        System.out.println("Getting user 5");
         // verify password
         try {
             boolean valid = UserTable.passwordValid(connection, userName, password);
@@ -67,8 +62,6 @@ class UserGetHandler implements HttpHandler
             return;
         }
 
-        System.out.println("Getting user 6");
-
         String[] userinfo;
 
         try {
@@ -78,19 +71,9 @@ class UserGetHandler implements HttpHandler
             return;
         }
 
-        System.out.println("Getting user 7");
-
         if (userinfo == null) {
             exchange.sendResponseHeaders(404, -1);
             return;
-        }
-
-        System.out.println("Getting user 8");
-
-        System.out.println("userinfo: ");
-
-        for (int i = 0; i < 6; i++) {
-            System.out.println(userinfo[i]);
         }
 
         UserData userData = new UserData(
@@ -104,16 +87,11 @@ class UserGetHandler implements HttpHandler
         Gson gson = new Gson();
         String json = gson.toJson(userData);
 
-        System.out.println("Getting user 9");
-
         byte[] responseBytes = json.getBytes(StandardCharsets.UTF_8);
-
-        System.out.println("Getting user 10");
 
         exchange.getResponseHeaders().set("Content-Type", "application/json");
         exchange.sendResponseHeaders(200, responseBytes.length);
 
-        System.out.println("Getting user 11");
 
         try (OutputStream os = exchange.getResponseBody()) {
             os.write(responseBytes);
