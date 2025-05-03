@@ -60,8 +60,8 @@ public class DesktopFrontend extends Application {
         // private Stage window;
         private Scene mainScene, loginScene, createAccountScene, accountCreationSuccessScene;
         private static double songElapsed, songLength;
-        private static String currentSong, currentArtist, currentAlbumCover, currentSongPath, songID; 
-        private static Label timeElapsed, trackLength;
+        private static String currentSong, currentArtist, logo, songID, username, password; 
+        private static Label timeElapsed, trackLength, trackPlaying, artistPlaying, track, artist;
         private static boolean playing = false;
         private static MediaPlayer mediaPlayer = null;
         private static Button plause = null;
@@ -74,20 +74,15 @@ public class DesktopFrontend extends Application {
                 Font.loadFont(getClass().getResourceAsStream("/resources/fonts/smooth_line_7.ttf"), 12);
 
                 //sample initialization of global variables
-                currentArtist = "Riley Simmons";
-                currentSong = "A Giant Goliath Ate My Car!";
-                currentSongPath = "Jalandhar.mp3";
-                currentAlbumCover = "/resources/images/aGiantGoliathAteMyCar.jpg";
+                currentArtist = "Kevin Macleod";
+                currentSong = "Jazz Brunch";
+                logo = "/resources/images/logo.png";
                 String defaultMusicImage = "/resources/images/defaultMusicPlaying.png";
                 songID = "879";
                 songLength = 88615;
                 songElapsed = 70000;
                 String user = "Eli McKercher";
-                //Media media = null;
-                //MediaPlayer mediaPlayer = null;
-                //Button plause = null;
-                //Path songPath = null;
-                //ProgressBar progress = null;
+                MusicClient client = new MusicClient();
                 
                 // SIGN IN LANDING PAGE //
                 VBox loginPage = new VBox(10);
@@ -103,7 +98,7 @@ public class DesktopFrontend extends Application {
 
                 loginPage.setStyle("-fx-border-color: black;");
                 
-                File f = new File("C:\\Pictures\\Music Brand logo.jpg");
+                File f = new File(logo);
                 Image img = new Image(f.toURI().toString());
                 ImageView iview = new ImageView(img);
                 iview.setFitWidth(50);
@@ -171,7 +166,7 @@ public class DesktopFrontend extends Application {
                 confirmPasswordInput.setStyle("-fx-prompt-text-fill: purple;");
                 
                 Label newEmailLabel = new Label("Email: ");
-                newEmailLabel.setStyle("-fx-text-fill: red; -fx-font-weight: BOLD");
+                newEmailLabel.setStyle("-fx-text-fill: silver; -fx-font-weight: BOLD");
                 TextField newEmailInput = new TextField();
                 newEmailInput.setPromptText("REQUIRED: Please enter your email here (e.g. someone@example.com).");
                 newEmailInput.setStyle("-fx-prompt-text-fill: purple;");
@@ -193,32 +188,36 @@ public class DesktopFrontend extends Application {
                 Text createAccountErrorMsg = new Text();
                 
                 createAccount.setOnAction(e -> {
-                    if (newUsernameInput.getText().isEmpty() || 
-                            (newPasswordInput.getText().isEmpty() || confirmPasswordInput.getText().isEmpty())) {
-                        createAccountErrorMsg.setText("ERROR: Missing username, email, or password.");
-                        createAccountErrorMsg.setFont(Font.font("Times New Roman", FontWeight.BOLD, 22));
-                        createAccountErrorMsg.setFill(Color.RED);
-                        return;
-                    }
-                    
-                    if ( !newPasswordInput.getText().equals( confirmPasswordInput.getText() ) ){
-                        Alert errorDialog = new Alert(AlertType.ERROR, "Password fields do not match. Try again!", ButtonType.OK);
-                        errorDialog.showAndWait();
-                        return;
-                    }
-                    
-                    if ( !checkEULA.isSelected()){
-                        Alert errorDialog = new Alert(AlertType.ERROR, "You MUST accept the End User License Agreement", ButtonType.OK);
-                        errorDialog.showAndWait();
-                        return;
-                    }
-                    primaryStage.setScene(accountCreationSuccessScene);
-                    newUsernameInput.clear();
-                    newPasswordInput.clear();
-                    confirmPasswordInput.clear();
-                    newEmailInput.clear();
-                    newPhoneInput.clear();
-                    checkEULA.setSelected(false);
+                        if (newUsernameInput.getText().isEmpty() || 
+                                (newPasswordInput.getText().isEmpty() || confirmPasswordInput.getText().isEmpty())) {
+                                createAccountErrorMsg.setText("ERROR: Missing username or password.");
+                                createAccountErrorMsg.setFont(Font.font("Times New Roman", FontWeight.BOLD, 22));
+                                createAccountErrorMsg.setFill(Color.RED);
+                                return;
+                        }else if ( !newPasswordInput.getText().equals( confirmPasswordInput.getText() ) ){
+                                Alert errorDialog = new Alert(AlertType.ERROR, "Password fields do not match. Try again!", ButtonType.OK);
+                                errorDialog.showAndWait();
+                                return;
+                        }else if ( !checkEULA.isSelected()){
+                                Alert errorDialog = new Alert(AlertType.ERROR, "You MUST accept the End User License Agreement", ButtonType.OK);
+                                errorDialog.showAndWait();
+                                return;
+                        }
+                        boolean accountCreateResult = client.createAccount(newUsernameInput.getText(), newPasswordInput.getText());
+                        if (!accountCreateResult){
+                                Alert errorDialog = new Alert(AlertType.ERROR, "Account creation failed. Try again!", ButtonType.OK);
+                                errorDialog.showAndWait();
+                                return;
+                        }
+                        username = newUsernameInput.getText();
+                        password = newPasswordInput.getText();
+                        primaryStage.setScene(accountCreationSuccessScene);
+                        newUsernameInput.clear();
+                        newPasswordInput.clear();
+                        confirmPasswordInput.clear();
+                        newEmailInput.clear();
+                        newPhoneInput.clear();
+                        checkEULA.setSelected(false);
                 });
                 
                 toCreateAccountPage.setOnAction(e -> {
@@ -275,7 +274,6 @@ public class DesktopFrontend extends Application {
         
                 // MAIN PAGE //
                 BorderPane root = new BorderPane();
-                MusicClient client = new MusicClient();
 
                 // Main Page Gradient Background
                 root.setBackground(new Background(new BackgroundFill(
@@ -348,7 +346,7 @@ public class DesktopFrontend extends Application {
                                 JsonObject obj = element.getAsJsonObject();
                                 String resultTrack = obj.get("trk_name").getAsString();
                                 String resultID = obj.get("trk_id").getAsString();
-                                final String trackFinal = resultTrack;
+                                final String trackFinal = resultTrack.replaceFirst(".mp3","");
                                 final String idFinal = resultID;
                                 Button resultButton = new Button(trackFinal);
                                 resultButton.setMaxWidth(Double.MAX_VALUE);
@@ -370,7 +368,8 @@ public class DesktopFrontend extends Application {
                                         playing = true;
                                         new ProgressThread(progress, songElapsed, songLength).start();
                                         mediaPlayer.play();
-                                        
+                                        trackPlaying.setText(trackFinal);
+                                        track.setText(trackFinal);                                        
                                 });
                                 searchResults.getChildren().add(resultButton);
                         }
@@ -401,11 +400,11 @@ public class DesktopFrontend extends Application {
                 VBox playingDetails = new VBox(10);
                 playingDetails.setPadding(new Insets(10));
                 playingDetails.setStyle("-fx-border-color: black;");
-                ImageView albumcover = new ImageView(new Image("file:///" + defaultMusicImage.replace("\\", "/")));
+                ImageView albumcover = new ImageView(defaultMusicImage);
                 albumcover.setFitHeight(100);
                 albumcover.setFitWidth(100);
-                Label track = new Label("Track Name");
-                Label artist = new Label("Artist Name");
+                track = new Label(currentSong);
+                artist = new Label(currentArtist);
                 track.setStyle("-fx-text-fill: silver");
                 artist.setStyle("-fx-text-fill: silver");
                 playingDetails.getChildren().addAll(albumcover, track, artist);
@@ -416,13 +415,13 @@ public class DesktopFrontend extends Application {
                 bottom.setPadding(new Insets(10));
                 bottom.setMaxHeight(50);
                 bottom.setStyle("-fx-border-color: black;");
-                ImageView smallAlbumCover = new ImageView(new Image("file:///" + defaultMusicImage.replace("\\", "/")));
+                ImageView smallAlbumCover = new ImageView(new Image(defaultMusicImage));
                 smallAlbumCover.setFitHeight(30);
                 smallAlbumCover.setFitWidth(30);
                 VBox trackDesc = new VBox(10);
                 trackDesc.setPadding(new Insets(10));
-                Label trackPlaying = new Label("Track Name");
-                Label artistPlaying = new Label("Artist Name");
+                trackPlaying = new Label(currentSong);
+                artistPlaying = new Label(currentArtist);
                 trackPlaying.setStyle("-fx-font-size: 10px; -fx-text-fill: silver");
                 artistPlaying.setStyle("-fx-font-size: 10px; -fx-text-fill: silver");
                 trackDesc.getChildren().addAll(trackPlaying, artistPlaying);
