@@ -63,16 +63,11 @@ public class DesktopFrontend extends Application {
         private static String currentSong, currentArtist, currentAlbumCover, currentSongPath, songID; 
         private static Label timeElapsed, trackLength;
         private static boolean playing = false;
-
-        private static Media media = null;
         private static MediaPlayer mediaPlayer = null;
         private static Button plause = null;
-        private static Path songPath = null;
         private static ProgressBar progress = null;
-
-        private static TextField searchBar;
-        private static VBox searchResults;
-        private static MusicClient client;
+        private static Path songPath = null;
+        private static Media media = null;
 
         @Override
         public void start(Stage primaryStage) {
@@ -88,7 +83,11 @@ public class DesktopFrontend extends Application {
                 songLength = 88615;
                 songElapsed = 70000;
                 String user = "Eli McKercher";
-                
+                //Media media = null;
+                //MediaPlayer mediaPlayer = null;
+                //Button plause = null;
+                //Path songPath = null;
+                //ProgressBar progress = null;
                 
                 // SIGN IN LANDING PAGE //
                 VBox loginPage = new VBox(10);
@@ -275,9 +274,8 @@ public class DesktopFrontend extends Application {
                 accountCreationSuccessPage.getChildren().addAll(checkmarkImage, successfulMessage, backToSignInPage);
         
                 // MAIN PAGE //
-                StackPane sp = new StackPane();
                 BorderPane root = new BorderPane();
-                client = new MusicClient();
+                MusicClient client = new MusicClient();
 
                 // Main Page Gradient Background
                 root.setBackground(new Background(new BackgroundFill(
@@ -295,7 +293,7 @@ public class DesktopFrontend extends Application {
                 homeButton.setMaxSize(50, 50);
                 addRippleEffect(homeButton);
                 //VBox searchBarResults = new VBox(10);
-                searchBar = new TextField();
+                TextField searchBar = new TextField();
                 searchBar.setAlignment(Pos.CENTER);
                 Button createButton = new Button("+");
                 createButton.setShape(new Circle(15));
@@ -335,15 +333,48 @@ public class DesktopFrontend extends Application {
 
                 // CENTER
                 // Search Results
-                searchResults = new VBox(10);
+                VBox searchResults = new VBox(10);
                 searchResults.setPadding(new Insets(10));
                 searchResults.setStyle("-fx-border-color: black;");
-                new SearchThread(searchBar, searchResults, songID, playing, plause, client, mediaPlayer, media, songPath, progress);
-                /*Button result1 = createImageButton("Result 1", defaultMusicImage);
-                Button result2 = createImageButton("Result 2", defaultMusicImage);
-                result1.setMaxWidth(Double.MAX_VALUE);
-                result2.setMaxWidth(Double.MAX_VALUE);
-                searchResults.getChildren().addAll();*/
+                searchBar.textProperty().addListener((obs, oldVal, newVal) -> {
+                        JsonArray json = new JsonArray();
+                        try {
+                                json = JsonParser.parseString(client.searchDb(newVal, 10, 0)).getAsJsonArray();
+                        } catch (Exception e) {
+                                e.printStackTrace();
+                        }   
+                        searchResults.getChildren().clear();
+                        for(JsonElement element : json){
+                                JsonObject obj = element.getAsJsonObject();
+                                String resultTrack = obj.get("trk_name").getAsString();
+                                String resultID = obj.get("trk_id").getAsString();
+                                final String trackFinal = resultTrack;
+                                final String idFinal = resultID;
+                                Button resultButton = new Button(trackFinal);
+                                resultButton.setMaxWidth(Double.MAX_VALUE);
+                                resultButton.setOnAction(e -> {
+                                        songID = resultID;
+                                        if(playing){
+                                                plause.setText("\u23f5");
+                                                playing = false;
+                                                mediaPlayer.pause();
+                                        }
+                                        try{
+                                                songPath = client.downloadSong(songID);
+                                        } catch(Exception g){
+                                                System.out.println("cant download");
+                                        }
+                                        media = new Media(songPath.toUri().toString());
+                                        mediaPlayer = new MediaPlayer(media);
+                                        plause.setText("\u23f8");
+                                        playing = true;
+                                        new ProgressThread(progress, songElapsed, songLength).start();
+                                        mediaPlayer.play();
+                                        
+                                });
+                                searchResults.getChildren().add(resultButton);
+                        }
+                });
                 root.setCenter(searchResults);
                 homeButton.setOnAction(e -> root.setCenter(searchResults));
 
@@ -456,10 +487,9 @@ public class DesktopFrontend extends Application {
                 //SCENE SETTING
                 applyWaveAnimation((Node)root);
 
-                sp.getChildren().addAll(root);
                 loginScene = new Scene(loginPage, 1000, 600);
                 loginScene.getStylesheets().add(getClass().getResource("style.css").toExternalForm());
-                mainScene = new Scene(sp, 1000, 600);
+                mainScene = new Scene(root, 1000, 600);
                 mainScene.getStylesheets().add(getClass().getResource("style.css").toExternalForm());
                 createAccountScene = new Scene(createAccountPage, 1000, 600);
                 createAccountScene.getStylesheets().add(getClass().getResource("style.css").toExternalForm());
@@ -580,85 +610,7 @@ public class DesktopFrontend extends Application {
                                         e.printStackTrace();
                                 }
                         }
-                        System.out.println("terminating progress thread");
-                }
-        }
-
-        static class SearchThread extends Thread{
-                private TextField searchBar;
-                private VBox searchResults;
-                private String songID;
-                private boolean playing;
-                private final Button plause;
-                private MusicClient client;
-                private MediaPlayer mediaPlayer;
-                private Media media;
-                private Path songPath;
-                private final ProgressBar progress;
-
-                public SearchThread(TextField searchBar, VBox searchResults, String songID, boolean playing, Button plause, 
-                                MusicClient client, MediaPlayer mediaPlayer, Media media, Path songPath, ProgressBar progress) {
-                        this.searchBar = searchBar;
-                        this.searchResults = searchResults;
-                        this.songID = songID;
-                        this.playing = playing;
-                        this.plause = plause;
-                        this.client = client;
-                        this.mediaPlayer = mediaPlayer;
-                        this.media = media;
-                        this.songPath = songPath;
-                        this.progress = progress;
-                }
-
-                public void run(){
-                        while (true){
-                                searchBar.textProperty().addListener((obs, oldVal, newVal) -> {
-                                        JsonArray json = new JsonArray();
-                                        try {
-                                                json = JsonParser.parseString(client.searchDb(newVal, 10, 0)).getAsJsonArray();
-                                        } catch (Exception e) {
-                                                e.printStackTrace();
-                                        }   
-                                        searchResults.getChildren().clear();
-                                        for(JsonElement element : json){
-                                                JsonObject obj = element.getAsJsonObject();
-                                                String resultTrack = obj.get("trk_name").getAsString();
-                                                String resultID = obj.get("trk_id").getAsString();
-                                                Button resultButton = new Button(resultTrack);
-                                                resultButton.setMaxWidth(Double.MAX_VALUE);
-                                                final String IDcopy = resultID;
-                                                System.out.println(resultID);
-                                                resultButton.setOnAction(e -> {
-                                                        songID = IDcopy;
-                                                        if(playing){
-                                                                plause.setText("\u23f5");
-                                                                playing = false;
-                                                                mediaPlayer.pause();
-                                                        }
-                                                        try {
-                                                                songPath = client.downloadSong(songID);
-                                                                media = new Media(songPath.toUri().toString());
-                                                                plause.setText("\u23f8");
-                                                                playing = true;
-                                                                new ProgressThread(progress, songElapsed, songLength).start();
-                                                                if (mediaPlayer != null) {
-                                                                        mediaPlayer.stop();
-                                                                        mediaPlayer.dispose();
-                                                                }
-                                                                mediaPlayer = new MediaPlayer(media);
-                                                                mediaPlayer.play();
-                                                                    
-                                                        } catch (Exception f) {
-                                                                // TODO Auto-generated catch block
-                                                                f.printStackTrace();
-                                                        }
-                                                        
-                                                });
-                                                searchResults.getChildren().add(resultButton);
-                                        }
-                                });  
-                        }
-                        System.out.println("Killing search thread");
+                        System.out.println("terminating thread");
                 }
         }
 }
