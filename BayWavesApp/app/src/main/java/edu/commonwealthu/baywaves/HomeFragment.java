@@ -34,14 +34,14 @@ import java.util.List;
 
 public class HomeFragment extends Fragment {
 
-    private ExoPlayer exoPlayer;
+    public ExoPlayer exoPlayer;
     private ImageButton playPauseButton;
     private ImageButton nextSong;
     private ImageButton lastSong;
     private ImageButton likeSong;
     private SeekBar seekBar;
     final private Handler handler = new Handler();
-    private boolean isPlaying = false;
+    public boolean isPlaying = false;
     private boolean isLiked = false;
     private TextView startTime;
     private TextView endTime;
@@ -50,14 +50,14 @@ public class HomeFragment extends Fragment {
     private ImageView albumCover;
     private ImageView circularVisualizer;
 
-    private Track currentTrack;
+    public Track currentTrack;
     private TrackRepository trackRepository;
     private Artist currentArtist;
     private ArtistRepository artistRepository;
     private AlbumRepository albumRepository;
 
-    private int currentTrackID;
-
+    private int currentTrackIndex;
+    private List<Track> allTracks;
 
     @Nullable
     @Override
@@ -76,7 +76,7 @@ public class HomeFragment extends Fragment {
         likeSong = view.findViewById(R.id.like_song);
         seekBar = view.findViewById(R.id.seekBar);
         circularVisualizer = view.findViewById(R.id.circle_visualizer);
-        currentTrackID = 0;
+        currentTrackIndex = 0;
 
         // Initialize repositories
         artistRepository = ArtistRepository.getInstance();
@@ -88,37 +88,23 @@ public class HomeFragment extends Fragment {
         boolean isConnected = trackRepository.isDatabaseConnected();
         String connectionMessage = trackRepository.getConnectionErrorMessage();
 
-        /*if (isConnected) {
-            showCustomToast(connectionMessage);
-        } else {
-            showCustomToast(connectionMessage);
-        }*/
-
+        // Get all tracks once and reuse the list
+        allTracks = trackRepository.getAllTracks();
 
         // Load the first track from the repository
-        loadTrack(trackRepository.getAllTracks().get(currentTrackID));
+        loadTrack(allTracks.get(currentTrackIndex));
 
         // Setup play/pause button
         playPauseButton.setOnClickListener(v -> playAndPause());
 
+        // Setup next song button
         nextSong.setOnClickListener(v -> {
-            List<Track> tracks = trackRepository.getAllTracks();
-            if (currentTrackID < tracks.size() - 1) {
-                currentTrackID++;
-                Track newTrack = tracks.get(currentTrackID);
-                loadTrack(newTrack);
-                playAndPause();
-            }
+            changeNextTrack();
         });
 
+        // Setup previous song button
         lastSong.setOnClickListener(v -> {
-            List<Track> tracks = trackRepository.getAllTracks();
-            if (currentTrackID > 0) {
-                currentTrackID--;
-                Track newTrack = tracks.get(currentTrackID);
-                loadTrack(newTrack);
-                playAndPause();
-            }
+            changePreviousTrack();
         });
 
         // Setup like button
@@ -149,10 +135,24 @@ public class HomeFragment extends Fragment {
         return view;
     }
 
+    // Find track index in our list by track id
+    private int findTrackIndexById(int trackId) {
+        for (int i = 0; i < allTracks.size(); i++) {
+            if (allTracks.get(i).getId() == trackId) {
+                return i;
+            }
+        }
+        return 0; // Default to first track if not found
+    }
 
-    private void loadTrack(Track track) {
+    public void loadTrack(Track track) {
+        PlaylistFragment playlistFragment = (PlaylistFragment) getActivity()
+                .getSupportFragmentManager()
+                .findFragmentByTag(PlaylistFragment.class.getSimpleName());
+
         // Update current track
         currentTrack = track;
+        currentTrackIndex = findTrackIndexById(track.getId());
 
         // Get the streaming URI
         String streamingUri = trackRepository.getStreamingUri(track);
@@ -171,7 +171,7 @@ public class HomeFragment extends Fragment {
         exoPlayer.setMediaItem(mediaItem);
         exoPlayer.prepare();
 
-        // Rest of your existing method...
+        // Load artist and update UI
         loadArtistForTrack(track);
         updateTrackMetadata(track);
         updateAlbumCover(track);
@@ -179,6 +179,8 @@ public class HomeFragment extends Fragment {
         // Reset like state
         isLiked = track.getLikes() > 0 || trackRepository.isTrackLiked(track.getId());
         updateLikeButton();
+        //playlistFragment.updateSongItem();
+
     }
 
     private void loadArtistForTrack(Track track) {
@@ -220,8 +222,6 @@ public class HomeFragment extends Fragment {
         }
     }
 
-
-
     private void updateLikeButton() {
         Glide.with(requireContext())
                 .load(isLiked ? R.drawable.liked_song : R.drawable.like_song)
@@ -230,7 +230,6 @@ public class HomeFragment extends Fragment {
     }
 
     private void updateAlbumCover(Track track) {
-
         int albumId = track.getAlbumId();
         int coverResourceId = albumRepository.getAlbumCoverResourceId(albumId);
 
@@ -245,23 +244,25 @@ public class HomeFragment extends Fragment {
                 .into(albumCover);
     }
 
-    // Method to change track (you can call this when you want to switch tracks)
-    public void changeNextTrack(int trackId) {
-        List<Track> tracks = trackRepository.getAllTracks();
-        if (currentTrackID < tracks.size() - 1) {
-            currentTrackID++;
-            Track newTrack = tracks.get(currentTrackID);
+    // Method to change to next track
+    public void changeNextTrack() {
+        if (currentTrackIndex < allTracks.size() - 1) {
+            currentTrackIndex++;
+            Track newTrack = allTracks.get(currentTrackIndex);
             loadTrack(newTrack);
             playAndPause();
+            updatePlaylistFragment();
         }
     }
 
-    // Method to change track (you can call this when you want to switch tracks)
-    public void changeLastTrack(int trackId) {
-        Track newTrack = trackRepository.getTrackById(trackId);
-        if (newTrack != null && currentTrackID > 0) {
+    // Method to change to previous track
+    public void changePreviousTrack() {
+        if (currentTrackIndex > 0) {
+            currentTrackIndex--;
+            Track newTrack = allTracks.get(currentTrackIndex);
             loadTrack(newTrack);
-            playAndPause(); // Start playing the new track
+            playAndPause();
+            updatePlaylistFragment();
         }
     }
 
@@ -282,10 +283,8 @@ public class HomeFragment extends Fragment {
                     .into(circularVisualizer);
         }
         isPlaying = !isPlaying;
+        updatePlaylistFragment();
     }
-
-
-    // Replace the existing addSong() method in HomeFragment.java with this improved version:
 
     private void addSong() {
         if (!isLiked) {
@@ -326,7 +325,7 @@ public class HomeFragment extends Fragment {
                                     trackRepository.setTrackLiked(currentTrack.getId(), isLiked);
 
                                     // Get reference to the PlaylistFragment and update the liked songs playlist
-                                    updatePlaylistFragment(true);
+                                    updatePlaylistFragment();
                                 }
                             });
                             return false;
@@ -351,25 +350,26 @@ public class HomeFragment extends Fragment {
             trackRepository.setTrackLiked(currentTrack.getId(), isLiked);
 
             // Get reference to the PlaylistFragment and update the liked songs playlist
-            updatePlaylistFragment(false);
+            updatePlaylistFragment();
 
             showCustomToast(getString(R.string.song_unliked));
         }
     }
 
     // Add this helper method to safely find and update the PlaylistFragment
-    private void updatePlaylistFragment(boolean isLiking) {
+    private void updatePlaylistFragment() {
         // Find the PlaylistFragment using the tag specified in MainActivity
         PlaylistFragment playlistFragment = (PlaylistFragment) getActivity()
                 .getSupportFragmentManager()
                 .findFragmentByTag(PlaylistFragment.class.getSimpleName());
 
         // If fragment found, update the playlist
-        if (playlistFragment != null) {
-            if (isLiking) {
+        if (playlistFragment != null && playlistFragment.isInside) {
+            playlistFragment.updateCurrentlyPlayingSong(currentTrack.getId(), isPlaying);
+            if (isLiked) {
                 playlistFragment.addSongToDefault(currentTrack);
             } else {
-                playlistFragment.removeSongToDefault(currentTrack);
+                playlistFragment.removeSongFromDefault(currentTrack);
             }
         }
     }
