@@ -250,6 +250,48 @@ public class MusicClient {
         }
     }
 
+    /**
+     * Returns true if (username, password) are valid according to your AuthHandler.
+     */
+    public boolean authenticate(String username, String password) {
+        try {
+            String authUrl = baseUrl + "/user/auth";
+            URL url = new URI(authUrl).toURL();
+            HttpsURLConnection conn = (HttpsURLConnection) url.openConnection();
+            conn.setRequestMethod("POST");
+            conn.setDoOutput(true);
+            conn.setRequestProperty("Content-Type", "application/json; charset=UTF-8");
+
+            // build JSON payload
+            Map<String, String> payload = new HashMap<>();
+            payload.put("username", username);
+            payload.put("password", password);
+            String json = new Gson().toJson(payload);
+
+            // send JSON body
+            try (OutputStream os = conn.getOutputStream()) {
+                byte[] bytes = json.getBytes(StandardCharsets.UTF_8);
+                os.write(bytes, 0, bytes.length);
+            }
+
+            int code = conn.getResponseCode();
+            // consume response so connection can close cleanly
+            try (InputStream in = (code == 200
+                    ? conn.getInputStream()
+                    : conn.getErrorStream())) {
+                // no-op
+            }
+            conn.disconnect();
+
+            return code == HttpsURLConnection.HTTP_OK;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+
+
 
 
 
