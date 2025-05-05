@@ -1,6 +1,6 @@
 package com.BayWave;
 
-import com.BayWave.Tables.UserTable;
+import com.BayWave.Tables.AlbumTable;
 import com.google.gson.Gson;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
@@ -16,7 +16,7 @@ import static com.BayWave.ParseQuery.parseQuery;
 import static com.BayWave.Util.ServerUtil.getConnection;
 
 
-class UserGetHandler implements HttpHandler
+class AlbumDataHandler implements HttpHandler
 {
 
     @Override
@@ -31,12 +31,9 @@ class UserGetHandler implements HttpHandler
             exchange.sendResponseHeaders(400, -1);
             return;
         }
-        String userName = params.get("username");
-        String password = params.get("password");
+        String id = params.get("id");
 
-        if (userName == null || password == null) {
-            System.out.println("Username: " + userName);
-            System.out.println("Password: " + password);
+        if (id == null) {
             exchange.sendResponseHeaders(400, -1);
             return;
         }
@@ -49,43 +46,33 @@ class UserGetHandler implements HttpHandler
             System.err.println("Unable to establish DB connection: " + e.getMessage());
             return;
         }
-        // verify password
-        try {
-            boolean valid = UserTable.passwordValid(connection, userName, password);
-            if (!valid) {
-                exchange.sendResponseHeaders(403, -1); // Forbidden
-                exchange.getResponseBody().close();
-                return;
-            }
-        } catch (SQLException e) {
-            System.out.println("Password invalid for user " + userName + ": " + e.getMessage());
-            return;
-        }
 
-        String[] userinfo;
+        String[] albuminfo;
 
         try {
-            userinfo = UserTable.getUser(connection, userName);
+            albuminfo = AlbumTable.getAlbum(connection, Integer.parseInt(id));
         } catch (SQLException e) {
             System.err.println("Could not get user info: " + e.getMessage());
             return;
         }
 
-        if (userinfo == null) {
+        if (albuminfo == null) {
             exchange.sendResponseHeaders(404, -1);
             return;
         }
 
-        UserData userData = new UserData(
-                Integer.parseInt(userinfo[0]),
-                userinfo[1],
-                userinfo[2],
-                userinfo[3],
-                userinfo[4],
-                Integer.parseInt(userinfo[5]));
+        AlbumData albumData = new AlbumData(
+                Integer.parseInt(albuminfo[0]),
+                albuminfo[1],
+                albuminfo[2],
+                albuminfo[3],
+                Integer.parseInt(albuminfo[4]),
+                Integer.parseInt(albuminfo[5]),
+                Boolean.parseBoolean(albuminfo[6]),
+                Integer.parseInt(albuminfo[7]));
 
         Gson gson = new Gson();
-        String json = gson.toJson(userData);
+        String json = gson.toJson(albumData);
 
         byte[] responseBytes = json.getBytes(StandardCharsets.UTF_8);
 

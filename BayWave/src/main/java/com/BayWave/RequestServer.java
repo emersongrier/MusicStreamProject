@@ -65,7 +65,13 @@ public class RequestServer {
         server.createContext("/playlist/create", new CreatePlaylistHandler());
         server.createContext("/playlist/addsong",new AddSongPlaylistHandler());
         server.createContext("/playlist/deletesong", new DeleteSongPlaylistHandler());
+        server.createContext("/playlist/songs", new PlaylistSongsHandler());
+        server.createContext("/playlist/chains", new PlaylistChainsHandler());
+        server.createContext("/artist/metadata", new ArtistDataHandler());
+        server.createContext("/album/metadata", new AlbumDataHandler());
+        server.createContext("/chain/songs", new ChainSongsHandler());
         server.createContext("/user/auth", new AuthHandler());
+
 
         server.setExecutor(Executors.newCachedThreadPool());
         server.start();

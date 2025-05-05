@@ -39,6 +39,18 @@ public class SongAdapter extends RecyclerView.Adapter<SongAdapter.SongViewHolder
         this.listener = listener;
     }
 
+    private TextView lastClickedSongName;
+    private TextView lastClickedArtistName;
+    private ImageView lastClickedGif;
+
+    // Method to update the last clicked items
+    private void updateLastClickedViews(SongViewHolder holder) {
+        lastClickedSongName = holder.songName;
+        lastClickedArtistName = holder.artistName;
+        lastClickedGif = holder.musicPlayingIcon;
+    }
+
+
     @NonNull
     @Override
     public SongViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -77,6 +89,7 @@ public class SongAdapter extends RecyclerView.Adapter<SongAdapter.SongViewHolder
         holder.songItem.setOnClickListener(v -> {
             if (listener != null) {
                 listener.onSonglistClick(track);
+                updateLastClickedViews(holder);
 
             }
         });
@@ -94,24 +107,13 @@ public class SongAdapter extends RecyclerView.Adapter<SongAdapter.SongViewHolder
         notifyDataSetChanged();
     }
 
-    public TextView getSongName() {
-        return SongViewHolder.songName;
-    }
-
-    public TextView getArtistName() {
-        return SongViewHolder.artistName;
-    }
-
-    public ImageView getGif() {
-        return SongViewHolder.musicPlayingIcon;
-    }
 
     static class SongViewHolder extends RecyclerView.ViewHolder {
         LinearLayout songItem;
         ImageView songCover;
-        static TextView songName;
-        static TextView artistName;
-        static ImageView musicPlayingIcon;
+        TextView songName;
+        TextView artistName;
+        ImageView musicPlayingIcon;
 
         SongViewHolder(View itemView) {
             super(itemView);
@@ -121,5 +123,19 @@ public class SongAdapter extends RecyclerView.Adapter<SongAdapter.SongViewHolder
             artistName = itemView.findViewById(R.id.artist_name);
             musicPlayingIcon = itemView.findViewById(R.id.music_playing);
         }
+
     }
+
+    public TextView getSongName() {
+        return lastClickedSongName;
+    }
+
+    public TextView getArtistName() {
+        return lastClickedArtistName;
+    }
+
+    public ImageView getGif() {
+        return lastClickedGif;
+    }
+
 }

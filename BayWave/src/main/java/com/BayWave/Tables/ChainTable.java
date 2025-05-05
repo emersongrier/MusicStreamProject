@@ -260,54 +260,26 @@ public class ChainTable {
         return getChainIdWithPlaylistAndTrack(connection, playlistId, trackId);
     }
 
-    public static ArrayList<String[]> getTableForPlaylist(Connection connection, int playlistId) throws SQLException {
-        PreparedStatement ps = connection.prepareStatement("SELECT * FROM CHAIN_ WHERE ply_id=?");
+    /**
+     * Returns a String[] of all chains associated with a given playlist
+     */
+    public static String[] getTableForPlaylist(Connection connection, int playlistId) throws SQLException {
+        PreparedStatement ps = connection.prepareStatement("SELECT chn_id, count(*) over () total_rows FROM CHAIN_ WHERE ply_id=?");
         ps.setInt(1, playlistId);
         ResultSet rs = ps.executeQuery();
         if (!rs.isBeforeFirst()) {
             System.out.println("Chain not found");
             return null;
         }
-        return TableUtil.getTable(rs);
+        return TableUtil.getFirstColumnStringTable(rs);
     }
 
     /**
      * Gets table using names instead of an ID.
      */
-    public static ArrayList<String[]> getTableForPlaylist(Connection connection, String user, String playlist) throws SQLException {
-        int userId = TableUtil.getUserID(connection, user);
-        if (userId == -1) {
-            System.out.println("User not found");
-            return null;
-        }
-        PreparedStatement ps = connection.prepareStatement("SELECT * FROM PLAYLIST WHERE usr_id=? AND lower(ply_name)=?");
-        ps.setInt(1, userId);
-        ps.setString(2, playlist);
-        ResultSet rs = ps.executeQuery();
-        if (!rs.isBeforeFirst()) {
-            System.out.println("Playlist not found");
-            return null;
-        }
-        rs.next();
-        int plyId = rs.getInt("ply_id");
-        return getTableForPlaylist(connection, plyId);
-    }
-
-    /**
-     * Returns an ArrayList of strings, each representing a row in the TRACK table associated with the
-     * specified chain, and containing the following attributes in order starting from string index 0:
-     * trk_id, trk_name, trk_file, trk_pos, trk_lyrics, trk_len, trk_strms, trk_likes, alb_id.
-     * The first element of the ArrayList (index 0), is a header containing these attribute names.
-     */
-    public static ArrayList<String[]> getTracksForChain(Connection connection, int chainId) throws SQLException {
-        PreparedStatement ps = connection.prepareStatement("SELECT * FROM CHAIN_TRACK WHERE chn_id=?");
-        ps.setInt(1, chainId);
-        ResultSet rs = ps.executeQuery();
-        if (!rs.isBeforeFirst()) {
-            System.out.println("Tracks not found");
-            return null;
-        }
-        return TableUtil.getTable(rs);
+    public static String[] getTableForPlaylist(Connection connection, String user, String playlist) throws SQLException {
+        int playlistId = TableUtil.getPlaylistID(connection, user, playlist);
+        return getTableForPlaylist(connection, playlistId);
     }
 
     /**

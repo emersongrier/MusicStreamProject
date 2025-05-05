@@ -365,6 +365,25 @@ public class TableUtil {
         return data;
     }
 
+    /**
+     * Returns the first column of a result set as a string table. The second column
+     * should represent the amount of rows in the ResultSet.
+     */
+    public static String[] getFirstColumnStringTable(ResultSet rs) throws SQLException {
+        if (!rs.isBeforeFirst()) {
+            return null;
+        }
+        rs.next();
+        int rows = rs.getInt(2);
+        String[] data = new String[rows];
+        data[0] = rs.getString(1);
+        for (int i = 1; i < rows; i++) {
+            rs.next();
+            data[i] = rs.getString(i);
+        }
+        return data;
+    }
+
     public static void printArrayList(ArrayList<String[]> list) {
         for (int i = 0; i < list.size(); i++) {
             for (int j = 0; j < list.get(i).length; j++) {

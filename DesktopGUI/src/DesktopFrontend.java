@@ -60,35 +60,30 @@ public class DesktopFrontend extends Application {
         // private Stage window;
         private Scene mainScene, loginScene, createAccountScene, accountCreationSuccessScene;
         private static double songElapsed, songLength;
-        private static String currentSong, currentArtist, currentAlbumCover, currentSongPath, songID; 
-        private static Label timeElapsed, trackLength;
+        private static String currentSong, currentArtist, logo, songID, username, password; 
+        private static Label timeElapsed, trackLength, trackPlaying, artistPlaying, track, artist;
         private static boolean playing = false;
-
-        private static Media media = null;
         private static MediaPlayer mediaPlayer = null;
         private static Button plause = null;
-        private static Path songPath = null;
         private static ProgressBar progress = null;
-
-        private static TextField searchBar;
-        private static VBox searchResults;
-        private static MusicClient client;
+        private static Path songPath = null;
+        private static Media media = null;
 
         @Override
         public void start(Stage primaryStage) {
                 Font.loadFont(getClass().getResourceAsStream("/resources/fonts/smooth_line_7.ttf"), 12);
 
                 //sample initialization of global variables
-                currentArtist = "Riley Simmons";
-                currentSong = "A Giant Goliath Ate My Car!";
-                currentSongPath = "Jalandhar.mp3";
-                currentAlbumCover = "/resources/images/aGiantGoliathAteMyCar.jpg";
+                currentArtist = "Kevin Macleod";
+                currentSong = "Jazz Brunch";
+                logo = "/resources/images/logo.png";
                 String defaultMusicImage = "/resources/images/defaultMusicPlaying.png";
+                String colorWheelPath = "/resources/images/color_wheel.png";
                 songID = "879";
                 songLength = 88615;
                 songElapsed = 70000;
                 String user = "Eli McKercher";
-                
+                MusicClient client = new MusicClient();
                 
                 // SIGN IN LANDING PAGE //
                 VBox loginPage = new VBox(10);
@@ -104,7 +99,7 @@ public class DesktopFrontend extends Application {
 
                 loginPage.setStyle("-fx-border-color: black;");
                 
-                File f = new File("C:\\Pictures\\Music Brand logo.jpg");
+                File f = new File(logo);
                 Image img = new Image(f.toURI().toString());
                 ImageView iview = new ImageView(img);
                 iview.setFitWidth(50);
@@ -172,7 +167,7 @@ public class DesktopFrontend extends Application {
                 confirmPasswordInput.setStyle("-fx-prompt-text-fill: purple;");
                 
                 Label newEmailLabel = new Label("Email: ");
-                newEmailLabel.setStyle("-fx-text-fill: red; -fx-font-weight: BOLD");
+                newEmailLabel.setStyle("-fx-text-fill: silver; -fx-font-weight: BOLD");
                 TextField newEmailInput = new TextField();
                 newEmailInput.setPromptText("REQUIRED: Please enter your email here (e.g. someone@example.com).");
                 newEmailInput.setStyle("-fx-prompt-text-fill: purple;");
@@ -194,32 +189,36 @@ public class DesktopFrontend extends Application {
                 Text createAccountErrorMsg = new Text();
                 
                 createAccount.setOnAction(e -> {
-                    if (newUsernameInput.getText().isEmpty() || 
-                            (newPasswordInput.getText().isEmpty() || confirmPasswordInput.getText().isEmpty())) {
-                        createAccountErrorMsg.setText("ERROR: Missing username, email, or password.");
-                        createAccountErrorMsg.setFont(Font.font("Times New Roman", FontWeight.BOLD, 22));
-                        createAccountErrorMsg.setFill(Color.RED);
-                        return;
-                    }
-                    
-                    if ( !newPasswordInput.getText().equals( confirmPasswordInput.getText() ) ){
-                        Alert errorDialog = new Alert(AlertType.ERROR, "Password fields do not match. Try again!", ButtonType.OK);
-                        errorDialog.showAndWait();
-                        return;
-                    }
-                    
-                    if ( !checkEULA.isSelected()){
-                        Alert errorDialog = new Alert(AlertType.ERROR, "You MUST accept the End User License Agreement", ButtonType.OK);
-                        errorDialog.showAndWait();
-                        return;
-                    }
-                    primaryStage.setScene(accountCreationSuccessScene);
-                    newUsernameInput.clear();
-                    newPasswordInput.clear();
-                    confirmPasswordInput.clear();
-                    newEmailInput.clear();
-                    newPhoneInput.clear();
-                    checkEULA.setSelected(false);
+                        if (newUsernameInput.getText().isEmpty() || 
+                                (newPasswordInput.getText().isEmpty() || confirmPasswordInput.getText().isEmpty())) {
+                                createAccountErrorMsg.setText("ERROR: Missing username or password.");
+                                createAccountErrorMsg.setFont(Font.font("Times New Roman", FontWeight.BOLD, 22));
+                                createAccountErrorMsg.setFill(Color.RED);
+                                return;
+                        }else if ( !newPasswordInput.getText().equals( confirmPasswordInput.getText() ) ){
+                                Alert errorDialog = new Alert(AlertType.ERROR, "Password fields do not match. Try again!", ButtonType.OK);
+                                errorDialog.showAndWait();
+                                return;
+                        }else if ( !checkEULA.isSelected()){
+                                Alert errorDialog = new Alert(AlertType.ERROR, "You MUST accept the End User License Agreement", ButtonType.OK);
+                                errorDialog.showAndWait();
+                                return;
+                        }
+                        boolean accountCreateResult = client.createAccount(newUsernameInput.getText(), newPasswordInput.getText());
+                        if (!accountCreateResult){
+                                Alert errorDialog = new Alert(AlertType.ERROR, "Account creation failed. Try again!", ButtonType.OK);
+                                errorDialog.showAndWait();
+                                return;
+                        }
+                        username = newUsernameInput.getText();
+                        password = newPasswordInput.getText();
+                        primaryStage.setScene(accountCreationSuccessScene);
+                        newUsernameInput.clear();
+                        newPasswordInput.clear();
+                        confirmPasswordInput.clear();
+                        newEmailInput.clear();
+                        newPhoneInput.clear();
+                        checkEULA.setSelected(false);
                 });
                 
                 toCreateAccountPage.setOnAction(e -> {
@@ -275,9 +274,7 @@ public class DesktopFrontend extends Application {
                 accountCreationSuccessPage.getChildren().addAll(checkmarkImage, successfulMessage, backToSignInPage);
         
                 // MAIN PAGE //
-                StackPane sp = new StackPane();
                 BorderPane root = new BorderPane();
-                client = new MusicClient();
 
                 // Main Page Gradient Background
                 root.setBackground(new Background(new BackgroundFill(
@@ -295,7 +292,7 @@ public class DesktopFrontend extends Application {
                 homeButton.setMaxSize(50, 50);
                 addRippleEffect(homeButton);
                 //VBox searchBarResults = new VBox(10);
-                searchBar = new TextField();
+                TextField searchBar = new TextField();
                 searchBar.setAlignment(Pos.CENTER);
                 Button createButton = new Button("+");
                 createButton.setShape(new Circle(15));
@@ -312,9 +309,10 @@ public class DesktopFrontend extends Application {
                 createButton.setOnAction(e -> createOptions.show(createButton, Side.BOTTOM, 0, 0));
 
                 ContextMenu profileBtnDD = new ContextMenu();
+                MenuItem viewSettings = new MenuItem("View Setting");
                 MenuItem viewProfile = new MenuItem("View Profile");
                 MenuItem logOut = new MenuItem("Log Out");
-                profileBtnDD.getItems().addAll(viewProfile, logOut);
+                profileBtnDD.getItems().addAll(viewSettings, viewProfile, logOut);
                 profileButton.setOnAction(e -> profileBtnDD.show(profileButton, Side.BOTTOM, 0, 0));
                 logOut.setOnAction(e -> primaryStage.setScene(loginScene));
 
@@ -324,10 +322,8 @@ public class DesktopFrontend extends Application {
                 VBox recents = new VBox(10);
                 recents.setPadding(new Insets(10));
                 recents.setStyle("-fx-border-color: black;");
-                Button recent1 = createImageButton("Recent 1",
-                                "C:/Users/emcke/Pictures/Screenshots/Screenshot 2024-09-09 100439.png");
-                Button recent2 = createImageButton("Recent 2",
-                                "C:/Users/emcke/Pictures/Screenshots/Screenshot 2024-09-09 100439.png");
+                Button recent1 = createImageButton("Recent 1", defaultMusicImage);
+                Button recent2 = createImageButton("Recent 2", defaultMusicImage);
                 recent1.setMaxWidth(Double.MAX_VALUE);
                 recent2.setMaxWidth(Double.MAX_VALUE);
                 recents.getChildren().addAll(recent1, recent2);
@@ -335,15 +331,49 @@ public class DesktopFrontend extends Application {
 
                 // CENTER
                 // Search Results
-                searchResults = new VBox(10);
+                VBox searchResults = new VBox(10);
                 searchResults.setPadding(new Insets(10));
                 searchResults.setStyle("-fx-border-color: black;");
-                new SearchThread(searchBar, searchResults, songID, playing, plause, client, mediaPlayer, media, songPath, progress);
-                /*Button result1 = createImageButton("Result 1", defaultMusicImage);
-                Button result2 = createImageButton("Result 2", defaultMusicImage);
-                result1.setMaxWidth(Double.MAX_VALUE);
-                result2.setMaxWidth(Double.MAX_VALUE);
-                searchResults.getChildren().addAll();*/
+                searchBar.textProperty().addListener((obs, oldVal, newVal) -> {
+                        JsonArray json = new JsonArray();
+                        try {
+                                json = JsonParser.parseString(client.searchDb(newVal, 10, 0)).getAsJsonArray();
+                        } catch (Exception e) {
+                                e.printStackTrace();
+                        }   
+                        searchResults.getChildren().clear();
+                        for(JsonElement element : json){
+                                JsonObject obj = element.getAsJsonObject();
+                                String resultTrack = obj.get("trk_name").getAsString();
+                                String resultID = obj.get("trk_id").getAsString();
+                                final String trackFinal = resultTrack.replaceFirst(".mp3","");
+                                final String idFinal = resultID;
+                                Button resultButton = new Button(trackFinal);
+                                resultButton.setMaxWidth(Double.MAX_VALUE);
+                                resultButton.setOnAction(e -> {
+                                        songID = resultID;
+                                        if(playing){
+                                                plause.setText("\u23f5");
+                                                playing = false;
+                                                mediaPlayer.pause();
+                                        }
+                                        try{
+                                                songPath = client.downloadSong(songID);
+                                        } catch(Exception g){
+                                                System.out.println("cant download");
+                                        }
+                                        media = new Media(songPath.toUri().toString());
+                                        mediaPlayer = new MediaPlayer(media);
+                                        plause.setText("\u23f8");
+                                        playing = true;
+                                        new ProgressThread(progress, songElapsed, songLength).start();
+                                        mediaPlayer.play();
+                                        trackPlaying.setText(trackFinal);
+                                        track.setText(trackFinal);                                        
+                                });
+                                searchResults.getChildren().add(resultButton);
+                        }
+                });
                 root.setCenter(searchResults);
                 homeButton.setOnAction(e -> root.setCenter(searchResults));
 
@@ -366,15 +396,31 @@ public class DesktopFrontend extends Application {
 
                 viewProfile.setOnAction(e -> root.setCenter(profileBox));
 
+                // Settings Display
+                VBox settingsBox = new VBox(10);
+                settingsBox.setPadding(new Insets(10));
+                settingsBox.setStyle("-fx-border-color: black;");
+                VBox colorSetting = new VBox(10);
+                Label colorTheme = new Label("Color Theme: ");
+                colorTheme.setStyle("-fx-text-fill: silver");
+                System.out.println(new File("resources/images/color_wheel.png").getAbsolutePath());
+                System.out.println(new File("resources/images/color_wheel.png").exists());
+                ImageView colorWheel = new ImageView(colorWheelPath);
+                colorWheel.setFitHeight(100);
+                colorWheel.setFitWidth(100);
+                colorSetting.getChildren().addAll(colorTheme, colorWheel);
+                settingsBox.getChildren().addAll(colorSetting);
+                viewSettings.setOnAction(e -> root.setCenter(settingsBox));
+
                 // RIGHT
                 VBox playingDetails = new VBox(10);
                 playingDetails.setPadding(new Insets(10));
                 playingDetails.setStyle("-fx-border-color: black;");
-                ImageView albumcover = new ImageView(new Image("file:///" + defaultMusicImage.replace("\\", "/")));
+                ImageView albumcover = new ImageView(defaultMusicImage);
                 albumcover.setFitHeight(100);
                 albumcover.setFitWidth(100);
-                Label track = new Label("Track Name");
-                Label artist = new Label("Artist Name");
+                track = new Label(currentSong);
+                artist = new Label(currentArtist);
                 track.setStyle("-fx-text-fill: silver");
                 artist.setStyle("-fx-text-fill: silver");
                 playingDetails.getChildren().addAll(albumcover, track, artist);
@@ -385,13 +431,13 @@ public class DesktopFrontend extends Application {
                 bottom.setPadding(new Insets(10));
                 bottom.setMaxHeight(50);
                 bottom.setStyle("-fx-border-color: black;");
-                ImageView smallAlbumCover = new ImageView(new Image("file:///" + defaultMusicImage.replace("\\", "/")));
+                ImageView smallAlbumCover = new ImageView(new Image(defaultMusicImage));
                 smallAlbumCover.setFitHeight(30);
                 smallAlbumCover.setFitWidth(30);
                 VBox trackDesc = new VBox(10);
                 trackDesc.setPadding(new Insets(10));
-                Label trackPlaying = new Label("Track Name");
-                Label artistPlaying = new Label("Artist Name");
+                trackPlaying = new Label(currentSong);
+                artistPlaying = new Label(currentArtist);
                 trackPlaying.setStyle("-fx-font-size: 10px; -fx-text-fill: silver");
                 artistPlaying.setStyle("-fx-font-size: 10px; -fx-text-fill: silver");
                 trackDesc.getChildren().addAll(trackPlaying, artistPlaying);
@@ -456,10 +502,9 @@ public class DesktopFrontend extends Application {
                 //SCENE SETTING
                 applyWaveAnimation((Node)root);
 
-                sp.getChildren().addAll(root);
                 loginScene = new Scene(loginPage, 1000, 600);
                 loginScene.getStylesheets().add(getClass().getResource("style.css").toExternalForm());
-                mainScene = new Scene(sp, 1000, 600);
+                mainScene = new Scene(root, 1000, 600);
                 mainScene.getStylesheets().add(getClass().getResource("style.css").toExternalForm());
                 createAccountScene = new Scene(createAccountPage, 1000, 600);
                 createAccountScene.getStylesheets().add(getClass().getResource("style.css").toExternalForm());
@@ -580,85 +625,7 @@ public class DesktopFrontend extends Application {
                                         e.printStackTrace();
                                 }
                         }
-                        System.out.println("terminating progress thread");
-                }
-        }
-
-        static class SearchThread extends Thread{
-                private TextField searchBar;
-                private VBox searchResults;
-                private String songID;
-                private boolean playing;
-                private final Button plause;
-                private MusicClient client;
-                private MediaPlayer mediaPlayer;
-                private Media media;
-                private Path songPath;
-                private final ProgressBar progress;
-
-                public SearchThread(TextField searchBar, VBox searchResults, String songID, boolean playing, Button plause, 
-                                MusicClient client, MediaPlayer mediaPlayer, Media media, Path songPath, ProgressBar progress) {
-                        this.searchBar = searchBar;
-                        this.searchResults = searchResults;
-                        this.songID = songID;
-                        this.playing = playing;
-                        this.plause = plause;
-                        this.client = client;
-                        this.mediaPlayer = mediaPlayer;
-                        this.media = media;
-                        this.songPath = songPath;
-                        this.progress = progress;
-                }
-
-                public void run(){
-                        while (true){
-                                searchBar.textProperty().addListener((obs, oldVal, newVal) -> {
-                                        JsonArray json = new JsonArray();
-                                        try {
-                                                json = JsonParser.parseString(client.searchDb(newVal, 10, 0)).getAsJsonArray();
-                                        } catch (Exception e) {
-                                                e.printStackTrace();
-                                        }   
-                                        searchResults.getChildren().clear();
-                                        for(JsonElement element : json){
-                                                JsonObject obj = element.getAsJsonObject();
-                                                String resultTrack = obj.get("trk_name").getAsString();
-                                                String resultID = obj.get("trk_id").getAsString();
-                                                Button resultButton = new Button(resultTrack);
-                                                resultButton.setMaxWidth(Double.MAX_VALUE);
-                                                final String IDcopy = resultID;
-                                                System.out.println(resultID);
-                                                resultButton.setOnAction(e -> {
-                                                        songID = IDcopy;
-                                                        if(playing){
-                                                                plause.setText("\u23f5");
-                                                                playing = false;
-                                                                mediaPlayer.pause();
-                                                        }
-                                                        try {
-                                                                songPath = client.downloadSong(songID);
-                                                                media = new Media(songPath.toUri().toString());
-                                                                plause.setText("\u23f8");
-                                                                playing = true;
-                                                                new ProgressThread(progress, songElapsed, songLength).start();
-                                                                if (mediaPlayer != null) {
-                                                                        mediaPlayer.stop();
-                                                                        mediaPlayer.dispose();
-                                                                }
-                                                                mediaPlayer = new MediaPlayer(media);
-                                                                mediaPlayer.play();
-                                                                    
-                                                        } catch (Exception f) {
-                                                                // TODO Auto-generated catch block
-                                                                f.printStackTrace();
-                                                        }
-                                                        
-                                                });
-                                                searchResults.getChildren().add(resultButton);
-                                        }
-                                });  
-                        }
-                        System.out.println("Killing search thread");
+                        System.out.println("terminating thread");
                 }
         }
 }

@@ -710,19 +710,17 @@ public class ChainTrackTable {
     }
 
     /**
-     * Returns an ArrayList of String tables. Each string table represents a row in the CHAIN_TRACK table
-     * associated with the given chain, which represents all the tracks found within the chain.
-     * The first element (at index 0 of the ArrayList), is a header containing the attribute names.
+     * Returns a string table of track IDs associated with the given chain.
      */
-    public static ArrayList<String[]> getTableForChain(Connection connection, int chainId) throws SQLException {
-        PreparedStatement ps = connection.prepareStatement("SELECT * FROM CHAIN_TRACK WHERE chn_id=?");
+    public static String[] getTableForChain(Connection connection, int chainId) throws SQLException {
+        PreparedStatement ps = connection.prepareStatement("SELECT trk_id, count(*) over () total_rows FROM CHAIN_TRACK WHERE chn_id=?");
         ps.setInt(1, chainId);
         ResultSet rs = ps.executeQuery();
-        if (rs.isBeforeFirst()) {
+        if (!rs.isBeforeFirst()) {
             System.err.println("Chain not found");
             return null;
         }
-        return TableUtil.getTable(rs);
+        return TableUtil.getFirstColumnStringTable(rs);
     }
 
     /**

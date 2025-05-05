@@ -1,11 +1,10 @@
 package com.BayWave.Options;
 
 import com.BayWave.Tables.ChainTable;
-import com.BayWave.Util.TableUtil;
+import com.BayWave.Tables.ChainTrackTable;
 
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.Objects;
 import java.util.Scanner;
 
@@ -32,7 +31,7 @@ public class ChainOptions {
         String album;
         String track;
         String playlist;
-        ArrayList<String[]> chainList;
+        String[] chainList;
         int chainId;
         do {
             printOptions();
@@ -95,19 +94,23 @@ public class ChainOptions {
                         System.out.println("Chain list is null");
                     }
                     else {
-                        TableUtil.printArrayList(chainList);
+                        for (String s : chainList) {
+                            System.out.println(s);
+                        }
                     }
                     break;
                 case "6":
                     System.out.println("Enter chain ID: ");
                     chainId = scanner.nextInt();
                     scanner.nextLine();
-                    chainList = ChainTable.getTracksForChain(connection, chainId);
+                    chainList = ChainTrackTable.getTableForChain(connection, chainId);
                     if (chainList == null) {
                         System.out.println("Chain list is null");
                     }
                     else {
-                        TableUtil.printArrayList(chainList);
+                        for (String s : chainList) {
+                            System.out.println(s);
+                        }
                     }
                     break;
                 case "7":

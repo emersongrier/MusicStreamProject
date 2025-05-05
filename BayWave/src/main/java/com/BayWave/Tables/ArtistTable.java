@@ -176,11 +176,7 @@ public class ArtistTable {
      * which contains the following attributes in order starting from index 0:
      * art_id, art_name, art_bio, art_flwrs, art_mbrs.
      */
-    public static String[] getArtist(Connection connection, String artist) throws SQLException {
-        int artistId = TableUtil.getArtistID(connection, artist);
-        if (artistId == -1) {
-            return null;
-        }
+    public static String[] getArtist(Connection connection, int artistId) throws SQLException {
         PreparedStatement ps = connection.prepareStatement("SELECT * FROM ARTIST WHERE art_id=?");
         ps.setInt(1, artistId);
         ResultSet rs = ps.executeQuery();
@@ -189,6 +185,19 @@ public class ArtistTable {
             return null;
         }
         return TableUtil.getFirstStringTable(rs);
+    }
+
+    /**
+     * Returns a string representing the specified row in the ALBUM table,
+     * which contains the following attributes in order starting from index 0:
+     * art_id, art_name, art_bio, art_flwrs, art_mbrs.
+     */
+    public static String[] getArtist(Connection connection, String artist) throws SQLException {
+        int artistId = TableUtil.getArtistID(connection, artist);
+        if (artistId == -1) {
+            return null;
+        }
+        return getArtist(connection, artistId);
     }
 
     /**
