@@ -69,6 +69,7 @@ public class RequestServer {
         server.createContext("/playlist/chains", new PlaylistChainsHandler());
         server.createContext("/artist/metadata", new ArtistDataHandler());
         server.createContext("/album/metadata", new AlbumDataHandler());
+        server.createContext("/chain/songs", new ChainSongsHandler());
 
         server.setExecutor(Executors.newCachedThreadPool());
         server.start();
