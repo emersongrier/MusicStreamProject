@@ -78,6 +78,7 @@ public class DesktopFrontend extends Application {
                 currentSong = "Jazz Brunch";
                 logo = "/resources/images/logo.png";
                 String defaultMusicImage = "/resources/images/defaultMusicPlaying.png";
+                String colorWheelPath = "/resources/images/color_wheel.png";
                 songID = "879";
                 songLength = 88615;
                 songElapsed = 70000;
@@ -308,9 +309,10 @@ public class DesktopFrontend extends Application {
                 createButton.setOnAction(e -> createOptions.show(createButton, Side.BOTTOM, 0, 0));
 
                 ContextMenu profileBtnDD = new ContextMenu();
+                MenuItem viewSettings = new MenuItem("View Setting");
                 MenuItem viewProfile = new MenuItem("View Profile");
                 MenuItem logOut = new MenuItem("Log Out");
-                profileBtnDD.getItems().addAll(viewProfile, logOut);
+                profileBtnDD.getItems().addAll(viewSettings, viewProfile, logOut);
                 profileButton.setOnAction(e -> profileBtnDD.show(profileButton, Side.BOTTOM, 0, 0));
                 logOut.setOnAction(e -> primaryStage.setScene(loginScene));
 
@@ -320,10 +322,8 @@ public class DesktopFrontend extends Application {
                 VBox recents = new VBox(10);
                 recents.setPadding(new Insets(10));
                 recents.setStyle("-fx-border-color: black;");
-                Button recent1 = createImageButton("Recent 1",
-                                "C:/Users/emcke/Pictures/Screenshots/Screenshot 2024-09-09 100439.png");
-                Button recent2 = createImageButton("Recent 2",
-                                "C:/Users/emcke/Pictures/Screenshots/Screenshot 2024-09-09 100439.png");
+                Button recent1 = createImageButton("Recent 1", defaultMusicImage);
+                Button recent2 = createImageButton("Recent 2", defaultMusicImage);
                 recent1.setMaxWidth(Double.MAX_VALUE);
                 recent2.setMaxWidth(Double.MAX_VALUE);
                 recents.getChildren().addAll(recent1, recent2);
@@ -395,6 +395,22 @@ public class DesktopFrontend extends Application {
                 profileBox.getChildren().addAll(profileBasics, socialStatus);
 
                 viewProfile.setOnAction(e -> root.setCenter(profileBox));
+
+                // Settings Display
+                VBox settingsBox = new VBox(10);
+                settingsBox.setPadding(new Insets(10));
+                settingsBox.setStyle("-fx-border-color: black;");
+                VBox colorSetting = new VBox(10);
+                Label colorTheme = new Label("Color Theme: ");
+                colorTheme.setStyle("-fx-text-fill: silver");
+                System.out.println(new File("resources/images/color_wheel.png").getAbsolutePath());
+                System.out.println(new File("resources/images/color_wheel.png").exists());
+                ImageView colorWheel = new ImageView(colorWheelPath);
+                colorWheel.setFitHeight(100);
+                colorWheel.setFitWidth(100);
+                colorSetting.getChildren().addAll(colorTheme, colorWheel);
+                settingsBox.getChildren().addAll(colorSetting);
+                viewSettings.setOnAction(e -> root.setCenter(settingsBox));
 
                 // RIGHT
                 VBox playingDetails = new VBox(10);
