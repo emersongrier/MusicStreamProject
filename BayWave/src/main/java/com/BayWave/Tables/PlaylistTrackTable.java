@@ -468,6 +468,9 @@ public class PlaylistTrackTable {
         return rs.isBeforeFirst();
     }
 
+    /**
+     * Returns a string table of all track IDs associated with a particular playlist.
+     */
     public static String[] getTracks(Connection connection, int playlistId) throws SQLException {
         PreparedStatement ps = connection.prepareStatement("SELECT trk_id, count(*) over () total_rows FROM PLAYLIST_TRACK WHERE ply_id=?");
         ps.setInt(1, playlistId);

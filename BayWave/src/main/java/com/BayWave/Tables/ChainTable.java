@@ -260,6 +260,9 @@ public class ChainTable {
         return getChainIdWithPlaylistAndTrack(connection, playlistId, trackId);
     }
 
+    /**
+     * Returns all chains associated with a given playlist
+     */
     public static ArrayList<String[]> getTableForPlaylist(Connection connection, int playlistId) throws SQLException {
         PreparedStatement ps = connection.prepareStatement("SELECT * FROM CHAIN_ WHERE ply_id=?");
         ps.setInt(1, playlistId);
