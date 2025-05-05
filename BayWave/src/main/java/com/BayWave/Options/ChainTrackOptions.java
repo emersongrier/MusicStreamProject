@@ -16,7 +16,8 @@ public class ChainTrackOptions {
         System.out.println("4. Update track position (swap) (CHAIN_TRACK)");
         System.out.println("5. Update track position (insert) (CHAIN_TRACK)");
         System.out.println("6. Check if chain has track");
-        System.out.println("7. Return");
+        System.out.println("7. Get tracks for chain");
+        System.out.println("8. Return");
         System.out.println();
     }
 
@@ -101,6 +102,16 @@ public class ChainTrackOptions {
                     track = scanner.nextLine();
                     System.out.println("Contains: " + ChainTrackTable.contains(connection, chainId, artist, album, track));
                     break;
+                case "7":
+                    System.out.println("Enter chain ID: ");
+                    chainId = scanner.nextInt();
+                    scanner.nextLine();
+                    String[] tracks = ChainTrackTable.getTableForChain(connection, chainId);
+                    if (tracks != null) {
+                        for (String s : tracks) {
+                            System.out.println(s);
+                        }
+                    }
                 default:
                     input = "-1";
             }

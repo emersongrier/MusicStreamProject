@@ -716,7 +716,7 @@ public class ChainTrackTable {
         PreparedStatement ps = connection.prepareStatement("SELECT trk_id, count(*) over () total_rows FROM CHAIN_TRACK WHERE chn_id=?");
         ps.setInt(1, chainId);
         ResultSet rs = ps.executeQuery();
-        if (rs.isBeforeFirst()) {
+        if (!rs.isBeforeFirst()) {
             System.err.println("Chain not found");
             return null;
         }
