@@ -66,6 +66,7 @@ public class RequestServer {
         server.createContext("/playlist/addsong",new AddSongPlaylistHandler());
         server.createContext("/playlist/deletesong", new DeleteSongPlaylistHandler());
         server.createContext("/playlist/songs", new PlaylistSongsHandler());
+        server.createContext("/playlist/chains", new PlaylistChainsHandler());
         server.createContext("/artist/metadata", new ArtistDataHandler());
         server.createContext("/album/metadata", new AlbumDataHandler());
 
