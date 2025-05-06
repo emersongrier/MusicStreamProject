@@ -89,6 +89,9 @@ public class MusicClient {
         }
     }
 
+    /**
+     * Returns all chain IDs associated with the given playlist.
+     */
     public String downloadPlaylistChainData(String playlistId) {
         try {
             String playlistUrl = baseUrl + "/playlist/chains?id=" + playlistId;
@@ -120,9 +123,12 @@ public class MusicClient {
         }
     }
 
+    /**
+     * Returns all song IDs associated with the given chain.
+     */
     public String downloadChainSongData(String chainId) {
         try {
-            String playlistUrl = baseUrl + "/playlist/chains?id=" + playlistId;
+            String playlistUrl = baseUrl + "/chain/songs?id=" + chainId;
             URL url = new URI(songUrl).toURL();
             HttpsURLConnection conn = (HttpsURLConnection) url.openConnection();
             conn.setRequestMethod("GET");
