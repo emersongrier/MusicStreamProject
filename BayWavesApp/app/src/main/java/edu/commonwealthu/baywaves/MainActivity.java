@@ -70,4 +70,13 @@ public class MainActivity extends AppCompatActivity {
         fragmentTransaction.commit();
     }
 
+
+    public void switchToHomeTab() {
+        binding.bottomNavigationView.setSelectedItemId(R.id.home);
+    }
+
+    public void switchToSearchTab() {
+        binding.bottomNavigationView.setSelectedItemId(R.id.search);
+    }
+
 }

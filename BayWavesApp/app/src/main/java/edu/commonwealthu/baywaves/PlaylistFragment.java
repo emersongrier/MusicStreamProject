@@ -44,11 +44,11 @@ public class PlaylistFragment extends Fragment implements PlaylistAdapter.OnPlay
     private TrackRepository trackRepository;
     private List<Track> likedPlaylist = new ArrayList<>();
     private MaterialToolbar toolbar, playlistToolbar;
-    public TextView songName, artistName;
-    public ImageView musicPlaying;
+    private TextView songName, artistName;
+    private ImageView musicPlaying;
 
     public boolean isInside;
-    
+
 
     private ActivityResultLauncher<Intent> resultLauncher;
 
