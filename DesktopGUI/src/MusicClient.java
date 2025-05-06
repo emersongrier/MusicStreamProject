@@ -89,6 +89,68 @@ public class MusicClient {
         }
     }
 
+    public String downloadPlaylistChainData(String playlistId) {
+        try {
+            String playlistUrl = baseUrl + "/playlist/chains?id=" + playlistId;
+            URL url = new URI(songUrl).toURL();
+            HttpsURLConnection conn = (HttpsURLConnection) url.openConnection();
+            conn.setRequestMethod("GET");
+            conn.setDoOutput(true);
+
+            // Send request body
+            try (OutputStream os = conn.getOutputStream()) {
+                byte[] input = json.getBytes(StandardCharsets.UTF_8);
+                os.write(input, 0, input.length);
+            }
+
+            int responseCode = conn.getResponseCode();
+            if (responseCode == 200) {
+                // Success
+                try (BufferedReader reader = new BufferedReader(new InputStreamReader(conn.getInputStream()))) {
+                    return reader.lines().collect(Collectors.joining());
+                }
+            } else {
+                // Failure (403, 404, etc) → just return null
+                return null;
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public String downloadChainSongData(String chainId) {
+        try {
+            String playlistUrl = baseUrl + "/playlist/chains?id=" + playlistId;
+            URL url = new URI(songUrl).toURL();
+            HttpsURLConnection conn = (HttpsURLConnection) url.openConnection();
+            conn.setRequestMethod("GET");
+            conn.setDoOutput(true);
+
+            // Send request body
+            try (OutputStream os = conn.getOutputStream()) {
+                byte[] input = json.getBytes(StandardCharsets.UTF_8);
+                os.write(input, 0, input.length);
+            }
+
+            int responseCode = conn.getResponseCode();
+            if (responseCode == 200) {
+                // Success
+                try (BufferedReader reader = new BufferedReader(new InputStreamReader(conn.getInputStream()))) {
+                    return reader.lines().collect(Collectors.joining());
+                }
+            } else {
+                // Failure (403, 404, etc) → just return null
+                return null;
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
     public String searchDb(String searchstring, int limit, int offset) throws Exception
     {
 
