@@ -29,7 +29,6 @@ public class TrackRepository {
     private boolean isLoggedIn = false;
 
     private TrackRepository() {
-        // Private constructor to prevent direct instantiation
         likedTracksCache = new HashMap<>();
     }
 
@@ -115,8 +114,6 @@ public class TrackRepository {
 
     // Helper to extract track ID from file path
     private String extractTrackId(String filePath) {
-        // if(filePath.equals())
-        // For tracks with filenames like "Achilles.mp3", return the track's actual ID
         if (filePath.endsWith(".mp3") && !filePath.contains("/")) {
             // Look up the track by filename and return its ID
             List<Track> tracks = getLocalFallbackTracks();
@@ -406,46 +403,47 @@ public class TrackRepository {
     // Local fallback tracks as a last resort
     protected List<Track> getLocalFallbackTracks() {
         List<Track> fallbackTracks = new ArrayList<>();
-        fallbackTracks.add(new Track(
-                12,
-                "Rollin",
-                "Achilles.mp3",
-                1,
-                "Sample lyrics for Aves Rollin",
-                0,
-                0,
-                0,
-                1,  // Album ID for "Waves"
-                1   // Artist ID for Aves
-        ));
 
 
         // Track from Yarin Primak in a different album
         fallbackTracks.add(new Track(
-                2,
-                "Special Vibe",
-                "android.resource://edu.commonwealthu.baywaves/" + R.raw.special_vibe,
-                2,
-                "Lyrics for Special Vibe",
+                12,
+                "Disquiet",
+                "Disquiet.mp3",
+                1,
+                "Lyrics for Disquiet",
                 0,
                 500,
                 0,
-                2,  // Album ID for "Special Collection"
-                2   // Artist ID for Yarin Primak
+                4,  // Album ID for "Disquiet"
+                3   // Artist ID for Kevin MacLeod
+        ));
+
+        fallbackTracks.add(new Track(
+                13,
+                "Dream Culture",
+                "Dream Culture.mp3",
+                2,
+                "Sample lyrics for Dream Culture",
+                0,
+                0,
+                0,
+                5,  // Album ID for "Dream Culture"
+                3   // Artist ID for Kevin Macleod
         ));
 
         // Additional track from Aves in the same album
         fallbackTracks.add(new Track(
+                799,
+                "Cool Vibes",
+                "Cool Vibes.mp3",
                 3,
-                "The Frog Walk",
-                "android.resource://edu.commonwealthu.baywaves/" + R.raw.aves_the_frog_walk,
-                3,
-                "Lyrics for The Frog Walk by Aves",
+                "Lyrics for Cool Vibes",
                 0,
                 750,
                 0,
-                3,
-                1   // Same Artist ID for Aves
+                6,
+                3   // Same Artist ID for Kevin Macleod
         ));
 
         return fallbackTracks;

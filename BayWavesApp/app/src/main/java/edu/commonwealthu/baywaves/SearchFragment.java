@@ -1,7 +1,6 @@
 package edu.commonwealthu.baywaves;
 
 import android.os.Bundle;
-import android.os.Handler;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -11,7 +10,6 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -82,9 +80,6 @@ public class SearchFragment extends Fragment implements SongAdapter.OnSongClickL
     }
 
     private void performSearch(String query) {
-        // Show loading indicator if needed
-        // loadingIndicator.setVisibility(View.VISIBLE);
-
         // Run search in a background thread to avoid blocking UI
         new Thread(() -> {
             try {
@@ -102,11 +97,9 @@ public class SearchFragment extends Fragment implements SongAdapter.OnSongClickL
                         adapter.setTracks(searchResults); // Use the existing method to update adapter
 
                         if (searchResults.isEmpty()) {
-                            Toast.makeText(getContext(), "No songs found", Toast.LENGTH_SHORT).show();
+                           // Toast.makeText(getContext(), "No songs found", Toast.LENGTH_SHORT).show();
                         }
 
-                        // Hide loading indicator if needed
-                        // loadingIndicator.setVisibility(View.GONE);
                     });
                 } else {
                     // If server search fails, fall back to local search
@@ -119,11 +112,9 @@ public class SearchFragment extends Fragment implements SongAdapter.OnSongClickL
                             adapter.setTracks(searchResults); // Use the existing method to update adapter
 
                             if (searchResults.isEmpty()) {
-                                Toast.makeText(getContext(), "No songs found", Toast.LENGTH_SHORT).show();
+                                //Toast.makeText(getContext(), "No songs found", Toast.LENGTH_SHORT).show();
                             }
 
-                            // Hide loading indicator if needed
-                            // loadingIndicator.setVisibility(View.GONE);
                         });
                     }
                 }
@@ -133,10 +124,8 @@ public class SearchFragment extends Fragment implements SongAdapter.OnSongClickL
                 // Handle error on UI thread
                 if (getActivity() != null) {
                     getActivity().runOnUiThread(() -> {
-                        Toast.makeText(getContext(), "Search failed: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                       // Toast.makeText(getContext(), "Search failed: " + e.getMessage(), Toast.LENGTH_SHORT).show();
 
-                        // Hide loading indicator if needed
-                        // loadingIndicator.setVisibility(View.GONE);
                     });
                 }
             }
@@ -145,11 +134,8 @@ public class SearchFragment extends Fragment implements SongAdapter.OnSongClickL
 
     // Helper method to parse JSON if TrackRepository.parseTracksFromJson is not accessible
     private List<Track> parseTracksFromJson(String json) {
-        // You can either:
-        // 1. Make the parseTracksFromJson method in TrackRepository public, or
-        // 2. Implement the parsing logic here
 
-        // For now, let's call the repository method if it's accessible
+        // call the repository method if it's accessible
         try {
             return trackRepository.parseTracksFromJson(json);
         } catch (Exception e) {
@@ -177,10 +163,6 @@ public class SearchFragment extends Fragment implements SongAdapter.OnSongClickL
         return results;
     }
 
-    // Modify the onSonglistClick method in your SearchFragment.java
-
-    // Modify the onSonglistClick method in your SearchFragment.java
-
     @Override
     public void onSonglistClick(Track track) {
         Log.d(TAG, "Song clicked: " + track.getName() + " (ID: " + track.getId() + ")");
@@ -195,7 +177,7 @@ public class SearchFragment extends Fragment implements SongAdapter.OnSongClickL
         // Make sure we have a valid track ID
         if (track.getId() <= 0) {
             Log.e(TAG, "Track has invalid ID: " + track.getId());
-            Toast.makeText(getContext(), "Song cannot be played: invalid track ID", Toast.LENGTH_SHORT).show();
+           // Toast.makeText(getContext(), "Song cannot be played: invalid track ID", Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -206,8 +188,7 @@ public class SearchFragment extends Fragment implements SongAdapter.OnSongClickL
 
         if (homeFragment != null) {
             try {
-                // Get the track from repository using the ID to ensure we have complete track info
-                // This is a key step to ensure we're using the correct track data
+                // Get the track from repository using the ID to ensure we have complete track info (key step)
                 Track fullTrack = trackRepository.getTrackById(track.getId());
 
                 if (fullTrack == null) {
@@ -221,12 +202,12 @@ public class SearchFragment extends Fragment implements SongAdapter.OnSongClickL
                 // Load the track into the player
                 homeFragment.loadTrack(fullTrack);
 
-                // Add a small delay before playing to ensure ExoPlayer is ready
-                new Handler().postDelayed(() -> {
-                    if (homeFragment.exoPlayer != null && !homeFragment.isPlaying) {
-                        homeFragment.playAndPause();
-                    }
-                }, 500);  // 500ms delay
+                if (homeFragment.isPlaying) {
+                    homeFragment.playAndPause();
+                }
+                if (!homeFragment.isPlaying) {
+                    homeFragment.playAndPause();
+                }
 
                 // Switch to Home tab
                 try {
@@ -239,11 +220,11 @@ public class SearchFragment extends Fragment implements SongAdapter.OnSongClickL
                 }
             } catch (Exception e) {
                 Log.e(TAG, "Error playing track: " + e.getMessage(), e);
-                Toast.makeText(getContext(), "Error playing track: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+               // Toast.makeText(getContext(), "Error playing track: " + e.getMessage(), Toast.LENGTH_SHORT).show();
             }
         } else {
             Log.e(TAG, "HomeFragment not found");
-            Toast.makeText(getContext(), "Cannot play song: Player not found", Toast.LENGTH_SHORT).show();
+           // Toast.makeText(getContext(), "Cannot play song: Player not found", Toast.LENGTH_SHORT).show();
         }
     }
 }

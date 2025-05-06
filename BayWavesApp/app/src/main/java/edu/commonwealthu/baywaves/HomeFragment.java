@@ -92,12 +92,12 @@ public class HomeFragment extends Fragment {
         if (!trackRepository.isLoggedIn()) {
             // Replace with actual credentials
             boolean loginSuccess = trackRepository.login("your_username", "your_password");
-            showCustomToast("Login attempt: " + loginSuccess);
+            //showCustomToast("Login attempt: " + loginSuccess);
         }
 
         boolean isConnected = trackRepository.isServerConnected();
         String connectionMessage = trackRepository.getConnectionErrorMessage();
-        showCustomToast("Server connected: " + isConnected + " - " + connectionMessage);
+        //showCustomToast("Server connected: " + isConnected + " - " + connectionMessage);
 
         boolean isLoggedIn = trackRepository.isLoggedIn();
         showCustomToast("Logged in: " + isLoggedIn);
@@ -496,7 +496,7 @@ public class HomeFragment extends Fragment {
         }
     }
 
-    // Add this helper method to safely find and update the PlaylistFragment
+    // Helper method to safely find and update the PlaylistFragment
     private void updatePlaylistFragment() {
         // Find the PlaylistFragment using the tag specified in MainActivity
         PlaylistFragment playlistFragment = (PlaylistFragment) getActivity()

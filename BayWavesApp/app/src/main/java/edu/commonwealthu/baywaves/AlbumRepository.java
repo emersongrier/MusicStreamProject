@@ -126,6 +126,40 @@ public class AlbumRepository {
         );
         albums.add(fonkyThings);
 
+        // Add default album for Aves
+        Album missing_Hits_C_to_E = new Album(
+                4,
+                "Album",
+                "Missing Hits C to E",
+                null, // Cover will be set dynamically
+                new ArrayList<>(), // Empty tracks list initially
+                150,
+                3 // Artist ID for Kevin Macleod
+        );
+        albums.add(missing_Hits_C_to_E);
+
+        Album calming = new Album(
+                5,
+                "Album",
+                "Calming",
+                null, // Cover will be set dynamically
+                new ArrayList<>(), // Empty tracks list initially
+                150,
+                3 // Artist ID Kevin macleod
+        );
+        albums.add(calming);
+
+        Album noir = new Album(
+                6,
+                "Album",
+                "Noir",
+                null, // Cover will be set dynamically
+                new ArrayList<>(), // Empty tracks list initially
+                150,
+                3 // Artist ID Kevin macleod
+        );
+        albums.add(noir);
+
         // Now try to populate tracks if available
         try {
             for (Album album : albums) {
@@ -143,6 +177,9 @@ public class AlbumRepository {
         albumCoverResourceIds.put(1, R.drawable.test_album_art);
         albumCoverResourceIds.put(2, R.drawable.special_vibe_cover);
         albumCoverResourceIds.put(3, R.drawable.the_fonky_things);
+        albumCoverResourceIds.put(4, R.drawable.disquiet_album);
+        albumCoverResourceIds.put(5, R.drawable.dream_culture);
+        albumCoverResourceIds.put(6, R.drawable.cool_vibes);
     }
 
     public List<Album> getAllAlbums() {
