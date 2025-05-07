@@ -17,7 +17,6 @@ import javafx.animation.Interpolator;
 import javafx.scene.effect.ColorAdjust;
 import java.io.File;
 import java.io.FileInputStream;
-
 import javafx.animation.Animation;
 import javafx.animation.Interpolator;
 import javafx.animation.KeyFrame;
@@ -50,6 +49,12 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import com.google.gson.*;
+import javax.net.ssl.HttpsURLConnection;
+import java.net.URI;
+import java.net.URL;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.nio.file.Files;
 
 //import static com.BayWave.Tables.UserTable.passwordValid;
 //import static com.BayWave.Tables.UserTable.usernameExists;
@@ -64,12 +69,13 @@ public class DesktopFrontend extends Application {
         private static double songElapsed, songLength;
         private static String currentSong, currentArtist, logo, songID, username, password, metadata; 
         private static Label timeElapsed, trackLength, trackPlaying, artistPlaying, track, artist;
-        private static boolean playing = false;
+        private static boolean playing, ambianceStatus = false;
         private static MediaPlayer mediaPlayer = null;
         private static Button plause, profileButton = null;
         private static ProgressBar progress = null;
         private static Path songPath = null;
         private static Media media = null;
+        private static MediaPlayer ambiancePlayer = null;
 
         @Override
         public void start(Stage primaryStage) {
@@ -307,7 +313,8 @@ public class DesktopFrontend extends Application {
                 ContextMenu createOptions = new ContextMenu();
                 MenuItem createPlaylist = new MenuItem("Create Playlist");
                 MenuItem openDAW = new MenuItem("Add Filter");
-                createOptions.getItems().addAll(createPlaylist, openDAW);
+                MenuItem ambiancePlay = new MenuItem("Add Ambiance");
+                createOptions.getItems().addAll(createPlaylist, openDAW, ambiancePlay);
                 createButton.setOnAction(e -> createOptions.show(createButton, Side.BOTTOM, 0, 0));
 
                 ContextMenu profileBtnDD = new ContextMenu();
@@ -318,6 +325,38 @@ public class DesktopFrontend extends Application {
                 profileButton.setOnAction(e -> profileBtnDD.show(profileButton, Side.BOTTOM, 0, 0));
                 logOut.setOnAction(e -> primaryStage.setScene(loginScene));
 
+                ambiancePlay.setOnAction(e ->{
+                        if(!ambianceStatus){
+                                try{
+                                        URL url = new URI("https://baywave.org:8080/ambience?type=rain").toURL();
+                                        HttpsURLConnection conn = (HttpsURLConnection) url.openConnection();
+                                        conn.setRequestMethod("GET");
+                                        Path ambiancePath;
+                                        try (InputStream in = conn.getInputStream()) {
+                                                ambiancePath = Files.createTempFile("rainAmbiance", null);
+                                                Files.copy(in, ambiancePath, java.nio.file.StandardCopyOption.REPLACE_EXISTING);
+                                        }
+                                        Media ambianceMedia = new Media(ambiancePath.toUri().toString());
+                                        ambiancePlayer = new MediaPlayer(ambianceMedia);
+                                        ambiancePlayer.play();
+                                        ambianceStatus = true;
+                                        ambiancePlayer.setOnEndOfMedia(new Runnable() {
+                                                @Override
+                                                public void run() {
+                                                    ambiancePlayer.seek(Duration.ZERO);
+                                                    ambiancePlayer.play();
+                                                }
+                                            }); 
+                                } catch(Exception h){
+                                        h.printStackTrace();
+                                }
+                                
+                        }
+                        else{
+                                ambiancePlayer.pause();
+                                ambianceStatus = false;
+                        }
+                });
                 
 
                 // LEFT
@@ -372,8 +411,8 @@ public class DesktopFrontend extends Application {
                                         mediaPlayer = new MediaPlayer(media);
                                         plause.setText("\u23f8");
                                         playing = true;
-                                        songLength = getSongLength(metadata, songMetadata, client);
-                                        new ProgressThread(progress, songElapsed, songLength).start();
+                                        //songLength = getSongLength(metadata, songMetadata, client);
+                                        new ProgressThread(progress/*, songElapsed, songLength*/).start();
                                         mediaPlayer.play();
                                         trackPlaying.setText(trackFinal);
                                         track.setText(trackFinal);                                        
@@ -518,8 +557,8 @@ public class DesktopFrontend extends Application {
                         else{
                                 plause.setText("\u23f8");
                                 playing = true;
-                                songLength = getSongLength(metadata, songMetadata, client);
-                                new ProgressThread(progress, songElapsed, songLength).start();
+                                //songLength = getSongLength(metadata, songMetadata, client);
+                                new ProgressThread(progress/*, songElapsed, songLength*/).start();
                                 mediaPlayer.play();
                         }
                 });
@@ -639,26 +678,32 @@ public class DesktopFrontend extends Application {
          */
         static class ProgressThread extends Thread {
                 private final ProgressBar progressBar;
-                private double songElapsed;
-                private final double songLength;
+                /*private double songElapsed;
+                private final double songLength;*/
 
-                public ProgressThread(ProgressBar progressBar, double songElapsed, double songLength) {
+                public ProgressThread(ProgressBar progressBar/*, double songElapsed, double songLength*/) {
                         this.progressBar = progressBar;
-                        this.songElapsed = songElapsed;
-                        this.songLength = songLength;
+                        /*this.songElapsed = songElapsed;
+                        this.songLength = songLength;*/
                 }
 
                 @Override
                 public void run() {
                         while(playing){
-                                Platform.runLater(() -> progressBar.setProgress(songElapsed/songLength));
+                                Platform.runLater(() -> progressBar.setProgress(
+                                        mediaPlayer.getCurrentTime().toMillis()/mediaPlayer.getTotalDuration().toMillis())
+                                        );
                                 Platform.runLater(() -> timeElapsed.setText(
-                                        ((int) songElapsed)/1000/60 + ":" + ((int) songElapsed)/1000%60));
+                                        ((int) mediaPlayer.getCurrentTime().toSeconds())/60 + 
+                                        ":" + 
+                                        String.format("%02d", ((int) mediaPlayer.getCurrentTime().toSeconds()) % 60)));
                                 Platform.runLater(() -> trackLength.setText(
-                                        ((int) songLength)/1000/60 + ":" + ((int) songLength)/1000%60));
+                                        ((int) mediaPlayer.getTotalDuration().toSeconds())/60 + 
+                                        ":" + 
+                                        String.format("%02d", ((int) mediaPlayer.getTotalDuration().toSeconds()) % 60)));
                                 try {
                                         Thread.sleep(500);
-                                        songElapsed+=500;
+                                        //songElapsed+=500;
                                 } catch (InterruptedException e) {
                                         // TODO Auto-generated catch block
                                         e.printStackTrace();
