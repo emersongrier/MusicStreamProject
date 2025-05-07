@@ -55,6 +55,8 @@ import java.net.URL;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.file.Files;
+import java.util.Optional;
+import javafx.scene.image.PixelReader;
 
 //import static com.BayWave.Tables.UserTable.passwordValid;
 //import static com.BayWave.Tables.UserTable.usernameExists;
@@ -92,6 +94,8 @@ public class DesktopFrontend extends Application {
                 songElapsed = 0;
                 MusicClient client = new MusicClient();
                 JsonArray songMetadata = new JsonArray();
+                Color defaultDarkPurple = Color.web("#1a0033");
+                Color defaultLightPurple = Color.web("#8756c8");
                 
                 // SIGN IN LANDING PAGE //
                 VBox loginPage = new VBox(10);
@@ -313,7 +317,7 @@ public class DesktopFrontend extends Application {
                 ContextMenu createOptions = new ContextMenu();
                 MenuItem createPlaylist = new MenuItem("Create Playlist");
                 MenuItem openDAW = new MenuItem("Add Filter");
-                MenuItem ambiancePlay = new MenuItem("Add Ambiance");
+                MenuItem ambiancePlay = new MenuItem("Toggle Ambiance");
                 createOptions.getItems().addAll(createPlaylist, openDAW, ambiancePlay);
                 createButton.setOnAction(e -> createOptions.show(createButton, Side.BOTTOM, 0, 0));
 
@@ -338,6 +342,7 @@ public class DesktopFrontend extends Application {
                                         }
                                         Media ambianceMedia = new Media(ambiancePath.toUri().toString());
                                         ambiancePlayer = new MediaPlayer(ambianceMedia);
+                                        ambiancePlayer.setVolume(0.04);
                                         ambiancePlayer.play();
                                         ambianceStatus = true;
                                         ambiancePlayer.setOnEndOfMedia(new Runnable() {
@@ -363,8 +368,14 @@ public class DesktopFrontend extends Application {
                 VBox recents = new VBox(10);
                 recents.setPadding(new Insets(10));
                 recents.setStyle("-fx-border-color: black;");
-                Button recent1 = createImageButton("Recent 1", defaultMusicImage);
-                Button recent2 = createImageButton("Recent 2", defaultMusicImage);
+                ImageView defaultImageView = new ImageView(defaultMusicImage);
+                defaultImageView.setFitHeight(75);
+                defaultImageView.setFitWidth(75);
+                ImageView defaultImageView2 = new ImageView(defaultMusicImage);
+                defaultImageView2.setFitHeight(75);
+                defaultImageView2.setFitWidth(75);
+                Button recent1 = new Button("Recent 1", defaultImageView);
+                Button recent2 = new Button("Recent 2", defaultImageView2);
                 recent1.setMaxWidth(Double.MAX_VALUE);
                 recent2.setMaxWidth(Double.MAX_VALUE);
                 recents.getChildren().addAll(recent1, recent2);
@@ -375,10 +386,10 @@ public class DesktopFrontend extends Application {
                 VBox searchResults = new VBox(10);
                 searchResults.setPadding(new Insets(10));
                 searchResults.setStyle("-fx-border-color: black;");
-                ContextMenu meatballMenu = new ContextMenu(
-                        new MenuItem("Add to Playlist"),
-                        new MenuItem("Like Song")
-                );
+                ContextMenu meatballMenu = new ContextMenu();
+                MenuItem songToPlaylist = new MenuItem("Add to Playlist");
+                MenuItem likeSong = new MenuItem("Like Song");
+                meatballMenu.getItems().addAll(songToPlaylist, likeSong);
                 searchBar.textProperty().addListener((obs, oldVal, newVal) -> {
                         JsonArray json = new JsonArray();
                         try {
@@ -414,8 +425,16 @@ public class DesktopFrontend extends Application {
                                         //songLength = getSongLength(metadata, songMetadata, client);
                                         new ProgressThread(progress/*, songElapsed, songLength*/).start();
                                         mediaPlayer.play();
-                                        trackPlaying.setText(trackFinal);
-                                        track.setText(trackFinal);                                        
+                                        if (trackFinal.length() >= 20) {
+                                                track.setText(trackFinal.substring(0, 15) + "...");
+                                        } else {
+                                                track.setText(trackFinal);
+                                        }
+                                        if (trackFinal.length() >= 35) {
+                                                trackPlaying.setText(trackFinal.substring(0, 30) + "...");
+                                        } else {
+                                                trackPlaying.setText(trackFinal);
+                                        }
                                 });
                                 resultButton.setOnMouseEntered(e -> {
                                         if(!meatballMenu.isShowing()){
@@ -433,12 +452,24 @@ public class DesktopFrontend extends Application {
                                         }).start();
                                 });
                                 meatballMenu.setOnHidden(e -> resultButton.disarm());
+                                likeSong.setOnAction(e -> client.toggleSongLike(songID, username, password));
+                                songToPlaylist.setOnAction(e -> {
+                                        TextInputDialog playlistNamePopup = new TextInputDialog("sample_name");
+                                        playlistNamePopup.setTitle("Playlist Name Request");
+                                        playlistNamePopup.setHeaderText("Playlist you want this song added to: ");
+                                        //playlistNamePopup.setContentText("Input:");
+                                        Optional<String> result = playlistNamePopup.showAndWait();
+                                        result.ifPresent(playlistName -> {
+                                                System.out.println(client.addSongToPlaylist(songID, playlistName, username, password));
+                                        });
+                                });
                                 searchResults.getChildren().add(resultButton);
                         }
                 });
                 //searchResults.getChildren().add(meatballMenu);
                 root.setCenter(searchResults);
                 homeButton.setOnAction(e -> root.setCenter(searchResults));
+
 
                 // Profile Display
                 VBox profileBox = new VBox(10);
@@ -475,6 +506,52 @@ public class DesktopFrontend extends Application {
                 settingsBox.getChildren().addAll(colorTheme, colorWheel);
                 viewSettings.setOnAction(e -> root.setCenter(settingsBox));
 
+                colorWheel.setOnMouseClicked(event -> {
+                        double viewWidth = colorWheel.getBoundsInLocal().getWidth();
+                        double viewHeight = colorWheel.getBoundsInLocal().getHeight();
+                        double imageWidth = colorWheel.getImage().getWidth();
+                        double imageHeight = colorWheel.getImage().getHeight();
+                        double scaleX = imageWidth / viewWidth;
+                        double scaleY = imageHeight / viewHeight;
+                        int imgX = (int) (event.getX() * scaleX);
+                        int imgY = (int) (event.getY() * scaleY);
+                        PixelReader pixelReader = colorWheel.getImage().getPixelReader();
+                        if (pixelReader != null) {
+                            if (imgX >= 0 && imgX < colorWheel.getImage().getWidth() &&
+                                imgY >= 0 && imgY < colorWheel.getImage().getHeight()) {
+                                Color clickedColor = pixelReader.getColor(imgX, imgY);
+                                if (clickedColor.getOpacity() > 0.1) {
+                                        System.out.println("Picked color: " + clickedColor.toString());
+                                        loginPage.setBackground(new Background(new BackgroundFill(
+                                                new LinearGradient(0, 0, 0, 1, true, CycleMethod.NO_CYCLE,
+                                                        new Stop(0, clickedColor),
+                                                        new Stop(1, clickedColor.interpolate(javafx.scene.paint.Color.WHITE, 0.35))
+                                                ),
+                                                CornerRadii.EMPTY, Insets.EMPTY)));
+                                        createAccountPage.setBackground(new Background(new BackgroundFill(
+                                                new LinearGradient(0, 0, 0, 1, true, CycleMethod.NO_CYCLE,
+                                                        new Stop(0, clickedColor),
+                                                        new Stop(1, clickedColor.interpolate(javafx.scene.paint.Color.WHITE, 0.35))
+                                                ),
+                                                CornerRadii.EMPTY, Insets.EMPTY)));
+                                        accountCreationSuccessPage.setBackground(new Background(new BackgroundFill(
+                                                new LinearGradient(0, 0, 0, 1, true, CycleMethod.NO_CYCLE,
+                                                        new Stop(0, clickedColor),
+                                                        new Stop(1, clickedColor.interpolate(javafx.scene.paint.Color.WHITE, 0.35))
+                                                ),
+                                                CornerRadii.EMPTY, Insets.EMPTY)));
+                                        root.setBackground(new Background(new BackgroundFill(
+                                                new LinearGradient(0, 0, 0, 1, true, CycleMethod.NO_CYCLE,
+                                                        new Stop(0, clickedColor),
+                                                        new Stop(1, clickedColor.interpolate(javafx.scene.paint.Color.WHITE, 0.35))
+                                                ),
+                                                CornerRadii.EMPTY, Insets.EMPTY)));
+                                        
+                                }
+                            }
+                        }
+                });
+
                 // RIGHT
                 VBox playingDetails = new VBox(10);
                 playingDetails.setPadding(new Insets(10));
@@ -482,7 +559,11 @@ public class DesktopFrontend extends Application {
                 ImageView albumcover = new ImageView(defaultMusicImage);
                 albumcover.setFitHeight(100);
                 albumcover.setFitWidth(100);
-                track = new Label(currentSong);
+                if (currentSong.length() >= 20) {
+                        track = new Label(currentSong.substring(0, 15) + "...");
+                } else {
+                        track = new Label(currentSong);
+                }
                 artist = new Label(currentArtist);
                 track.setStyle("-fx-text-fill: silver");
                 artist.setStyle("-fx-text-fill: silver");
@@ -495,11 +576,15 @@ public class DesktopFrontend extends Application {
                 bottom.setMaxHeight(50);
                 bottom.setStyle("-fx-border-color: black;");
                 ImageView smallAlbumCover = new ImageView(new Image(defaultMusicImage));
-                smallAlbumCover.setFitHeight(30);
-                smallAlbumCover.setFitWidth(30);
+                smallAlbumCover.setFitHeight(90);
+                smallAlbumCover.setFitWidth(90);
                 VBox trackDesc = new VBox(10);
                 trackDesc.setPadding(new Insets(10));
-                trackPlaying = new Label(currentSong);
+                if (currentSong.length() >= 35) {
+                        trackPlaying = new Label(currentSong.substring(0, 30) + "...");
+                } else {
+                        trackPlaying = new Label(currentSong);
+                }
                 artistPlaying = new Label(currentArtist);
                 trackPlaying.setStyle("-fx-font-size: 10px; -fx-text-fill: silver");
                 artistPlaying.setStyle("-fx-font-size: 10px; -fx-text-fill: silver");
