@@ -77,6 +77,13 @@ public class ArtistRepository {
                 3000,
                 4
         ));
+        artists.add(new Artist(
+                3,
+                "Kevin MacLeod",
+                "Good artist",
+                0,
+                0
+        ));
     }
 
     public List<Artist> getAllArtists() {

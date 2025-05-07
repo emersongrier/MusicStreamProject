@@ -44,11 +44,11 @@ public class PlaylistFragment extends Fragment implements PlaylistAdapter.OnPlay
     private TrackRepository trackRepository;
     private List<Track> likedPlaylist = new ArrayList<>();
     private MaterialToolbar toolbar, playlistToolbar;
-    public TextView songName, artistName;
-    public ImageView musicPlaying;
+    private TextView songName, artistName;
+    private ImageView musicPlaying;
 
     public boolean isInside;
-    
+
 
     private ActivityResultLauncher<Intent> resultLauncher;
 
@@ -128,8 +128,8 @@ public class PlaylistFragment extends Fragment implements PlaylistAdapter.OnPlay
         }
     }
 
-    /*
-        Replaces current layout with new layout
+    /**
+     * Replaces current layout with new layout
      */
     private void setViewLayout(int id){
         LayoutInflater inflater = (LayoutInflater) getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -186,7 +186,6 @@ public class PlaylistFragment extends Fragment implements PlaylistAdapter.OnPlay
         playlistView.setAdapter(songAdapter);
         //songAdapter.notifyDataSetChanged();
 
-        // SIMPLE SOLUTION: Get current track info from HomeFragment and update UI
         try {
             HomeFragment homeFragment = (HomeFragment) getActivity()
                     .getSupportFragmentManager()
@@ -288,7 +287,6 @@ public class PlaylistFragment extends Fragment implements PlaylistAdapter.OnPlay
         }
     }
 
-    // Simplify the addSongToDefault method
     public void addSongToDefault(Track track) {
         // Check if the track is already in the liked playlist by ID
         for (Track t : likedPlaylist) {
@@ -314,7 +312,7 @@ public class PlaylistFragment extends Fragment implements PlaylistAdapter.OnPlay
         adapter.notifyDataSetChanged();
     }
 
-    // Simplify the removeSongFromDefault method
+
     public void removeSongFromDefault(Track track) {
         // Find the track in the liked playlist by ID
         Track trackToRemove = null;

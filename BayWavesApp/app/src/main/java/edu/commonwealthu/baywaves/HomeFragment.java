@@ -19,6 +19,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.media3.common.MediaItem;
+import androidx.media3.common.PlaybackException;
+import androidx.media3.common.Player;
 import androidx.media3.exoplayer.ExoPlayer;
 import androidx.vectordrawable.graphics.drawable.Animatable2Compat;
 
@@ -55,6 +57,7 @@ public class HomeFragment extends Fragment {
     private Artist currentArtist;
     private ArtistRepository artistRepository;
     private AlbumRepository albumRepository;
+    private MusicClient client;
 
     private int currentTrackIndex;
     private List<Track> allTracks;
@@ -82,11 +85,22 @@ public class HomeFragment extends Fragment {
         artistRepository = ArtistRepository.getInstance();
         trackRepository = TrackRepository.getInstance();
         albumRepository = AlbumRepository.getInstance();
+        client = new MusicClient(this.getContext());
 
         trackRepository.setContext(requireContext());
 
-        boolean isConnected = trackRepository.isDatabaseConnected();
+        if (!trackRepository.isLoggedIn()) {
+            // Replace with actual credentials
+            boolean loginSuccess = trackRepository.login("your_username", "your_password");
+            //showCustomToast("Login attempt: " + loginSuccess);
+        }
+
+        boolean isConnected = trackRepository.isServerConnected();
         String connectionMessage = trackRepository.getConnectionErrorMessage();
+        //showCustomToast("Server connected: " + isConnected + " - " + connectionMessage);
+
+        boolean isLoggedIn = trackRepository.isLoggedIn();
+        showCustomToast("Logged in: " + isLoggedIn);
 
         // Get all tracks once and reuse the list
         allTracks = trackRepository.getAllTracks();
@@ -137,51 +151,177 @@ public class HomeFragment extends Fragment {
 
     // Find track index in our list by track id
     private int findTrackIndexById(int trackId) {
+        if (allTracks == null || allTracks.isEmpty()) {
+            Log.e("HomeFragment", "Track list is empty or null");
+            return 0;
+        }
+
         for (int i = 0; i < allTracks.size(); i++) {
             if (allTracks.get(i).getId() == trackId) {
                 return i;
             }
         }
+
+        Log.w("HomeFragment", "Track ID " + trackId + " not found in playlist, defaulting to first track");
         return 0; // Default to first track if not found
     }
 
-    public void loadTrack(Track track) {
-        PlaylistFragment playlistFragment = (PlaylistFragment) getActivity()
-                .getSupportFragmentManager()
-                .findFragmentByTag(PlaylistFragment.class.getSimpleName());
+    private void tryFallbackPlayback(Track track) {
+        try {
+            Log.d("HomeFragment", "Trying fallback playback for track ID: " + track.getId());
 
-        // Update current track
-        currentTrack = track;
-        currentTrackIndex = findTrackIndexById(track.getId());
+            // Try direct download instead of streaming URL
+            if (client != null && track.getId() > 0) {
+                try {
+                    String downloadedPath = client.downloadSong(String.valueOf(track.getId()));
+                    Log.d("HomeFragment", "Downloaded song to: " + downloadedPath);
 
-        // Get the streaming URI
-        String streamingUri = trackRepository.getStreamingUri(track);
-        Log.d("HomeFragment", "Loading track with URI: " + streamingUri);
+                    if (exoPlayer != null) {
+                        exoPlayer.release();
+                    }
 
-        // Set up ExoPlayer with the track's streaming URI
-        MediaItem mediaItem = MediaItem.fromUri(Uri.parse(streamingUri));
+                    exoPlayer = new ExoPlayer.Builder(requireContext()).build();
+                    exoPlayer.setMediaItem(MediaItem.fromUri(Uri.parse(downloadedPath)));
+                    exoPlayer.prepare();
+                    exoPlayer.play();
+                    isPlaying = true;
+                    playPauseButton.setImageResource(R.drawable.pause_button);
 
-        // Release any existing player
-        if (exoPlayer != null) {
-            exoPlayer.release();
+                    // Update visualizer
+                    Glide.with(requireContext())
+                            .asGif()
+                            .load(R.drawable.media_playing)
+                            .into(circularVisualizer);
+
+                    return; // Early return if successful
+                } catch (Exception e) {
+                    Log.e("HomeFragment", "Direct download failed: " + e.getMessage(), e);
+                }
+            }
+
+            // If all else fails, try to find a local fallback track with the same ID
+            List<Track> localTracks = TrackRepository.getInstance().getLocalFallbackTracks();
+            for (Track localTrack : localTracks) {
+                if (localTrack.getId() == track.getId()) {
+                    Log.d("HomeFragment", "Found matching local track: " + localTrack.getName());
+
+                    // Try to play the local track
+                    if (exoPlayer != null) {
+                        exoPlayer.release();
+                    }
+
+                    exoPlayer = new ExoPlayer.Builder(requireContext()).build();
+                    exoPlayer.setMediaItem(MediaItem.fromUri(Uri.parse(localTrack.getFilePath())));
+                    exoPlayer.prepare();
+                    exoPlayer.play();
+                    isPlaying = true;
+                    playPauseButton.setImageResource(R.drawable.pause_button);
+
+                    // Update visualizer
+                    Glide.with(requireContext())
+                            .asGif()
+                            .load(R.drawable.media_playing)
+                            .into(circularVisualizer);
+
+                    return;
+                }
+            }
+
+            Log.e("HomeFragment", "All fallback attempts failed for track: " + track.getId());
+            showCustomToast("Could not play track. Please try another song.");
+        } catch (Exception e) {
+            Log.e("HomeFragment", "Fallback playback failed: " + e.getMessage(), e);
+            showCustomToast("Could not play track. Please try another song.");
         }
-
-        // Create new ExoPlayer instance
-        exoPlayer = new ExoPlayer.Builder(requireContext()).build();
-        exoPlayer.setMediaItem(mediaItem);
-        exoPlayer.prepare();
-
-        // Load artist and update UI
-        loadArtistForTrack(track);
-        updateTrackMetadata(track);
-        updateAlbumCover(track);
-
-        // Reset like state
-        isLiked = track.getLikes() > 0 || trackRepository.isTrackLiked(track.getId());
-        updateLikeButton();
-        //playlistFragment.updateSongItem();
-
     }
+
+    public void loadTrack(Track track) {
+        try {
+            Log.d("HomeFragment", "Loading track: " + track.getName() + " (ID: " + track.getId() + ")");
+
+            // Make sure we have a valid track with a proper ID
+            if (track.getId() <= 0) {
+                Log.e("HomeFragment", "Attempting to load track with invalid ID: " + track.getId());
+                showCustomToast("Invalid track ID");
+                return;
+            }
+
+            // Complete track info if needed
+            TrackRepository trackRepo = TrackRepository.getInstance();
+            Track completeTrack = trackRepo.completeTrackInfo(track);
+
+            if (completeTrack != null) {
+                track = completeTrack; // Use the complete track info
+            }
+
+            // Update current track
+            currentTrack = track;
+            currentTrackIndex = findTrackIndexById(track.getId());
+
+            Log.d("HomeFragment", "Track index in playlist: " + currentTrackIndex);
+
+            // Get the streaming URI
+            String streamingUri = trackRepo.getStreamingUri(track);
+            Log.d("HomeFragment", "Using streaming URI: " + streamingUri);
+
+            // Validate URI
+            if (streamingUri == null || streamingUri.isEmpty()) {
+                Log.e("HomeFragment", "Empty streaming URI for track: " + track.getId());
+                showCustomToast("Cannot play: missing audio source");
+                return;
+            }
+
+            // Set up ExoPlayer with the track's streaming URI
+            MediaItem mediaItem = MediaItem.fromUri(Uri.parse(streamingUri));
+
+            // Release any existing player
+            if (exoPlayer != null) {
+                exoPlayer.release();
+            }
+
+            // Create new ExoPlayer instance
+            exoPlayer = new ExoPlayer.Builder(requireContext()).build();
+            exoPlayer.setMediaItem(mediaItem);
+            exoPlayer.prepare();
+
+            // Add a listener to detect playback errors
+            Track finalTrack = track;
+            exoPlayer.addListener(new Player.Listener() {
+                @Override
+                public void onPlayerError(PlaybackException error) {
+                    Log.e("HomeFragment", "Playback error: " + error.getMessage(), error);
+                    showCustomToast("Playback error: " + error.getMessage());
+
+                    // Try fallback approach if the streaming URI failed
+                    tryFallbackPlayback(finalTrack);
+                }
+
+                @Override
+                public void onPlaybackStateChanged(int state) {
+                    if (state == Player.STATE_READY) {
+                        Log.d("HomeFragment", "Player is ready");
+                        updateTrackMetadata(finalTrack);
+                    }
+                }
+            });
+
+            // Load artist and update UI
+            loadArtistForTrack(track);
+            updateTrackMetadata(track);
+            updateAlbumCover(track);
+
+            // Reset like state
+            isLiked = track.getLikes() > 0 || trackRepo.isTrackLiked(track.getId());
+            updateLikeButton();
+
+            Log.d("HomeFragment", "Track loaded successfully: " + track.getId() + " - " + track.getName());
+        } catch (Exception e) {
+            Log.e("HomeFragment", "Error loading track: " + e.getMessage(), e);
+            showCustomToast("Error loading track: " + e.getMessage());
+        }
+    }
+
+
 
     private void loadArtistForTrack(Track track) {
         int artistId = track.getArtistId();
@@ -356,7 +496,7 @@ public class HomeFragment extends Fragment {
         }
     }
 
-    // Add this helper method to safely find and update the PlaylistFragment
+    // Helper method to safely find and update the PlaylistFragment
     private void updatePlaylistFragment() {
         // Find the PlaylistFragment using the tag specified in MainActivity
         PlaylistFragment playlistFragment = (PlaylistFragment) getActivity()

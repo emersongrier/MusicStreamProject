@@ -16,6 +16,8 @@ import javafx.animation.KeyValue;
 import javafx.animation.Interpolator;
 import javafx.scene.effect.ColorAdjust;
 import java.io.File;
+import java.io.FileInputStream;
+
 import javafx.animation.Animation;
 import javafx.animation.Interpolator;
 import javafx.animation.KeyFrame;
@@ -60,11 +62,11 @@ public class DesktopFrontend extends Application {
         // private Stage window;
         private Scene mainScene, loginScene, createAccountScene, accountCreationSuccessScene;
         private static double songElapsed, songLength;
-        private static String currentSong, currentArtist, logo, songID, username, password; 
+        private static String currentSong, currentArtist, logo, songID, username, password, metadata; 
         private static Label timeElapsed, trackLength, trackPlaying, artistPlaying, track, artist;
         private static boolean playing = false;
         private static MediaPlayer mediaPlayer = null;
-        private static Button plause = null;
+        private static Button plause, profileButton = null;
         private static ProgressBar progress = null;
         private static Path songPath = null;
         private static Media media = null;
@@ -78,12 +80,12 @@ public class DesktopFrontend extends Application {
                 currentSong = "Jazz Brunch";
                 logo = "/resources/images/logo.png";
                 String defaultMusicImage = "/resources/images/defaultMusicPlaying.png";
-                String colorWheelPath = "/resources/images/color_wheel.png";
+                String colorWheelPath = "C:/Users/emcke/MusicStreamProject/DesktopGUI/src/resources/images/color_wheel.png";
                 songID = "879";
                 songLength = 88615;
-                songElapsed = 70000;
-                String user = "Eli McKercher";
+                songElapsed = 0;
                 MusicClient client = new MusicClient();
+                JsonArray songMetadata = new JsonArray();
                 
                 // SIGN IN LANDING PAGE //
                 VBox loginPage = new VBox(10);
@@ -296,7 +298,7 @@ public class DesktopFrontend extends Application {
                 searchBar.setAlignment(Pos.CENTER);
                 Button createButton = new Button("+");
                 createButton.setShape(new Circle(15));
-                Button profileButton = new Button("E");
+                profileButton = new Button();
                 profileButton.setShape(new Circle(15));
                 profileButton.setAlignment(Pos.CENTER_RIGHT);
                 menuBar.getChildren().addAll(homeButton, searchBar, createButton, profileButton);
@@ -304,7 +306,7 @@ public class DesktopFrontend extends Application {
 
                 ContextMenu createOptions = new ContextMenu();
                 MenuItem createPlaylist = new MenuItem("Create Playlist");
-                MenuItem openDAW = new MenuItem("Create Track");
+                MenuItem openDAW = new MenuItem("Add Filter");
                 createOptions.getItems().addAll(createPlaylist, openDAW);
                 createButton.setOnAction(e -> createOptions.show(createButton, Side.BOTTOM, 0, 0));
 
@@ -334,6 +336,10 @@ public class DesktopFrontend extends Application {
                 VBox searchResults = new VBox(10);
                 searchResults.setPadding(new Insets(10));
                 searchResults.setStyle("-fx-border-color: black;");
+                ContextMenu meatballMenu = new ContextMenu(
+                        new MenuItem("Add to Playlist"),
+                        new MenuItem("Like Song")
+                );
                 searchBar.textProperty().addListener((obs, oldVal, newVal) -> {
                         JsonArray json = new JsonArray();
                         try {
@@ -366,14 +372,32 @@ public class DesktopFrontend extends Application {
                                         mediaPlayer = new MediaPlayer(media);
                                         plause.setText("\u23f8");
                                         playing = true;
+                                        songLength = getSongLength(metadata, songMetadata, client);
                                         new ProgressThread(progress, songElapsed, songLength).start();
                                         mediaPlayer.play();
                                         trackPlaying.setText(trackFinal);
                                         track.setText(trackFinal);                                        
                                 });
+                                resultButton.setOnMouseEntered(e -> {
+                                        if(!meatballMenu.isShowing()){
+                                                meatballMenu.show(resultButton, Side.BOTTOM, 0, 0);
+                                        }
+                                });
+                                resultButton.setOnMouseExited(e ->{
+                                        new Thread(() -> {
+                                                try { Thread.sleep(200); } catch (InterruptedException ignored) {}
+                                                if (!meatballMenu.isShowing()) return;
+                                                javafx.application.Platform.runLater(() -> {
+                                                    if (!meatballMenu.getOwnerNode().isHover() && !meatballMenu.isFocused())
+                                                        meatballMenu.hide();
+                                                });
+                                        }).start();
+                                });
+                                meatballMenu.setOnHidden(e -> resultButton.disarm());
                                 searchResults.getChildren().add(resultButton);
                         }
                 });
+                //searchResults.getChildren().add(meatballMenu);
                 root.setCenter(searchResults);
                 homeButton.setOnAction(e -> root.setCenter(searchResults));
 
@@ -383,7 +407,7 @@ public class DesktopFrontend extends Application {
                 profileBox.setStyle("-fx-border-color: black;");
                 HBox profileBasics = new HBox();
                 // insert profile picture
-                Label profileName = new Label("accountName");
+                Label profileName = new Label();
                 profileName.setStyle("-fx-text-fill: silver");
                 profileBasics.getChildren().addAll(profileName);
                 HBox socialStatus = new HBox();
@@ -393,23 +417,23 @@ public class DesktopFrontend extends Application {
                 following.setStyle("-fx-text-fill: silver");
                 socialStatus.getChildren().addAll(followers, following);
                 profileBox.getChildren().addAll(profileBasics, socialStatus);
-
+                
                 viewProfile.setOnAction(e -> root.setCenter(profileBox));
 
                 // Settings Display
                 VBox settingsBox = new VBox(10);
                 settingsBox.setPadding(new Insets(10));
                 settingsBox.setStyle("-fx-border-color: black;");
-                VBox colorSetting = new VBox(10);
                 Label colorTheme = new Label("Color Theme: ");
                 colorTheme.setStyle("-fx-text-fill: silver");
-                System.out.println(new File("resources/images/color_wheel.png").getAbsolutePath());
-                System.out.println(new File("resources/images/color_wheel.png").exists());
-                ImageView colorWheel = new ImageView(colorWheelPath);
+                //System.out.println(getClass().getResource("resources/images/colorwheel.png"));
+                //Image image = new Image(getClass().getResourceAsStream("/images/color_wheel.png"));
+                Image colorWheelImage = null;
+                try{colorWheelImage = new Image(new FileInputStream(colorWheelPath));}catch(Exception e){}
+                ImageView colorWheel = new ImageView(colorWheelImage);
                 colorWheel.setFitHeight(100);
                 colorWheel.setFitWidth(100);
-                colorSetting.getChildren().addAll(colorTheme, colorWheel);
-                settingsBox.getChildren().addAll(colorSetting);
+                settingsBox.getChildren().addAll(colorTheme, colorWheel);
                 viewSettings.setOnAction(e -> root.setCenter(settingsBox));
 
                 // RIGHT
@@ -453,10 +477,10 @@ public class DesktopFrontend extends Application {
                 controls.setAlignment(Pos.CENTER);
                 HBox trackProgress = new HBox(10);
                 trackProgress.setPadding(new Insets(10));
-                timeElapsed = new Label("5:56");
+                timeElapsed = new Label("0:00");
                 timeElapsed.setStyle("-fx-text-fill: silver");
                 progress = new ProgressBar();
-                new ProgressThread(progress, songElapsed, songLength).start();
+                //new ProgressThread(progress, songElapsed, songLength).start();
                 //progress.setStyle("-fx-accent: green;");
                 progress.setVisible(true);
                 progress.setManaged(true);
@@ -468,7 +492,7 @@ public class DesktopFrontend extends Application {
                 );
                 PBTimeline.setCycleCount(Animation.INDEFINITE);
                 PBTimeline.play();
-                trackLength = new Label("6:49");
+                trackLength = new Label("0:00");
                 trackLength.setStyle("-fx-text-fill: silver");
                 trackProgress.getChildren().addAll(timeElapsed, progress, trackLength);
                 trackProgress.setAlignment(Pos.CENTER);
@@ -494,6 +518,7 @@ public class DesktopFrontend extends Application {
                         else{
                                 plause.setText("\u23f8");
                                 playing = true;
+                                songLength = getSongLength(metadata, songMetadata, client);
                                 new ProgressThread(progress, songElapsed, songLength).start();
                                 mediaPlayer.play();
                         }
@@ -515,32 +540,34 @@ public class DesktopFrontend extends Application {
                 primaryStage.show();
 
                 signIn.setOnAction(e -> {
-                    /*if (usernameInput.getText().isEmpty() || passwordInput.getText().isEmpty()) {   
-                        errorMsg.setText("ERROR: Please enter both, your username and password.");
-                        errorMsg.setFont(Font.font("Times New Roman", FontWeight.BOLD, 22));
-                        errorMsg.setFill(Color.RED);
-                        return;// causes this program to fail to display the main page.
-                    } */ 
+                        if (usernameInput.getText().isEmpty() || passwordInput.getText().isEmpty()) {   
+                                errorMsg.setText("ERROR: Please enter both, your username and password.");
+                                errorMsg.setFont(Font.font("Times New Roman", FontWeight.BOLD, 22));
+                                errorMsg.setFill(Color.RED);
+                                return;// causes this program to fail to display the main page.
+                        } 
+                        if (client.authenticate(usernameInput.getText(), passwordInput.getText())){
+                                // Now we know both credentials are correct, so the main page will now be displayed.
+                                username = usernameInput.getText();
+                                password = passwordInput.getText();
+                                primaryStage.setScene(mainScene);
+                                usernameInput.clear();
+                                passwordInput.clear();
+                        }else {
+                                errorMsg.setText("ERROR: Username or password does not exist.");
+                                errorMsg.setFont(Font.font("Times New Roman", FontWeight.BOLD, 22));
+                                errorMsg.setFill(Color.RED);
+                                return; // causes this program to fail to display the main page.
+                        }
                     
                     /*try {
-                        if (usernameExists(getConnection("jdbc:h2:~/test;AUTOCOMMIT=OFF;"), usernameInput.getText()) &&
-                         passwordValid(getConnection("jdbc:h2:~/test;AUTOCOMMIT=OFF;"), usernameInput.getText(), passwordInput.getText())) {
-                            // Now we know both credentials are correct, so the main page will now be displayed.
-                            primaryStage.setScene(mainScene);
-                            usernameInput.clear();
-                            passwordInput.clear();
-                        }
-
-                        else {
-                            errorMsg.setText("ERROR: Username or password does not exist.");
-                            errorMsg.setFont(Font.font("Times New Roman", FontWeight.BOLD, 22));
-                            errorMsg.setFill(Color.RED);
-                            return; // causes this program to fail to display the main page.
-                        }
+                        
 
                     } catch (SQLException ex) {
                         System.out.println(ex.getMessage());
                     }*/
+                    profileButton.setText(username.charAt(0) + "");
+                    profileName.setText(username);
                     primaryStage.setScene(mainScene);
                     usernameInput.clear();
                     passwordInput.clear();
@@ -549,6 +576,17 @@ public class DesktopFrontend extends Application {
 
         public static void main(String[] args) {
                 launch(args);
+        }
+        
+        private double getSongLength(String metadata, JsonArray songMetadata, MusicClient client){
+                metadata = client.downloadSongData(songID, username, password);
+                try {
+                        songMetadata = JsonParser.parseString(metadata).getAsJsonArray();
+                } catch (Exception g) {
+                        g.printStackTrace();
+                }  
+                songLength = songMetadata.get(5).getAsJsonObject().get("trk_len").getAsDouble();
+                return songLength;
         }
 
         private Button createImageButton(String text, String imgPath) {
@@ -601,7 +639,7 @@ public class DesktopFrontend extends Application {
          */
         static class ProgressThread extends Thread {
                 private final ProgressBar progressBar;
-                private final double songElapsed;
+                private double songElapsed;
                 private final double songLength;
 
                 public ProgressThread(ProgressBar progressBar, double songElapsed, double songLength) {
@@ -620,6 +658,7 @@ public class DesktopFrontend extends Application {
                                         ((int) songLength)/1000/60 + ":" + ((int) songLength)/1000%60));
                                 try {
                                         Thread.sleep(500);
+                                        songElapsed+=500;
                                 } catch (InterruptedException e) {
                                         // TODO Auto-generated catch block
                                         e.printStackTrace();
