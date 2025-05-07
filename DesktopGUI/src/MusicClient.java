@@ -98,13 +98,7 @@ public class MusicClient {
             URL url = new URI(playlistUrl).toURL();
             HttpsURLConnection conn = (HttpsURLConnection) url.openConnection();
             conn.setRequestMethod("GET");
-            conn.setDoOutput(true);
-
-            // Send request body
-            try (OutputStream os = conn.getOutputStream()) {
-                byte[] input = json.getBytes(StandardCharsets.UTF_8);
-                os.write(input, 0, input.length);
-            }
+            conn.setDoOutput(false);
 
             int responseCode = conn.getResponseCode();
             if (responseCode == 200) {
@@ -128,17 +122,11 @@ public class MusicClient {
      */
     public String downloadChainSongData(String chainId) {
         try {
-            String playlistUrl = baseUrl + "/chain/songs?id=" + chainId;
-            URL url = new URI(playlistUrl).toURL();
+            String chainUrl = baseUrl + "/chain/songs?id=" + chainId;
+            URL url = new URI(chainUrl).toURL();
             HttpsURLConnection conn = (HttpsURLConnection) url.openConnection();
             conn.setRequestMethod("GET");
-            conn.setDoOutput(true);
-
-            // Send request body
-            try (OutputStream os = conn.getOutputStream()) {
-                byte[] input = json.getBytes(StandardCharsets.UTF_8);
-                os.write(input, 0, input.length);
-            }
+            conn.setDoOutput(false);
 
             int responseCode = conn.getResponseCode();
             if (responseCode == 200) {
