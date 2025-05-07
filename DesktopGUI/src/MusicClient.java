@@ -95,7 +95,7 @@ public class MusicClient {
     public String downloadPlaylistChainData(String playlistId) {
         try {
             String playlistUrl = baseUrl + "/playlist/chains?id=" + playlistId;
-            URL url = new URI(songUrl).toURL();
+            URL url = new URI(playlistUrl).toURL();
             HttpsURLConnection conn = (HttpsURLConnection) url.openConnection();
             conn.setRequestMethod("GET");
             conn.setDoOutput(true);
@@ -129,7 +129,7 @@ public class MusicClient {
     public String downloadChainSongData(String chainId) {
         try {
             String playlistUrl = baseUrl + "/chain/songs?id=" + chainId;
-            URL url = new URI(songUrl).toURL();
+            URL url = new URI(playlistUrl).toURL();
             HttpsURLConnection conn = (HttpsURLConnection) url.openConnection();
             conn.setRequestMethod("GET");
             conn.setDoOutput(true);

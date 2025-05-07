@@ -62,7 +62,7 @@ public class DesktopFrontend extends Application {
         // private Stage window;
         private Scene mainScene, loginScene, createAccountScene, accountCreationSuccessScene;
         private static double songElapsed, songLength;
-        private static String currentSong, currentArtist, logo, songID, username, password; 
+        private static String currentSong, currentArtist, logo, songID, username, password, metadata; 
         private static Label timeElapsed, trackLength, trackPlaying, artistPlaying, track, artist;
         private static boolean playing = false;
         private static MediaPlayer mediaPlayer = null;
@@ -83,8 +83,9 @@ public class DesktopFrontend extends Application {
                 String colorWheelPath = "C:/Users/emcke/MusicStreamProject/DesktopGUI/src/resources/images/color_wheel.png";
                 songID = "879";
                 songLength = 88615;
-                songElapsed = 70000;
+                songElapsed = 0;
                 MusicClient client = new MusicClient();
+                JsonArray songMetadata = new JsonArray();
                 
                 // SIGN IN LANDING PAGE //
                 VBox loginPage = new VBox(10);
@@ -371,6 +372,7 @@ public class DesktopFrontend extends Application {
                                         mediaPlayer = new MediaPlayer(media);
                                         plause.setText("\u23f8");
                                         playing = true;
+                                        songLength = getSongLength(metadata, songMetadata, client);
                                         new ProgressThread(progress, songElapsed, songLength).start();
                                         mediaPlayer.play();
                                         trackPlaying.setText(trackFinal);
@@ -475,10 +477,10 @@ public class DesktopFrontend extends Application {
                 controls.setAlignment(Pos.CENTER);
                 HBox trackProgress = new HBox(10);
                 trackProgress.setPadding(new Insets(10));
-                timeElapsed = new Label("5:56");
+                timeElapsed = new Label("0:00");
                 timeElapsed.setStyle("-fx-text-fill: silver");
                 progress = new ProgressBar();
-                new ProgressThread(progress, songElapsed, songLength).start();
+                //new ProgressThread(progress, songElapsed, songLength).start();
                 //progress.setStyle("-fx-accent: green;");
                 progress.setVisible(true);
                 progress.setManaged(true);
@@ -490,7 +492,7 @@ public class DesktopFrontend extends Application {
                 );
                 PBTimeline.setCycleCount(Animation.INDEFINITE);
                 PBTimeline.play();
-                trackLength = new Label("6:49");
+                trackLength = new Label("0:00");
                 trackLength.setStyle("-fx-text-fill: silver");
                 trackProgress.getChildren().addAll(timeElapsed, progress, trackLength);
                 trackProgress.setAlignment(Pos.CENTER);
@@ -516,6 +518,7 @@ public class DesktopFrontend extends Application {
                         else{
                                 plause.setText("\u23f8");
                                 playing = true;
+                                songLength = getSongLength(metadata, songMetadata, client);
                                 new ProgressThread(progress, songElapsed, songLength).start();
                                 mediaPlayer.play();
                         }
@@ -565,7 +568,6 @@ public class DesktopFrontend extends Application {
                     }*/
                     profileButton.setText(username.charAt(0) + "");
                     profileName.setText(username);
-                    //System.out.println(username.charAt(0) + "");
                     primaryStage.setScene(mainScene);
                     usernameInput.clear();
                     passwordInput.clear();
@@ -574,6 +576,17 @@ public class DesktopFrontend extends Application {
 
         public static void main(String[] args) {
                 launch(args);
+        }
+        
+        private double getSongLength(String metadata, JsonArray songMetadata, MusicClient client){
+                metadata = client.downloadSongData(songID, username, password);
+                try {
+                        songMetadata = JsonParser.parseString(metadata).getAsJsonArray();
+                } catch (Exception g) {
+                        g.printStackTrace();
+                }  
+                songLength = songMetadata.get(5).getAsJsonObject().get("trk_len").getAsDouble();
+                return songLength;
         }
 
         private Button createImageButton(String text, String imgPath) {
@@ -626,7 +639,7 @@ public class DesktopFrontend extends Application {
          */
         static class ProgressThread extends Thread {
                 private final ProgressBar progressBar;
-                private final double songElapsed;
+                private double songElapsed;
                 private final double songLength;
 
                 public ProgressThread(ProgressBar progressBar, double songElapsed, double songLength) {
@@ -645,6 +658,7 @@ public class DesktopFrontend extends Application {
                                         ((int) songLength)/1000/60 + ":" + ((int) songLength)/1000%60));
                                 try {
                                         Thread.sleep(500);
+                                        songElapsed+=500;
                                 } catch (InterruptedException e) {
                                         // TODO Auto-generated catch block
                                         e.printStackTrace();
