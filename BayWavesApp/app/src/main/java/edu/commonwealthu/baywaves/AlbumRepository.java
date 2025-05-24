@@ -160,7 +160,6 @@ public class AlbumRepository {
         );
         albums.add(noir);
 
-        // Now try to populate tracks if available
         try {
             for (Album album : albums) {
                 List<Track> tracks = trackRepository.getTracksByArtist(album.getArtistId());
@@ -298,7 +297,6 @@ public class AlbumRepository {
 
     // Method to set album cover resource ID
     public void setAlbumCoverResourceId(int albumId, int resourceId) {
-        // Update the cover resource ID in cache
         albumCoverResourceIds.put(albumId, resourceId);
     }
 
@@ -306,7 +304,6 @@ public class AlbumRepository {
     public int getAlbumCoverResourceId(int albumId) {
         Integer resourceId = albumCoverResourceIds.get(albumId);
         if (resourceId == null) {
-            // Return a default resource ID if not found
             return R.drawable.dafault_album_cover;
         }
         return resourceId;
@@ -316,13 +313,8 @@ public class AlbumRepository {
     public void addTrackToAlbum(int albumId, Track track) {
         Album album = getAlbumById(albumId);
         if (album != null) {
-            // Set the album ID in the track
             track.setAlbumId(albumId);
-
-            // Add track to album's track list
             album.addSong(track);
-
-            // Update track in repository
             trackRepository.updateTrack(track);
         }
     }
@@ -331,7 +323,6 @@ public class AlbumRepository {
     public void removeTrackFromAlbum(int albumId, Track track) {
         Album album = getAlbumById(albumId);
         if (album != null) {
-            // Remove track from album's track list
             album.removeSong(track);
         }
     }

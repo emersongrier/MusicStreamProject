@@ -15,15 +15,12 @@ public class ArtistRepository {
     private ArtistRepository() {
         artists = new ArrayList<>();
         try {
-            // Establish database connection
             connection = DatabaseConnection.getConnection();
 
             // Fetch artists from database
             loadArtistsFromDatabase();
         } catch (SQLException e) {
             e.printStackTrace();
-
-            // Fallback to default artists if database connection fails
             addDefaultArtists();
         }
     }
@@ -36,8 +33,6 @@ public class ArtistRepository {
     }
 
     private void loadArtistsFromDatabase() throws SQLException {
-        // Implement a method to fetch artists from the database
-        // This is a placeholder - you'll need to adapt this to your actual database schema
         String query = "SELECT * FROM ARTIST";
         try (PreparedStatement ps = connection.prepareStatement(query);
              ResultSet rs = ps.executeQuery()) {
@@ -60,8 +55,10 @@ public class ArtistRepository {
         }
     }
 
+    /**
+     * Adds defaults artists to songs
+     */
     private void addDefaultArtists() {
-        // Add some default artists if no database connection or no artists found
         artists.add(new Artist(
                 1,
                 "Aves",

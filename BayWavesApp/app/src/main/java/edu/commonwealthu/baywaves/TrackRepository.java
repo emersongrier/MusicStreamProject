@@ -23,7 +23,7 @@ public class TrackRepository {
     private String Id;
     private String artist;
 
-    // Temp variables for login - in a real app, use secure storage
+    // Temp variables for login
     private String username = "20jakeleonardo@gmail.com";
     private String password = "bayWaves88$";
     private boolean isLoggedIn = false;
@@ -369,10 +369,8 @@ public class TrackRepository {
     }
 
     public boolean isServerConnected() {
-        // Check if HTTPS service is available
         if (musicClient != null) {
             try {
-                // Try a simple search query
                 String response = musicClient.searchDb("test", 1, 0);
                 return response != null;
             } catch (Exception e) {
@@ -384,7 +382,6 @@ public class TrackRepository {
     }
 
     public String getConnectionErrorMessage() {
-        // Try server connection
         if (musicClient != null) {
             try {
                 String response = musicClient.searchDb("test", 1, 0);

@@ -90,7 +90,6 @@ public class HomeFragment extends Fragment {
         trackRepository.setContext(requireContext());
 
         if (!trackRepository.isLoggedIn()) {
-            // Replace with actual credentials
             boolean loginSuccess = trackRepository.login("your_username", "your_password");
             //showCustomToast("Login attempt: " + loginSuccess);
         }
@@ -100,7 +99,7 @@ public class HomeFragment extends Fragment {
         //showCustomToast("Server connected: " + isConnected + " - " + connectionMessage);
 
         boolean isLoggedIn = trackRepository.isLoggedIn();
-        showCustomToast("Logged in: " + isLoggedIn);
+       // showCustomToast("Logged in: " + isLoggedIn);
 
         // Get all tracks once and reuse the list
         allTracks = trackRepository.getAllTracks();
@@ -112,14 +111,10 @@ public class HomeFragment extends Fragment {
         playPauseButton.setOnClickListener(v -> playAndPause());
 
         // Setup next song button
-        nextSong.setOnClickListener(v -> {
-            changeNextTrack();
-        });
+        nextSong.setOnClickListener(v -> changeNextTrack());
 
         // Setup previous song button
-        lastSong.setOnClickListener(v -> {
-            changePreviousTrack();
-        });
+        lastSong.setOnClickListener(v -> changePreviousTrack());
 
         // Setup like button
         likeSong.setOnClickListener(v -> addSong());
@@ -227,10 +222,8 @@ public class HomeFragment extends Fragment {
                 }
             }
 
-            Log.e("HomeFragment", "All fallback attempts failed for track: " + track.getId());
             showCustomToast("Could not play track. Please try another song.");
         } catch (Exception e) {
-            Log.e("HomeFragment", "Fallback playback failed: " + e.getMessage(), e);
             showCustomToast("Could not play track. Please try another song.");
         }
     }
@@ -239,9 +232,8 @@ public class HomeFragment extends Fragment {
         try {
             Log.d("HomeFragment", "Loading track: " + track.getName() + " (ID: " + track.getId() + ")");
 
-            // Make sure we have a valid track with a proper ID
+            // Make sure track is valid with a proper ID
             if (track.getId() <= 0) {
-                Log.e("HomeFragment", "Attempting to load track with invalid ID: " + track.getId());
                 showCustomToast("Invalid track ID");
                 return;
             }
@@ -251,7 +243,7 @@ public class HomeFragment extends Fragment {
             Track completeTrack = trackRepo.completeTrackInfo(track);
 
             if (completeTrack != null) {
-                track = completeTrack; // Use the complete track info
+                track = completeTrack;
             }
 
             // Update current track
@@ -266,7 +258,6 @@ public class HomeFragment extends Fragment {
 
             // Validate URI
             if (streamingUri == null || streamingUri.isEmpty()) {
-                Log.e("HomeFragment", "Empty streaming URI for track: " + track.getId());
                 showCustomToast("Cannot play: missing audio source");
                 return;
             }
@@ -289,7 +280,6 @@ public class HomeFragment extends Fragment {
             exoPlayer.addListener(new Player.Listener() {
                 @Override
                 public void onPlayerError(PlaybackException error) {
-                    Log.e("HomeFragment", "Playback error: " + error.getMessage(), error);
                     showCustomToast("Playback error: " + error.getMessage());
 
                     // Try fallback approach if the streaming URI failed
@@ -299,7 +289,6 @@ public class HomeFragment extends Fragment {
                 @Override
                 public void onPlaybackStateChanged(int state) {
                     if (state == Player.STATE_READY) {
-                        Log.d("HomeFragment", "Player is ready");
                         updateTrackMetadata(finalTrack);
                     }
                 }
@@ -313,10 +302,7 @@ public class HomeFragment extends Fragment {
             // Reset like state
             isLiked = track.getLikes() > 0 || trackRepo.isTrackLiked(track.getId());
             updateLikeButton();
-
-            Log.d("HomeFragment", "Track loaded successfully: " + track.getId() + " - " + track.getName());
         } catch (Exception e) {
-            Log.e("HomeFragment", "Error loading track: " + e.getMessage(), e);
             showCustomToast("Error loading track: " + e.getMessage());
         }
     }
@@ -325,14 +311,11 @@ public class HomeFragment extends Fragment {
 
     private void loadArtistForTrack(Track track) {
         int artistId = track.getArtistId();
-
-        // Get artist from repository
         Artist artist = artistRepository.getArtistById(artistId);
 
         if (artist != null) {
             currentArtist = artist;
         } else {
-            // Fallback if artist not found
             currentArtist = new Artist(0, "Unknown Artist", "No bio available", 0, 1);
         }
     }
@@ -384,7 +367,9 @@ public class HomeFragment extends Fragment {
                 .into(albumCover);
     }
 
-    // Method to change to next track
+    /**
+     * Changes to the next song once the skip button is clicked
+     */
     public void changeNextTrack() {
         if (currentTrackIndex < allTracks.size() - 1) {
             currentTrackIndex++;
@@ -395,7 +380,9 @@ public class HomeFragment extends Fragment {
         }
     }
 
-    // Method to change to previous track
+    /**
+     * Goes back to the previous song once the go back button is clicked
+     */
     public void changePreviousTrack() {
         if (currentTrackIndex > 0) {
             currentTrackIndex--;
@@ -406,6 +393,9 @@ public class HomeFragment extends Fragment {
         }
     }
 
+    /**
+     * Method for playing and pausing the current song
+     */
     public void playAndPause() {
         if (isPlaying) {
             exoPlayer.pause();
@@ -496,14 +486,15 @@ public class HomeFragment extends Fragment {
         }
     }
 
-    // Helper method to safely find and update the PlaylistFragment
+
+    /**
+     * Helper method to update the Playlist Fragment once a song is liked
+     */
     private void updatePlaylistFragment() {
-        // Find the PlaylistFragment using the tag specified in MainActivity
         PlaylistFragment playlistFragment = (PlaylistFragment) getActivity()
                 .getSupportFragmentManager()
                 .findFragmentByTag(PlaylistFragment.class.getSimpleName());
 
-        // If fragment found, update the playlist
         if (playlistFragment != null && playlistFragment.isInside) {
             playlistFragment.updateCurrentlyPlayingSong(currentTrack.getId(), isPlaying);
             if (isLiked) {
@@ -514,6 +505,9 @@ public class HomeFragment extends Fragment {
         }
     }
 
+    /**
+     * Updates the seekbar to correspond with the position of the media-item
+     */
     private void updateSeekBar() {
         handler.postDelayed(new Runnable() {
             @Override
@@ -533,6 +527,11 @@ public class HomeFragment extends Fragment {
         }, 1000);
     }
 
+    /**
+     * Formats the the start and end time corresponding song
+     * @param timeInMillis the current time of the currently playing song
+     * @return the correct formatted time
+     */
     private String formatTime(int timeInMillis) {
         int minutes = (timeInMillis / 1000) / 60;
         int seconds = (timeInMillis / 1000) % 60;
@@ -541,6 +540,10 @@ public class HomeFragment extends Fragment {
                 String.format("%01d:%02d", minutes, seconds);
     }
 
+    /**
+     * Helper method to display a toast with a specific message
+     * @param message the current message
+     */
     private void showCustomToast(String message) {
         if (getContext() == null) return;
 
