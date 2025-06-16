@@ -38,16 +38,13 @@ public class SearchFragment extends Fragment implements SongAdapter.OnSongClickL
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_search, container, false);
 
-        // Initialize the repository and client
         trackRepository = TrackRepository.getInstance();
         musicClient = new MusicClient(getContext());
 
-        // Initialize views
         searchInput = view.findViewById(R.id.search_input);
         recyclerView = view.findViewById(R.id.recycler_view);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
-        // Set up the adapter with the listener
         adapter = new SongAdapter(searchResults, this);
         recyclerView.setAdapter(adapter);
 
@@ -199,7 +196,8 @@ public class SearchFragment extends Fragment implements SongAdapter.OnSongClickL
                     Log.d(TAG, "Using track from repository - ID: " + fullTrack.getId());
                 }
 
-                // Load the track into the player
+                // Load the track into the player (only at specific spot)
+                homeFragment.allTracks.add(homeFragment.currentTrackIndex + 1, fullTrack);
                 homeFragment.loadTrack(fullTrack);
 
                 if (homeFragment.isPlaying) {

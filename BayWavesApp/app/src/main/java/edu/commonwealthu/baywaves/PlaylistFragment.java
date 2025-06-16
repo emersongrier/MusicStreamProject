@@ -65,14 +65,10 @@ public class PlaylistFragment extends Fragment implements PlaylistAdapter.OnPlay
         setHasOptionsMenu(true);
         trackRepository = TrackRepository.getInstance();
 
-        // Initialize likedPlaylist with all liked songs from the repository
         initializeLikedPlaylist();
-
         initializeUI();
 
         defaultPlaylist = new Playlist(1, getString(R.string.liked_songs), getString(R.string.liked_songs_desc), R.drawable.like_default, 0, 1, likedPlaylist);
-
-        // Load data
         loadPlaylists();
 
         return view;
@@ -155,9 +151,6 @@ public class PlaylistFragment extends Fragment implements PlaylistAdapter.OnPlay
         adapter.notifyDataSetChanged();
     }
 
-    public boolean isInPlaylistView() {
-        return isInside;
-    }
 
     @Override
     public void onPlaylistClick(Playlist playlist) {
@@ -230,12 +223,11 @@ public class PlaylistFragment extends Fragment implements PlaylistAdapter.OnPlay
     }
 
     public void updateCurrentlyPlayingSong(int currentTrackId, boolean isPlaying) {
-        // Only proceed if we're in a playlist view
         if (!isInside || playlistView == null) {
             return;
         }
 
-        // First reset all items to normal state
+        // Reset all items to normal state
         for (int i = 0; i < playlistView.getChildCount(); i++) {
             View itemView = playlistView.getChildAt(i);
             TextView songNameView = itemView.findViewById(R.id.song_name);
@@ -327,6 +319,10 @@ public class PlaylistFragment extends Fragment implements PlaylistAdapter.OnPlay
             // Remove from likedPlaylist only - it's automatically removed from defaultPlaylist
             // since defaultPlaylist.getSongs() points to likedPlaylist
             likedPlaylist.remove(trackToRemove);
+            tracks.clear();
+            tracks.addAll(likedPlaylist);
+            songAdapter.notifyDataSetChanged();
+            updateCurrentlyPlayingSong(trackToRemove.getId(), false);
 
             // If we're currently viewing the default playlist, update the UI
             if (isInside && currentPlaylist != null &&

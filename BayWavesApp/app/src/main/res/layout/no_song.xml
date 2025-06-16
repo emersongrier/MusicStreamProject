@@ -14,26 +14,29 @@
         android:padding="32dp">
 
         <ImageView
+            android:id="@+id/music_icon"
             android:layout_width="120dp"
             android:layout_height="120dp"
             android:layout_marginBottom="32dp"
-            android:src="@drawable/dafault_album_cover" />
+            android:src="@drawable/default_playlist" />
 
         <TextView
+            android:id="@+id/empty_library"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="16dp"
-            android:text="Your Library is Empty"
+            android:text="@string/no_songs"
             android:textColor="@color/black"
             android:textSize="22sp"
             android:textStyle="bold" />
 
         <TextView
+            android:id="@+id/search_for_songs"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="32dp"
             android:gravity="center"
-            android:text="Search for songs to add them to your library"
+            android:text="@string/search_for_songs"
             android:textColor="@color/black"
             android:textSize="16sp" />
 
@@ -46,7 +49,7 @@
             android:paddingTop="12dp"
             android:paddingEnd="24dp"
             android:paddingBottom="12dp"
-            android:text="Browse Music"
+            android:text="@string/browse_music"
             android:textAllCaps="false"
             android:textColor="@color/white" />
 

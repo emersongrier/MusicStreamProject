@@ -23,7 +23,6 @@ public class TrackRepository {
     private String Id;
     private String artist;
 
-    // Temp variables for login
     private String username = "20jakeleonardo@gmail.com";
     private String password = "bayWaves88$";
     private boolean isLoggedIn = false;
@@ -39,7 +38,10 @@ public class TrackRepository {
         return instance;
     }
 
-    // Add a method to set the context and initialize MusicClient
+    /**
+     * Sets context for the music client
+     * @param context of the music client
+     */
     public void setContext(Context context) {
         this.context = context;
         if (this.context != null) {
@@ -152,6 +154,7 @@ public class TrackRepository {
 
         // If server fails, return local fallback tracks
         return getLocalFallbackTracks();
+        //return tracks;
     }
 
     // Parse tracks from JSON response
@@ -349,7 +352,6 @@ public class TrackRepository {
     }
 
     public boolean isTrackLiked(int trackId) {
-        // Try to get from server first
         if (musicClient != null) {
             try {
                 String metadata = musicClient.downloadSongMetadata(String.valueOf(trackId));
@@ -364,7 +366,6 @@ public class TrackRepository {
             }
         }
 
-        // Fallback to cache
         return likedTracksCache.getOrDefault(trackId, false);
     }
 

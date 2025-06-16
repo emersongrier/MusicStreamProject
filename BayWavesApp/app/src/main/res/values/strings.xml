@@ -43,5 +43,10 @@
     <string name="liked_playlists">Liked Songs</string>
     <string name="go_back_arrow">Back Arrow</string>
 
+    <!-- Default Start Screen -->
+    <string name="no_songs">Your Library is Empty</string>
+    <string name="search_for_songs">Search for songs to add them to your library</string>
+    <string name="browse_music">Browse Music</string>
+
 
 </resources>

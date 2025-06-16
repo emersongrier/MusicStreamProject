@@ -6,4 +6,6 @@
     <!-- SeekBar -->
     <dimen name="seek_bar_thickness">6dp</dimen>
     <dimen name="seek_bar_thumb_size">48dp</dimen>
+
+
 </resources>

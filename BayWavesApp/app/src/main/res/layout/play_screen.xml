@@ -9,6 +9,21 @@
     android:fitsSystemWindows="true"
     tools:context=".MainActivity">
 
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/textGuidline1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.20" />
+
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/textGuidline2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.80" />
+
 
     <TextView
         android:id="@+id/title_text"
@@ -16,11 +31,12 @@
         android:layout_height="wrap_content"
         android:fontFamily="@font/smooth_line_7"
         android:text="@string/song_title"
-        android:textSize="56sp"
+        android:textSize="50sp"
+        android:gravity="center"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginTop="16dp"/>
+        app:layout_constraintStart_toStartOf="@id/textGuidline1"
+        app:layout_constraintEnd_toEndOf="@id/textGuidline2"
+        android:layout_marginTop="16dp" />
 
     <TextView
         android:id="@+id/artist_name"
@@ -35,55 +51,99 @@
         android:layout_marginTop="8dp"/>
 
 
-    <FrameLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@id/artist_name"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/middle_constraint"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:orientation="vertical"
         app:layout_constraintBottom_toTopOf="@id/start_time"
-        android:layout_marginTop="24dp">
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/artist_name">
 
         <androidx.cardview.widget.CardView
-            android:layout_width="800dp"
-            android:layout_height="800dp"
+            android:id="@+id/album_visualizer"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
             android:layout_gravity="center"
-            app:cardCornerRadius="420dp"
-            android:elevation="4dp"
+            app:cardCornerRadius="0dp"
             app:cardPreventCornerOverlap="true"
-            app:cardUseCompatPadding="true">
+            app:cardUseCompatPadding="true"
+            app:layout_constraintDimensionRatio="1:1"
+            app:layout_constraintEnd_toEndOf="@id/guideline2"
+            app:layout_constraintStart_toStartOf="@id/guideline1"
+            app:layout_constraintTop_toTopOf="@id/guideline4"
+            app:layout_constraintBottom_toBottomOf="@id/guideline3">
 
             <ImageView
                 android:id="@+id/album_art"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_gravity="center"
+                android:scaleType="centerCrop"
                 android:src="@drawable/test_album_art"
-                android:scaleType="centerCrop"/>
+                app:layout_constraintEnd_toEndOf="@id/guideline2"
+                app:layout_constraintStart_toStartOf="@id/guideline1"
+                app:layout_constraintTop_toTopOf="@id/guideline4"
+                app:layout_constraintBottom_toBottomOf="@id/guideline3"/>
         </androidx.cardview.widget.CardView>
 
 
         <ImageView
-            android:layout_width="820dp"
-            android:layout_height="820dp"
             android:id="@+id/circle_visualizer"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_gravity="center"
             android:src="@drawable/media_playing"
             android:visibility="visible"
-            android:layout_gravity="center" />
+            app:layout_constraintDimensionRatio="1:1"
+            app:layout_constraintEnd_toEndOf="@id/guideline2"
+            app:layout_constraintStart_toStartOf="@id/guideline1"
+            app:layout_constraintTop_toTopOf="@id/guideline4"
+            app:layout_constraintBottom_toBottomOf="@id/guideline3"/>
 
-    </FrameLayout>
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guideline1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.025" />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guideline2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.975" />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guideline3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_percent="0.975" />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guideline4"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_percent="0.025" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
     <ImageButton
         android:id="@+id/like_song"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_marginBottom="10dp"
         android:src="@drawable/like_song"
         android:background="@null"
         android:contentDescription="@string/like_song"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/end_time"
-        android:layout_marginEnd="40dp"
-        android:layout_marginBottom="24dp"/>
+        app:layout_constraintDimensionRatio="1:1"
+        app:layout_constraintEnd_toEndOf="@id/end_time"
+        app:layout_constraintStart_toStartOf="@id/end_time"
+        app:layout_constraintBottom_toTopOf="@id/end_time" />
 
 
 
@@ -132,16 +192,16 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="32dp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent">
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
 
         <ImageButton
             android:id="@+id/unskip_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/unskip_button"
             android:background="@android:color/transparent"
             android:contentDescription="@string/unskip_button"
+            android:src="@drawable/unskip_button"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/play_pause"
             app:layout_constraintHorizontal_bias="0.5"
@@ -152,10 +212,10 @@
             android:id="@+id/play_pause"
             android:layout_width="84dp"
             android:layout_height="84dp"
-            android:scaleType="fitCenter"
-            android:src="@drawable/play_button"
             android:background="@android:color/transparent"
             android:contentDescription="@string/play_pause_button"
+            android:scaleType="fitCenter"
+            android:src="@drawable/play_button"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/skip_button"
             app:layout_constraintHorizontal_bias="0.5"
@@ -166,14 +226,16 @@
             android:id="@+id/skip_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/skip_button"
             android:background="@android:color/transparent"
             android:contentDescription="@string/skip_button"
+            android:src="@drawable/skip_button"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toEndOf="@+id/play_pause"
             app:layout_constraintTop_toTopOf="parent" />
+
+
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
