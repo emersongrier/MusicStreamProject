@@ -160,7 +160,7 @@ public class AlbumRepository {
         );
         albums.add(noir);
 
-        try {
+      /*  try {
             for (Album album : albums) {
                 List<Track> tracks = trackRepository.getTracksByArtist(album.getArtistId());
                 if (tracks != null && !tracks.isEmpty()) {
@@ -170,7 +170,7 @@ public class AlbumRepository {
         } catch (Exception e) {
             Log.e("BayWaves", "Error loading tracks for default albums: " + e.getMessage(), e);
             // Continue even if track loading fails
-        }
+        }*/
 
         // Set default cover resource IDs
         albumCoverResourceIds.put(1, R.drawable.test_album_art);
@@ -315,7 +315,7 @@ public class AlbumRepository {
         if (album != null) {
             track.setAlbumId(albumId);
             album.addSong(track);
-            trackRepository.updateTrack(track);
+            //trackRepository.updateTrack(track);
         }
     }
 

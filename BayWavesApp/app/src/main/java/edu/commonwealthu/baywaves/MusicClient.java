@@ -33,11 +33,26 @@ public class MusicClient {
         this.context = context;
     }
 
-    // Method to set credentials
+    /**
+     * Sets login credentials
+     * @param username of user
+     * @param password of user
+     */
     public void setCredentials(String username, String password) {
         this.username = username;
         this.password = password;
     }
+
+    /**
+     * Gets a direct streaming URL for a song (without downloading)
+     *
+     * @param trackId ID of the track
+     * @return URL string for direct streaming
+     */
+    public String getStreamingUrl(String trackId) {
+        return baseUrl + "/song?trckid=" + trackId;
+    }
+
 
     /**
      * Downloads a song by track ID and stores it in a temporary file.
@@ -78,15 +93,6 @@ public class MusicClient {
         }
     }
 
-    /**
-     * Gets a direct streaming URL for a song (without downloading)
-     *
-     * @param trackId ID of the track
-     * @return URL string for direct streaming
-     */
-    public String getStreamingUrl(String trackId) {
-        return baseUrl + "/song?trckid=" + trackId;
-    }
 
     /**
      * Gets metadata for a song using credentials

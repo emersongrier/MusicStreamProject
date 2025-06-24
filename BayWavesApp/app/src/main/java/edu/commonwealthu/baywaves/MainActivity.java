@@ -13,11 +13,23 @@ import androidx.fragment.app.FragmentTransaction;
 
 import edu.commonwealthu.baywaves.databinding.ActivityMainBinding;
 
-public class MainActivity extends AppCompatActivity {
+/**
+ * MainActivity serves as the primary entry point and navigation controller for the BayWaves music application.
+ * This activity manages the main user interface structure, including the bottom navigation bar
+ * and fragment transitions between different sections of the app.
+ *
+ * Author: Jacob Leonardo
+ */
+
+ public class MainActivity extends AppCompatActivity {
 
     ActivityMainBinding binding;
 
 
+    /**
+     * OnCreate method used for handling fragment replacements and splashscreen
+     * @param savedInstanceState
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -51,6 +63,13 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+
+    /**
+     * Helper method to load and hide fragments
+     * Saves fragment state without destroying and reloading it
+     *
+     * @param fragment The fragment to be loaded
+     */
     private void replaceFragment(Fragment fragment) {
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
@@ -71,10 +90,16 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
+    /**
+     * Helper method to switch to the HomeFragment when called
+     */
     public void switchToHomeTab() {
         binding.bottomNavigationView.setSelectedItemId(R.id.home);
     }
 
+    /**
+     * Helper method to switch to the SearchFragment when called
+     */
     public void switchToSearchTab() {
         binding.bottomNavigationView.setSelectedItemId(R.id.search);
     }

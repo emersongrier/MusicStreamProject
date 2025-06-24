@@ -4,12 +4,12 @@ import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.SeekBar;
@@ -21,8 +21,6 @@ import androidx.annotation.Nullable;
 import androidx.cardview.widget.CardView;
 import androidx.fragment.app.Fragment;
 import androidx.media3.common.MediaItem;
-import androidx.media3.common.PlaybackException;
-import androidx.media3.common.Player;
 import androidx.media3.exoplayer.ExoPlayer;
 import androidx.vectordrawable.graphics.drawable.Animatable2Compat;
 
@@ -36,11 +34,32 @@ import com.bumptech.glide.request.target.Target;
 
 import java.util.List;
 
+/**
+ * HomeFragment serves as the main music player interface for the BayWaves application.
+ * This fragment handles music playback, track navigation, like/unlike functionality,
+ * and displays album artwork with visual animations.
+ *
+ * The fragment manages two distinct UI states:
+ * 1. Empty state - displayed when no music is available in the library
+ * 2. Player state - displayed when music is available, showing full playback controls
+ *
+ * Key features include:
+ * - Audio playback using ExoPlayer
+ * - Track metadata display (title, artist, album art)
+ * - Playback controls (play/pause, next/previous)
+ * - Like/unlike functionality with animated feedback
+ * - Seek bar for track position control
+ * - Visual animations during playback
+ *
+ * @author Jacob Leonardo
+ */
+
 public class HomeFragment extends Fragment {
 
 
     public ExoPlayer exoPlayer;
-    private ImageButton playPauseButton, nextSong, lastSong, likeSong, browseMusic;
+    private ImageButton playPauseButton, nextSong, lastSong, likeSong;
+    private Button browseMusic;
     private ImageView musicIcon, albumCover, circularVisualizer;
     private TextView startTime, endTime, songName, artistName, emptyLibrary, searchForSongs;
     private CardView albumVisualizer;
@@ -60,29 +79,49 @@ public class HomeFragment extends Fragment {
     public int currentTrackIndex;
     public List<Track> allTracks;
 
+    public View view;
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_home, container, false);
-
-        setUpViews(view);
-        setConstraints();
         setUpRepositories();
-        setUpEventListeners();
-        setUpSeekBar();
 
-        currentTrackIndex = 0;
-        loadTrack(allTracks.get(currentTrackIndex));
+        if(allTracks.isEmpty()) {
+            view = inflater.inflate(R.layout.no_song, container, false);
+            setUpStartScreenViews(view);
+            setUpStartScreenListeners();
+        }
+        else {
+            view = inflater.inflate(R.layout.fragment_home, container, false);
+            setUpPlayScreenViews(view);
+            setConstraints();
+            setUpEventListeners();
+            setUpSeekBar();
+
+            currentTrackIndex = 0;
+            loadTrack(allTracks.get(currentTrackIndex));
+        }
 
         return view;
     }
 
-    private void setUpViews(View view) {
-       /* emptyLibrary = view.findViewById(R.id.empty_library);
+
+    /**
+     * Helper method to set up views/organize code
+     * @param view the start screen/no music in library layout
+     */
+    private void setUpStartScreenViews(View view) {
+        emptyLibrary = view.findViewById(R.id.empty_library);
         searchForSongs = view.findViewById(R.id.search_for_songs);
         musicIcon = view.findViewById(R.id.music_icon);
-        browseMusic = view.findViewById(R.id.browse_button); */
+        browseMusic = view.findViewById(R.id.browse_button);
+    }
 
+    /**
+     * Helper method to set up views/organize code
+     * @param view the play screen layout
+     */
+    private void setUpPlayScreenViews(View view) {
         startTime = view.findViewById(R.id.start_time);
         endTime = view.findViewById(R.id.end_time);
         songName = view.findViewById(R.id.title_text);
@@ -97,6 +136,9 @@ public class HomeFragment extends Fragment {
         albumVisualizer = view.findViewById(R.id.album_visualizer);
     }
 
+    /**
+     * Helper method to set up repositories/organize code
+     */
     private void setUpRepositories() {
         artistRepository = ArtistRepository.getInstance();
         trackRepository = TrackRepository.getInstance();
@@ -107,6 +149,9 @@ public class HomeFragment extends Fragment {
         allTracks = trackRepository.getAllTracks();
     }
 
+    /**
+     * Helper method to set up event listeners/organize code
+     */
     private void setUpEventListeners() {
         playPauseButton.setOnClickListener(v -> playAndPause());
         nextSong.setOnClickListener(v -> changeNextTrack());
@@ -114,6 +159,19 @@ public class HomeFragment extends Fragment {
         likeSong.setOnClickListener(v -> addSong());
     }
 
+    /**
+     * Helper method to set up the browse music button/organize code
+     */
+    private void setUpStartScreenListeners () {
+        browseMusic.setOnClickListener(v -> {
+            MainActivity mainActivity = (MainActivity) getActivity();
+            mainActivity.switchToSearchTab();
+        });
+    }
+
+    /**
+     * Dynamically sets album cover and visualizer constraints to be consistent with screen size
+     */
     private void setConstraints(){
         albumVisualizer.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
             @Override
@@ -130,6 +188,9 @@ public class HomeFragment extends Fragment {
         });
     }
 
+    /**
+     * Sets up seekbar for position control
+     */
     private void setUpSeekBar() {
         seekBar.setMax(100);
         seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
@@ -154,7 +215,7 @@ public class HomeFragment extends Fragment {
     }
 
     /**
-     * Updates the seekbar to correspond with the position of the media-item
+     * Updates the seekbar to correspond with the position of the song
      */
     private void updateSeekBar() {
         handler.postDelayed(new Runnable() {
@@ -176,9 +237,9 @@ public class HomeFragment extends Fragment {
     }
 
     /**
-     * Formats the the start and end time corresponding song
+     * Formats the the start and end time for the corresponding song
      * @param timeInMillis the current time of the currently playing song
-     * @return the correct formatted time
+     * @return the formatted time
      */
     private String formatTime(int timeInMillis) {
         int minutes = (timeInMillis / 1000) / 60;
@@ -188,10 +249,14 @@ public class HomeFragment extends Fragment {
                 String.format("%01d:%02d", minutes, seconds);
     }
 
-    // Find track index in our list by track id
+    /**
+     * Finds track's index in the list by its Id
+     * @param trackId The Id of the current track
+     * @return index of track in the list, returns 0 if not found
+     */
     public int findTrackIndexById(int trackId) {
         if (allTracks == null || allTracks.isEmpty()) {
-            Log.e("HomeFragment", "Track list is empty or null");
+            showCustomToast("Track list is empty or null");
             return 0;
         }
 
@@ -201,201 +266,79 @@ public class HomeFragment extends Fragment {
             }
         }
 
-        Log.w("HomeFragment", "Track ID " + trackId + " not found in playlist, defaulting to first track");
-        return 0; // Default to first track if not found
+        showCustomToast("Track ID " + trackId + " not found in playlist, defaulting to first track"); // Exception check
+        return 0;
     }
 
-    private void tryFallbackPlayback(Track track) {
-        try {
-            Log.d("HomeFragment", "Trying fallback playback for track ID: " + track.getId());
 
-            // Try direct download instead of streaming URL
-            if (client != null && track.getId() > 0) {
-                try {
-                    String downloadedPath = client.downloadSong(String.valueOf(track.getId()));
-                    Log.d("HomeFragment", "Downloaded song to: " + downloadedPath);
-
-                    if (exoPlayer != null) {
-                        exoPlayer.release();
-                    }
-
-                    exoPlayer = new ExoPlayer.Builder(requireContext()).build();
-                    exoPlayer.setMediaItem(MediaItem.fromUri(Uri.parse(downloadedPath)));
-                    exoPlayer.prepare();
-                    exoPlayer.play();
-                    isPlaying = true;
-                    playPauseButton.setImageResource(R.drawable.pause_button);
-
-                    // Update visualizer
-                    Glide.with(requireContext())
-                            .asGif()
-                            .load(R.drawable.media_playing)
-                            .into(circularVisualizer);
-
-                    return; // Early return if successful
-                } catch (Exception e) {
-                    Log.e("HomeFragment", "Direct download failed: " + e.getMessage(), e);
-                }
-            }
-
-            // If all else fails, try to find a local fallback track with the same ID
-            List<Track> localTracks = TrackRepository.getInstance().getLocalFallbackTracks();
-            for (Track localTrack : localTracks) {
-                if (localTrack.getId() == track.getId()) {
-                    Log.d("HomeFragment", "Found matching local track: " + localTrack.getName());
-
-                    // Try to play the local track
-                    if (exoPlayer != null) {
-                        exoPlayer.release();
-                    }
-
-                    exoPlayer = new ExoPlayer.Builder(requireContext()).build();
-                    exoPlayer.setMediaItem(MediaItem.fromUri(Uri.parse(localTrack.getFilePath())));
-                    exoPlayer.prepare();
-                    exoPlayer.play();
-                    isPlaying = true;
-                    playPauseButton.setImageResource(R.drawable.pause_button);
-
-                    // Update visualizer
-                    Glide.with(requireContext())
-                            .asGif()
-                            .load(R.drawable.media_playing)
-                            .into(circularVisualizer);
-
-                    return;
-                }
-            }
-
-            showCustomToast("Could not play track. Please try another song.");
-        } catch (Exception e) {
-            showCustomToast("Could not play track. Please try another song.");
-        }
-    }
-
+    /**
+     * Loads the current track to be played by the ExoPlayer
+     * @param track Current track being loaded
+     */
     public void loadTrack(Track track) {
-        try {
-            Log.d("HomeFragment", "Loading track: " + track.getName() + " (ID: " + track.getId() + ")");
 
-            // Make sure track is valid with a proper ID
-            if (track.getId() <= 0) {
-                showCustomToast("Invalid track ID");
-                return;
-            }
-
-            // Complete track info if needed
-            TrackRepository trackRepo = TrackRepository.getInstance();
-            Track completeTrack = trackRepo.completeTrackInfo(track);
-
-            if (completeTrack != null) {
-                track = completeTrack;
-            }
-
-            // Update current track
-            currentTrack = track;
-            currentTrackIndex = findTrackIndexById(track.getId());
-
-            Log.d("HomeFragment", "Track index in playlist: " + currentTrackIndex);
-
-            // Get the streaming URI
-            String streamingUri = trackRepo.getStreamingUri(track);
-            Log.d("HomeFragment", "Using streaming URI: " + streamingUri);
-
-            // Validate URI
-            if (streamingUri == null || streamingUri.isEmpty()) {
-                showCustomToast("Cannot play: missing audio source");
-                return;
-            }
-
-            // Set up ExoPlayer with the track's streaming URI
-            MediaItem mediaItem = MediaItem.fromUri(Uri.parse(streamingUri));
-
-            // Release any existing player
-            if (exoPlayer != null) {
-                exoPlayer.release();
-            }
-
-            // Create new ExoPlayer instance
-            exoPlayer = new ExoPlayer.Builder(requireContext()).build();
-            exoPlayer.setMediaItem(mediaItem);
-            exoPlayer.prepare();
-
-            // Add a listener to detect playback errors
-            Track finalTrack = track;
-            exoPlayer.addListener(new Player.Listener() {
-                @Override
-                public void onPlayerError(PlaybackException error) {
-                    showCustomToast("Playback error: " + error.getMessage());
-
-                    // Try fallback approach if the streaming URI failed
-                    tryFallbackPlayback(finalTrack);
-                }
-
-                @Override
-                public void onPlaybackStateChanged(int state) {
-                    if (state == Player.STATE_READY) {
-                        updateTrackMetadata(finalTrack);
-                    }
-                }
-            });
-
-            // Load artist and update UI
-            loadArtistForTrack(track);
-            updateTrackMetadata(track);
-            updateAlbumCover(track);
-
-            // Reset like state
-            isLiked = track.getLikes() > 0 || trackRepo.isTrackLiked(track.getId());
-            updateLikeButton();
-        } catch (Exception e) {
-            showCustomToast("Error loading track: " + e.getMessage());
+        if (track.getId() <= 0) {
+            showCustomToast("Invalid track ID");
+            return;
         }
+
+        TrackRepository trackRepo = TrackRepository.getInstance();
+        /*Track completeTrack = trackRepository.getTrackById(track.getId()); //replace with client.downloadSong
+        if (completeTrack != null) {
+            track = completeTrack;
+        }*/
+
+        currentTrack = track;
+        currentTrackIndex = findTrackIndexById(track.getId());
+
+        String streamingUri = client.getStreamingUrl(String.valueOf(track.getId()));
+        if (streamingUri == null || streamingUri.isEmpty()) {
+            showCustomToast("Streamed Song not loaded");
+            return;
+        }
+
+        MediaItem mediaItem = MediaItem.fromUri(Uri.parse(streamingUri));
+
+        // Release any existing player
+        if (exoPlayer != null) {
+            exoPlayer.release();
+        }
+        exoPlayer = new ExoPlayer.Builder(requireContext()).build();
+        exoPlayer.setMediaItem(mediaItem);
+        exoPlayer.prepare();
+
+        updateTrackMetadata(track);
+
+        // Reset like state
+        isLiked = track.getLikes() > 0 || trackRepo.isTrackLiked(track.getId());
+        updateLikeButton();
     }
 
 
-
-    private void loadArtistForTrack(Track track) {
-        int artistId = track.getArtistId();
-        Artist artist = artistRepository.getArtistById(artistId);
-
-        if (artist != null) {
-            currentArtist = artist;
-        } else {
-            currentArtist = new Artist(0, "Unknown Artist", "No bio available", 0, 1);
-        }
-    }
-
+    /**
+     * Sets the metadata for the currently loaded track
+     * @param track The track who's metadata will be loaded
+     */
     private void updateTrackMetadata(Track track) {
         track.setLength((int) exoPlayer.getDuration());
 
-        // Set initial time displays
         startTime.setText("0:00");
         endTime.setText(formatTime(track.getLength()));
 
-        // Update seek bar max based on track length
         seekBar.setProgress(0);
         seekBar.setMax(100);
-
-        // Update seekBar functionality
         updateSeekBar();
 
-        // Update track name display
         songName.setText(track.getName());
-
-        // Update artist name display
-        if (currentArtist != null) {
-            artistName.setText(currentArtist.getName());
-        } else {
-            artistName.setText("Unknown Artist");
-        }
+        loadArtistForTrack(track);
+        updateAlbumCover(track);
     }
 
-    private void updateLikeButton() {
-        Glide.with(requireContext())
-                .load(isLiked ? R.drawable.liked_song : R.drawable.like_song)
-                .dontAnimate()
-                .into(likeSong);
-    }
 
+    /**
+     * Sets the album cover for the corresponding song if it exists
+     * @param track The track of the album cover to be loaded
+     */
     private void updateAlbumCover(Track track) {
         int albumId = track.getAlbumId();
         int coverResourceId = albumRepository.getAlbumCoverResourceId(albumId);
@@ -410,7 +353,36 @@ public class HomeFragment extends Fragment {
     }
 
     /**
-     * Method for playing and pausing the current song
+     * Loads the artist for the current track
+     * @param track The track who's artist will be loaded for
+     */
+    private void loadArtistForTrack(Track track) {
+        int artistId = track.getArtistId();
+        Artist artist = artistRepository.getArtistById(artistId);
+
+        if (artist != null) {
+            currentArtist = artist;
+            artistName.setText(currentArtist.getName());
+        } else {
+            currentArtist = new Artist(0, "Unknown Artist", "No bio available", 0, 1);
+            artistName.setText("Unknown Artist");
+        }
+    }
+
+
+    /**
+     * Sets the like button to the current song's like state
+     */
+    private void updateLikeButton() {
+        Glide.with(requireContext())
+                .load(isLiked ? R.drawable.liked_song : R.drawable.like_song)
+                .dontAnimate()
+                .into(likeSong);
+    }
+
+    /**
+     * Toggles playback state. Updates play/pause UI and visualizer animation,
+     * and notifies PlaylistFragment of current playback state.
      */
     public void playAndPause() {
         if (isPlaying) {
@@ -459,9 +431,13 @@ public class HomeFragment extends Fragment {
     }
 
 
+    /**
+     * Adds a song to the default playlist and performs like button animation
+     */
     private void addSong() {
         if (!isLiked) {
-            // Play the animation once
+
+            // Play animation
             Glide.with(requireContext())
                     .asGif()
                     .load(R.drawable.like_song)
@@ -484,10 +460,9 @@ public class HomeFragment extends Fragment {
                                 @Override
                                 public void onAnimationEnd(Drawable drawable) {
                                     currentTrack.setLikes(currentTrack.getLikes() + 1);
-                                    currentTrack.setLocalLikedState(true); // Set the liked state
-                                    trackRepository.updateTrack(currentTrack);
+                                    client.toggleSongLike(String.valueOf(currentTrack.getId()));
 
-                                    // Change to liked state image
+                                    // Keeps the like button in the like state
                                     Glide.with(requireContext())
                                             .load(R.drawable.liked_song)
                                             .dontAnimate()
@@ -505,16 +480,15 @@ public class HomeFragment extends Fragment {
 
             showCustomToast(getString(R.string.song_liked));
         } else {
-            // Reset to original state
+            // Resets like button to the unlike state
             Glide.with(requireContext())
                     .load(R.drawable.like_song)
                     .dontAnimate()
                     .into(likeSong);
 
-            // Update track likes
+
             currentTrack.setLikes(currentTrack.getLikes() - 1);
-            currentTrack.setLocalLikedState(false); // Set the liked state
-            trackRepository.updateTrack(currentTrack);
+            client.toggleSongLike(String.valueOf(currentTrack.getId())); 
 
             isLiked = false;
             trackRepository.setTrackLiked(currentTrack.getId(), isLiked);
@@ -527,6 +501,7 @@ public class HomeFragment extends Fragment {
 
     /**
      * Helper method to update the Playlist Fragment once a song is liked
+     * Adds song to the default liked songs playlist
      */
     private void updatePlaylistFragment() {
         PlaylistFragment playlistFragment = (PlaylistFragment) getActivity()
@@ -564,6 +539,9 @@ public class HomeFragment extends Fragment {
         toast.show();
     }
 
+    /**
+     * Releases and the ExoPlayer and sets it to null
+     */
     @Override
     public void onDestroyView() {
         super.onDestroyView();

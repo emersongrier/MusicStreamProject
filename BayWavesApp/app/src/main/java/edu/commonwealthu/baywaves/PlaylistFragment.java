@@ -127,7 +127,7 @@ public class PlaylistFragment extends Fragment implements PlaylistAdapter.OnPlay
     /**
      * Replaces current layout with new layout
      */
-    private void setViewLayout(int id){
+    public void setViewLayout(int id){
         LayoutInflater inflater = (LayoutInflater) getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         view = inflater.inflate(id, null);
         ViewGroup rootView = (ViewGroup) getView();
