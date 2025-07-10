@@ -1,7 +1,6 @@
 package edu.commonwealthu.baywaves;
 
 import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -15,7 +14,6 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import androidx.activity.result.ActivityResultLauncher;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
@@ -42,15 +40,12 @@ public class PlaylistFragment extends Fragment implements PlaylistAdapter.OnPlay
     private List<Playlist> loadedPlaylists;
     private List<Track> tracks = new ArrayList<>();
     private TrackRepository trackRepository;
-    private List<Track> likedPlaylist = new ArrayList<>();
+    public List<Track> likedPlaylist = new ArrayList<>();
     private MaterialToolbar toolbar, playlistToolbar;
     private TextView songName, artistName;
     private ImageView musicPlaying;
 
     public boolean isInside;
-
-
-    private ActivityResultLauncher<Intent> resultLauncher;
 
     private Playlist defaultPlaylist;
     private PlaylistAdapter.PlaylistViewHolder selectPlaylist;
@@ -101,7 +96,6 @@ public class PlaylistFragment extends Fragment implements PlaylistAdapter.OnPlay
         recyclerView = view.findViewById(R.id.playlist_view);
         recyclerView.setLayoutManager(new GridLayoutManager(getContext(), 2));
 
-        // Initialize adapter
         adapter = new PlaylistAdapter(playlists, this);
         recyclerView.setAdapter(adapter);
     }
@@ -141,20 +135,25 @@ public class PlaylistFragment extends Fragment implements PlaylistAdapter.OnPlay
         rootView.addView(view);
     }
 
+    /**
+     * Method that initializes the the list of playlists
+     */
     private void loadPlaylists() {
         loadedPlaylists = new ArrayList<>();
         loadedPlaylists.add(defaultPlaylist);
 
-        // Update the adapter
         playlists.clear();
         playlists.addAll(loadedPlaylists);
         adapter.notifyDataSetChanged();
     }
 
 
+    /**
+     * Handles playlist click and navigates to the playlist menu
+     * @param playlist The playlist being clicked/loaded
+     */
     @Override
     public void onPlaylistClick(Playlist playlist) {
-        // Handle playlist click - navigate to playlist details
         setViewLayout(R.layout.inside_playlist);
         isInside = true;
         currentPlaylist = playlist;
@@ -174,54 +173,51 @@ public class PlaylistFragment extends Fragment implements PlaylistAdapter.OnPlay
         tracks.clear();
         tracks.addAll(playlist.getSongs());
 
-        // Create a song adapter and set it on the RecyclerView
         songAdapter = new SongAdapter(tracks, this);
         playlistView.setAdapter(songAdapter);
         //songAdapter.notifyDataSetChanged();
 
-        try {
-            HomeFragment homeFragment = (HomeFragment) getActivity()
-                    .getSupportFragmentManager()
-                    .findFragmentByTag(HomeFragment.class.getSimpleName());
 
-            if (homeFragment != null && homeFragment.currentTrack != null) {
-                // Just use the existing method with the current track ID and playing state
-                updateCurrentlyPlayingSong(homeFragment.currentTrack.getId(), homeFragment.isPlaying);
-            }
-        } catch (Exception e) {
-            // Just silently handle any potential errors
+        HomeFragment homeFragment = (HomeFragment) getActivity()
+                .getSupportFragmentManager()
+                .findFragmentByTag(HomeFragment.class.getSimpleName());
+
+        if (homeFragment != null && homeFragment.currentTrack != null) {
+            updateCurrentlyPlayingSong(homeFragment.currentTrack.getId(), homeFragment.isPlaying);
         }
+
     }
 
-    // Implement SongAdapter.OnSongClickListener interface
+    /**
+     * Handles song click and plays the current song
+     * @param track The track item being clicked
+     */
     @Override
     public void onSonglistClick(Track track) {
-        try {
-            // Get the HomeFragment instance
-            HomeFragment homeFragment = (HomeFragment) getActivity()
-                    .getSupportFragmentManager()
-                    .findFragmentByTag(HomeFragment.class.getSimpleName());
+        HomeFragment homeFragment = (HomeFragment) getActivity()
+                .getSupportFragmentManager()
+                .findFragmentByTag(HomeFragment.class.getSimpleName());
 
-            if (homeFragment != null) {
-                // Load the track that was clicked
-                homeFragment.loadTrack(track);
+        if (homeFragment != null) {
+            homeFragment.loadTrack(track);
 
-                // Start and stop playing
-                if (homeFragment.isPlaying) {
-                    homeFragment.playAndPause();
-                }
-                if (!homeFragment.isPlaying) {
-                    homeFragment.playAndPause();
-                }
-
-                updateCurrentlyPlayingSong(track.getId(), homeFragment.isPlaying);
+            if (homeFragment.isPlaying) {
+                homeFragment.playAndPause();
             }
-        } catch (Exception e) {
-            e.printStackTrace();
-            // Handle exception gracefully, maybe show a toast
+            if (!homeFragment.isPlaying) {
+                homeFragment.playAndPause();
+            }
+
+            updateCurrentlyPlayingSong(track.getId(), homeFragment.isPlaying);
         }
     }
 
+    /**
+     * Updates the current song icon in the playlist.
+     * Highlights current song and resets other songs to default.
+     * @param currentTrackId The Id of the current selected track
+     * @param isPlaying Determines if current song is playing to show icon
+     */
     public void updateCurrentlyPlayingSong(int currentTrackId, boolean isPlaying) {
         if (!isInside || playlistView == null) {
             return;
@@ -234,36 +230,25 @@ public class PlaylistFragment extends Fragment implements PlaylistAdapter.OnPlay
             TextView artistNameView = itemView.findViewById(R.id.artist_name);
             ImageView musicPlayingView = itemView.findViewById(R.id.music_playing);
 
-            if (songNameView != null) {
-                songNameView.setTextColor(getResources().getColor(R.color.black));
-            }
-            if (artistNameView != null) {
-                artistNameView.setTextColor(getResources().getColor(R.color.black));
-            }
-            if (musicPlayingView != null) {
-                musicPlayingView.setVisibility(View.INVISIBLE);
-            }
+            songNameView.setTextColor(getResources().getColor(R.color.black));
+            artistNameView.setTextColor(getResources().getColor(R.color.black));
+            musicPlayingView.setVisibility(View.INVISIBLE);
+
         }
 
-        // Now highlight the playing song if it exists in this playlist
+        // Highlight playing song
         for (int i = 0; i < tracks.size(); i++) {
             if (tracks.get(i).getId() == currentTrackId) {
-                // Found the playing track in this playlist
                 RecyclerView.ViewHolder holder = playlistView.findViewHolderForAdapterPosition(i);
                 if (holder != null) {
-                    // View is visible, update it
                     View itemView = holder.itemView;
                     TextView songNameView = itemView.findViewById(R.id.song_name);
                     TextView artistNameView = itemView.findViewById(R.id.artist_name);
                     ImageView musicPlayingView = itemView.findViewById(R.id.music_playing);
 
-                    if (songNameView != null) {
-                        songNameView.setTextColor(getResources().getColor(R.color.bayWave));
-                    }
-                    if (artistNameView != null) {
-                        artistNameView.setTextColor(getResources().getColor(R.color.bayWave));
-                    }
-                    if (musicPlayingView != null && isPlaying) {
+                    songNameView.setTextColor(getResources().getColor(R.color.bayWave));
+                    artistNameView.setTextColor(getResources().getColor(R.color.bayWave));
+                    if (isPlaying) {
                         musicPlayingView.setVisibility(View.VISIBLE);
                         Glide.with(requireContext())
                                 .asGif()
@@ -271,28 +256,26 @@ public class PlaylistFragment extends Fragment implements PlaylistAdapter.OnPlay
                                 .into(musicPlayingView);
                     }
                 } else {
-                    // View not visible, scroll to it
                     playlistView.scrollToPosition(i);
                 }
-                break;  // Found our match, no need to continue
+                break;
             }
         }
     }
 
+    /**
+     * Adds a track to the default liked playlist
+     * @param track The track being added to the playlist
+     */
     public void addSongToDefault(Track track) {
-        // Check if the track is already in the liked playlist by ID
         for (Track t : likedPlaylist) {
             if (t.getId() == track.getId()) {
-                // Already exists, no need to add
                 return;
             }
         }
 
-        // Only add to likedPlaylist - it's automatically in defaultPlaylist
-        // since defaultPlaylist.getSongs() points to likedPlaylist
         likedPlaylist.add(track);
 
-        // If we're currently viewing the default playlist, update the UI
         if (isInside && currentPlaylist != null &&
                 currentPlaylist.getId() == defaultPlaylist.getId() && songAdapter != null) {
             tracks.clear();
@@ -300,13 +283,15 @@ public class PlaylistFragment extends Fragment implements PlaylistAdapter.OnPlay
             songAdapter.notifyDataSetChanged();
         }
 
-        // Update the playlist grid view
         adapter.notifyDataSetChanged();
     }
 
 
+    /**
+     * Removes a track from the default liked playlist
+     * @param track The track being removed from the playlist
+     */
     public void removeSongFromDefault(Track track) {
-        // Find the track in the liked playlist by ID
         Track trackToRemove = null;
         for (Track t : likedPlaylist) {
             if (t.getId() == track.getId()) {
@@ -316,15 +301,12 @@ public class PlaylistFragment extends Fragment implements PlaylistAdapter.OnPlay
         }
 
         if (trackToRemove != null) {
-            // Remove from likedPlaylist only - it's automatically removed from defaultPlaylist
-            // since defaultPlaylist.getSongs() points to likedPlaylist
             likedPlaylist.remove(trackToRemove);
             tracks.clear();
             tracks.addAll(likedPlaylist);
             songAdapter.notifyDataSetChanged();
             updateCurrentlyPlayingSong(trackToRemove.getId(), false);
 
-            // If we're currently viewing the default playlist, update the UI
             if (isInside && currentPlaylist != null &&
                     currentPlaylist.getId() == defaultPlaylist.getId() && songAdapter != null) {
                 tracks.clear();
@@ -332,7 +314,6 @@ public class PlaylistFragment extends Fragment implements PlaylistAdapter.OnPlay
                 songAdapter.notifyDataSetChanged();
             }
 
-            // Update the playlist grid view
             adapter.notifyDataSetChanged();
         }
     }
@@ -402,15 +383,12 @@ public class PlaylistFragment extends Fragment implements PlaylistAdapter.OnPlay
                         new ArrayList<Track>()
                 );
 
-                // Add the new playlist to the list
                 loadedPlaylists.add(newPlaylist);
 
-                // Update the adapter data and refresh the view
                 playlists.clear();
                 playlists.addAll(loadedPlaylists);
                 adapter.notifyDataSetChanged();
 
-                // Dismiss the dialog
                 dialog.dismiss();
             }
         });

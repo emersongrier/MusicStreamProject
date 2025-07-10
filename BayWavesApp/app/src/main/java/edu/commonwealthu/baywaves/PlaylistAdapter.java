@@ -20,16 +20,31 @@ public class PlaylistAdapter extends RecyclerView.Adapter<PlaylistAdapter.Playli
     private OnPlaylistClickListener listener;
 
 
-    // Interface for click listener
+    /**
+     * Interface for click listener
+     */
     public interface OnPlaylistClickListener {
         void onPlaylistClick(Playlist playlist);
     }
 
+    /**
+     * Initializes list of playlists and listener
+     * @param playlists A list of playlists
+     * @param listener The click listener for playlist insteractions
+     */
     public PlaylistAdapter(List<Playlist> playlists, OnPlaylistClickListener listener) {
         this.playlists = playlists;
         this.listener = listener;
     }
 
+
+    /**
+     * Creates a new ViewHolder instance for playlist items.
+     * Inflates the playlist_icon layout and returns a new PlaylistViewHolder.
+     * @param parent The ViewGroup into which the new View will be added
+     * @param viewType The view type of the new View (not used in this implementation)
+     * @return A new PlaylistViewHolder that holds a View of the playlist_icon layout
+     */
     @NonNull
     @Override
     public PlaylistViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -37,6 +52,12 @@ public class PlaylistAdapter extends RecyclerView.Adapter<PlaylistAdapter.Playli
         return new PlaylistViewHolder(view);
     }
 
+    /**
+     * Binds data to the ViewHolder at the specified position.
+     * Sets the playlist title, loads the cover image using Glide, and sets up click listeners.
+     * @param holder The ViewHolder which should be updated to represent the contents of the item
+     * @param position The position of the item within the adapter's data set
+     */
     @Override
     public void onBindViewHolder(@NonNull PlaylistViewHolder holder, int position) {
         Playlist playlist = playlists.get(position);
@@ -60,18 +81,31 @@ public class PlaylistAdapter extends RecyclerView.Adapter<PlaylistAdapter.Playli
 
 
 
+    /**
+     * Returns the total number of items in the data set held by the adapter.
+     * @return The total number of playlists in the adapter, or 0 if playlists is null
+     */
     @Override
     public int getItemCount() {
         return playlists != null ? playlists.size() : 0;
     }
 
 
-    // Method to update data
+    /**
+     * Updates the playlist data in the adapter and notifies observers.
+     * This method should be called when the playlist data changes.
+     * @param playlists The new list of playlists to display
+     */
     public void setPlaylists(List<Playlist> playlists) {
         this.playlists = playlists;
         notifyDataSetChanged();
     }
 
+
+    /**
+     * ViewHolder class for playlist items.
+     * Holds references to the views within each playlist item layout.
+     */
     static class PlaylistViewHolder extends RecyclerView.ViewHolder {
         CardView cardView;
         ImageView cover;

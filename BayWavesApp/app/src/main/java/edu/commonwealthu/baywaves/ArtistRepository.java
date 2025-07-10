@@ -12,12 +12,15 @@ public class ArtistRepository {
     private List<Artist> artists;
     private Connection connection;
 
+
+    /**
+     * Creates a lists of artists.
+     * Fetches artist from database if not null, otherwise uses the default artists
+     */
     private ArtistRepository() {
         artists = new ArrayList<>();
         try {
             connection = DatabaseConnection.getConnection();
-
-            // Fetch artists from database
             loadArtistsFromDatabase();
         } catch (SQLException e) {
             e.printStackTrace();
@@ -25,6 +28,10 @@ public class ArtistRepository {
         }
     }
 
+    /**
+     * Creates an instance of the ArtistRepository class
+     * @return an ArtistRepository object
+     */
     public static synchronized ArtistRepository getInstance() {
         if (instance == null) {
             instance = new ArtistRepository();
@@ -32,6 +39,11 @@ public class ArtistRepository {
         return instance;
     }
 
+
+    /**
+     * Adds artists to list from database.
+     * If no artists are found, it adds the default artists
+     */
     private void loadArtistsFromDatabase() throws SQLException {
         String query = "SELECT * FROM ARTIST";
         try (PreparedStatement ps = connection.prepareStatement(query);
@@ -49,14 +61,13 @@ public class ArtistRepository {
             }
         }
 
-        // If no artists found, add default artists
         if (artists.isEmpty()) {
             addDefaultArtists();
         }
     }
 
     /**
-     * Adds defaults artists to songs
+     * Sets a list of default artists as a backup
      */
     private void addDefaultArtists() {
         artists.add(new Artist(
@@ -83,10 +94,21 @@ public class ArtistRepository {
         ));
     }
 
+    /**
+     * Returns all artists
+     * @return a list of all artists
+     */
     public List<Artist> getAllArtists() {
         return new ArrayList<>(artists);
     }
 
+
+
+    /**
+     * Retrieves an artist by their unique identifier.
+     * @param id the unique identifier of the artist to retrieve
+     * @return the Artist object with the specified ID, or null if no artist is found
+     */
     public Artist getArtistById(int id) {
         return artists.stream()
                 .filter(artist -> artist.getId() == id)
@@ -94,11 +116,15 @@ public class ArtistRepository {
                 .orElse(null);
     }
 
+
+    /**
+     * Adds artist to the database if user wanted to upload own music (not currently a feature)
+     * @param artist The artist being added to the database
+     */
     public void addArtist(Artist artist) {
         artists.add(artist);
 
         try {
-            // Insert artist into database
             String query = "INSERT INTO ARTIST (art_id, art_name, art_bio, art_followers, art_members) " +
                     "VALUES (?, ?, ?, ?, ?)";
             try (PreparedStatement ps = connection.prepareStatement(query)) {
@@ -116,8 +142,11 @@ public class ArtistRepository {
         }
     }
 
+    /**
+     * Updates artist's info in database
+     * @param artist The artist being updated
+     */
     public void updateArtist(Artist artist) {
-        // Update in local list
         for (int i = 0; i < artists.size(); i++) {
             if (artists.get(i).getId() == artist.getId()) {
                 artists.set(i, artist);
@@ -126,7 +155,6 @@ public class ArtistRepository {
         }
 
         try {
-            // Update in database
             String query = "UPDATE ARTIST SET " +
                     "art_name = ?, art_bio = ?, art_followers = ?, art_members = ? " +
                     "WHERE art_id = ?";
@@ -145,12 +173,14 @@ public class ArtistRepository {
         }
     }
 
+    /**
+     * Deletes an artist from the database
+     * @param artistId The Id of the artist being deleted
+     */
     public void deleteArtist(int artistId) {
-        // Remove from local list
-        artists.removeIf(artist -> artist.getId() == artistId);
+        artists.removeIf(artist -> artist.getId() == artistId); // remove from local list
 
         try {
-            // Delete from database
             String query = "DELETE FROM ARTIST WHERE art_id = ?";
             try (PreparedStatement ps = connection.prepareStatement(query)) {
                 ps.setInt(1, artistId);

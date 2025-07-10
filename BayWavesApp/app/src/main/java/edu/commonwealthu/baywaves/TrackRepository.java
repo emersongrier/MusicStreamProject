@@ -314,7 +314,6 @@ public class TrackRepository {
                 3   // Same Artist ID for Kevin Macleod
         ));
 
-
         return fallbackTracks;
     }
 

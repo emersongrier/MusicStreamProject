@@ -21,17 +21,18 @@ public class SongAdapter extends RecyclerView.Adapter<SongAdapter.SongViewHolder
     private ArtistRepository artistRepository;
     private OnSongClickListener listener;
 
-    // Interface for click listener
+    /**
+     * Interface for click listener
+     */
     public interface OnSongClickListener {
         void onSonglistClick(Track track);
     }
 
-    public SongAdapter(List<Track> tracks) {
-        this.tracks = tracks;
-        this.listener = null; // No listener provided
-    }
-
-
+    /**
+     * Initializes repositories and listeners
+     * @param tracks List of tracks in playlist
+     * @param listener Listener interface
+     */
     public SongAdapter(List<Track> tracks, OnSongClickListener listener) {
         this.tracks = tracks;
         this.albumRepository = AlbumRepository.getInstance();
@@ -43,7 +44,10 @@ public class SongAdapter extends RecyclerView.Adapter<SongAdapter.SongViewHolder
     private TextView lastClickedArtistName;
     private ImageView lastClickedGif;
 
-    // Method to update the last clicked items
+    /**
+     * Updates last clicked song item
+     * @param holder View holder for the song item
+     */
     private void updateLastClickedViews(SongViewHolder holder) {
         lastClickedSongName = holder.songName;
         lastClickedArtistName = holder.artistName;
@@ -51,6 +55,13 @@ public class SongAdapter extends RecyclerView.Adapter<SongAdapter.SongViewHolder
     }
 
 
+    /**
+     * Returns a holder for a song item
+     * @param parent   The ViewGroup into which the new View will be added after it is bound to
+     *                 an adapter position.
+     * @param viewType The view type of the new View.
+     * @return A song as a song_item layout
+     */
     @NonNull
     @Override
     public SongViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -58,6 +69,12 @@ public class SongAdapter extends RecyclerView.Adapter<SongAdapter.SongViewHolder
         return new SongViewHolder(view);
     }
 
+    /**
+     * Sets the view holder to the specified track
+     * @param holder   The ViewHolder which should be updated to represent the contents of the
+     *                 item at the given position in the data set.
+     * @param position The position of the item within the adapter's data set.
+     */
     @Override
     public void onBindViewHolder(@NonNull SongViewHolder holder, int position) {
         if (tracks == null || position >= tracks.size()) {
@@ -69,14 +86,10 @@ public class SongAdapter extends RecyclerView.Adapter<SongAdapter.SongViewHolder
             return; // Another safety check
         }
 
-        // Set song name
         holder.songName.setText(track.getName());
-
-        // Set artist name
         Artist artist = artistRepository.getArtistById(track.getArtistId());
         holder.artistName.setText(artist != null ? artist.getName() : "Unknown Artist");
 
-        // Load album cover image
         int albumCoverId = albumRepository.getAlbumCoverResourceId(track.getAlbumId());
 
         Glide.with(holder.itemView.getContext())
@@ -96,18 +109,28 @@ public class SongAdapter extends RecyclerView.Adapter<SongAdapter.SongViewHolder
 
     }
 
+    /**
+     * Gets number of tracks in playlist
+     * @return The number of songs in playlist
+     */
     @Override
     public int getItemCount() {
         return tracks != null ? tracks.size() : 0;
     }
 
-    // Method to update data
+    /**
+     * Sets list of available tracks from search
+     * @param tracks List of tracks from search
+     */
     public void setTracks(List<Track> tracks) {
         this.tracks = tracks;
         notifyDataSetChanged();
     }
 
 
+    /**
+     * Static class that sets up song as view holder item
+     */
     static class SongViewHolder extends RecyclerView.ViewHolder {
         LinearLayout songItem;
         ImageView songCover;
@@ -115,6 +138,10 @@ public class SongAdapter extends RecyclerView.Adapter<SongAdapter.SongViewHolder
         TextView artistName;
         ImageView musicPlayingIcon;
 
+        /**
+         * Declares layout as song item
+         * @param itemView Th layout being set as a View holder item
+         */
         SongViewHolder(View itemView) {
             super(itemView);
             songItem = itemView.findViewById(R.id.song_item);
@@ -126,14 +153,26 @@ public class SongAdapter extends RecyclerView.Adapter<SongAdapter.SongViewHolder
 
     }
 
+    /**
+     * Gets last clicked song name
+     * @return last clicked song name
+     */
     public TextView getSongName() {
         return lastClickedSongName;
     }
 
+    /**
+     * Gets last clicked song artist
+     * @return Last song's artist
+     */
     public TextView getArtistName() {
         return lastClickedArtistName;
     }
 
+    /**
+     * Returns play icon from last clicked song
+     * @return Gif of play icon
+     */
     public ImageView getGif() {
         return lastClickedGif;
     }

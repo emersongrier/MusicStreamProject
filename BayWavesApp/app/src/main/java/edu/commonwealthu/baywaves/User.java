@@ -1,4 +1,4 @@
-package edu.commonwealthu.baywaves.data_objects;
+package edu.commonwealthu.baywaves;
 
 import java.util.List;
 

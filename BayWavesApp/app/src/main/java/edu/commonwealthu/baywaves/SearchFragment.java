@@ -8,8 +8,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
-import android.widget.ImageView;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -32,8 +30,6 @@ public class SearchFragment extends Fragment implements SongAdapter.OnSongClickL
     private MusicClient musicClient;
     public boolean isClicked = false;
 
-    private TextView songName, artistName;
-    private ImageView musicPlaying;
 
     @Nullable
     @Override
@@ -53,58 +49,55 @@ public class SearchFragment extends Fragment implements SongAdapter.OnSongClickL
         // Add text change listener to search input
         searchInput.addTextChangedListener(new TextWatcher() {
             @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-                // Not needed
-            }
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                // Trigger search when text changes
                 if (s.length() >= 2) { // Start search after at least 2 characters
                     performSearch(s.toString());
                 } else if (s.length() == 0) {
                     // Clear results when search box is empty
                     searchResults.clear();
-                    adapter.setTracks(searchResults); // Use the existing method to update adapter
+                    adapter.setTracks(searchResults);
                 }
             }
 
             @Override
-            public void afterTextChanged(Editable s) {
-                // Not needed
-            }
+            public void afterTextChanged(Editable s) {}
         });
 
         return view;
     }
 
+    /**
+     * Performs a search operation for the given query.
+     * First attempts to search the server database, then falls back to local search if needed.
+     * The search is performed in a background thread to avoid blocking the UI.
+     *
+     * @param query The search query string entered by the user
+     */
     private void performSearch(String query) {
-        // Run search in a background thread to avoid blocking UI
         new Thread(() -> {
             try {
-                // Use the MusicClient to search the server database
                 String jsonResponse = musicClient.searchDb(query, 20, 0); // Limit to 20 results
 
                 if (jsonResponse != null && getActivity() != null) {
-                    // Parse the JSON response into Track objects
                     List<Track> serverResults = trackRepository.parseTracksFromJson(jsonResponse);
 
                     // Update UI on the main thread
                     getActivity().runOnUiThread(() -> {
                         searchResults.clear();
                         searchResults.addAll(serverResults);
-                        adapter.setTracks(searchResults); // Use the existing method to update adapter
-
+                        adapter.setTracks(searchResults);
                     });
                 } else {
-                    // If server search fails, fall back to local search
                     List<Track> localResults = searchLocalTracks(query);
 
                     if (getActivity() != null) {
                         getActivity().runOnUiThread(() -> {
                             searchResults.clear();
                             searchResults.addAll(localResults);
-                            adapter.setTracks(searchResults); // Use the existing method to update adapter
+                            adapter.setTracks(searchResults);
 
                             if (searchResults.isEmpty()) {
                                 //Toast.makeText(getContext(), "No songs found", Toast.LENGTH_SHORT).show();
@@ -115,11 +108,9 @@ public class SearchFragment extends Fragment implements SongAdapter.OnSongClickL
                 }
             } catch (Exception e) {
                 Log.e(TAG, "Error performing search", e);
-
-                // Handle error on UI thread
                 if (getActivity() != null) {
                     getActivity().runOnUiThread(() -> {
-                       // Toast.makeText(getContext(), "Search failed: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getContext(), "Search failed: " + e.getMessage(), Toast.LENGTH_SHORT).show();
 
                     });
                 }
@@ -127,25 +118,18 @@ public class SearchFragment extends Fragment implements SongAdapter.OnSongClickL
         }).start();
     }
 
-    // Helper method to parse JSON if TrackRepository.parseTracksFromJson is not accessible
-    private List<Track> parseTracksFromJson(String json) {
 
-        // call the repository method if it's accessible
-        try {
-            return trackRepository.parseTracksFromJson(json);
-        } catch (Exception e) {
-            Log.e(TAG, "Error parsing JSON, method might be private", e);
-            // If the method is private, you would need to implement the parsing here
-            return new ArrayList<>();
-        }
-    }
-
+    /**
+     * Searches through local tracks as a fallback when server search fails.
+     * Performs a case-insensitive search on track names and artist names.
+     *
+     * @param query The search query string
+     * @return List of Track objects that match the search query
+     */
     private List<Track> searchLocalTracks(String query) {
-        // Search in local tracks as fallback
         List<Track> results = new ArrayList<>();
         List<Track> allTracks = trackRepository.getLocalFallbackTracks();
 
-        // Simple case-insensitive search
         String lowerQuery = query.toLowerCase();
         for (Track track : allTracks) {
             if (track.getName().toLowerCase().contains(lowerQuery) ||
@@ -158,56 +142,48 @@ public class SearchFragment extends Fragment implements SongAdapter.OnSongClickL
         return results;
     }
 
+
+    /**
+     * Handles song selection from search results.
+     * When a song is clicked, this method validates the track, adds it to the player's queue,
+     * and switches to the Home tab for playback. It integrates with the HomeFragment's
+     * music player functionality.
+     *
+     * @param track The Track object that was selected by the user
+     */
     @Override
     public void onSonglistClick(Track track) {
-        Log.d(TAG, "Song clicked: " + track.getName() + " (ID: " + track.getId() + ")");
-
-        // Log the track details to help debug
-        Log.d(TAG, "Track details - ID: " + track.getId() +
-                ", Name: " + track.getName() +
-                ", FilePath: " + track.getFilePath() +
-                ", ArtistID: " + track.getArtistId() +
-                ", AlbumID: " + track.getAlbumId());
-
-        // Make sure we have a valid track ID
         if (track.getId() <= 0) {
            // Toast.makeText(getContext(), "Song cannot be played: invalid track ID", Toast.LENGTH_SHORT).show();
             return;
         }
-
-        // Find the HomeFragment to play the selected song
         HomeFragment homeFragment = (HomeFragment) getActivity()
                 .getSupportFragmentManager()
                 .findFragmentByTag(HomeFragment.class.getSimpleName());
 
         if (homeFragment != null) {
+
+            // Load the track into the player (only at specific spot)
+            homeFragment.allTracks.add(homeFragment.currentTrackIndex + 1, track);
+            homeFragment.loadTrack(track);
+
+            if (homeFragment.isPlaying) {
+                homeFragment.playAndPause();
+            }
+            if (!homeFragment.isPlaying) {
+                homeFragment.playAndPause();
+            }
+
+            // Switch to Home tab
             try {
-
-               // isClicked = true;
-
-                // Load the track into the player (only at specific spot)
-                homeFragment.allTracks.add(homeFragment.currentTrackIndex + 1, track);
-                homeFragment.loadTrack(track);
-
-                if (homeFragment.isPlaying) {
-                    homeFragment.playAndPause();
-                }
-                if (!homeFragment.isPlaying) {
-                    homeFragment.playAndPause();
-                }
-
-                // Switch to Home tab
-                try {
-                    MainActivity mainActivity = (MainActivity) getActivity();
-                    if (mainActivity != null) {
-                        mainActivity.switchToHomeTab();
-                    }
-                } catch (Exception e) {
-                    Toast.makeText(getContext(), "Error switching to home tab " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                MainActivity mainActivity = (MainActivity) getActivity();
+                if (mainActivity != null) {
+                    mainActivity.switchToHomeTab();
                 }
             } catch (Exception e) {
-                Toast.makeText(getContext(), "Error playing track: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), "Error switching to home tab " + e.getMessage(), Toast.LENGTH_SHORT).show();
             }
+
         } else {
             Toast.makeText(getContext(), "Cannot play song: Player not found", Toast.LENGTH_SHORT).show();
         }

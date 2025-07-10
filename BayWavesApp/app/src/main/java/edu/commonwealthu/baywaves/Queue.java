@@ -1,8 +1,6 @@
-package edu.commonwealthu.baywaves.data_objects;
+package edu.commonwealthu.baywaves;
 
 import java.util.List;
-
-import edu.commonwealthu.baywaves.Track;
 
 public class Queue {
 
